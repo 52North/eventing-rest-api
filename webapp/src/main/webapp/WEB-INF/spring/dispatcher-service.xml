@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:ctx="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="
@@ -11,14 +12,14 @@
         http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
 
     <mvc:annotation-driven />
+    <ctx:annotation-config />
 
     <!-- MVC beans -->
     <bean class="org.n52.eventing.rest.ResourcesController" />
-
-
+    <bean class="org.n52.eventing.rest.publications.PublicationsController" />
 
     <bean id="contentNegotiationManager"
-              class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+          class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
         <property name="mediaTypes">
             <value>
                 json=application/json*

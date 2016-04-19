@@ -56,6 +56,11 @@
         </init-param>
     </servlet>
 
+    <!-- listener for making the request available in the MVC controllers -->
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+
     <servlet-mapping>
         <servlet-name>eventing-dispatcher-service</servlet-name>
         <url-pattern>/*</url-pattern>

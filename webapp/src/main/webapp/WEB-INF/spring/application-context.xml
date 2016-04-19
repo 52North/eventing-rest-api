@@ -10,4 +10,6 @@
 
     <mvc:annotation-driven />
 
+    <bean class="org.n52.eventing.rest.publications.DummyPublicationsDao" />
+
 </beans>

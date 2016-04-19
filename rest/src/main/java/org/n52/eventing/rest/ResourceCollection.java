@@ -11,6 +11,7 @@ public class ResourceCollection {
     private String label;
     private String description;
     private Integer size;
+    private String href;
 
     private ResourceCollection(String id) {
         this.id = id;
@@ -48,6 +49,14 @@ public class ResourceCollection {
         this.size = size;
     }
 
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
+
     public ResourceCollection withLabel(String label) {
         this.label = label;
         return this;
@@ -60,6 +69,11 @@ public class ResourceCollection {
 
     public ResourceCollection withCount(Integer count) {
         this.size = count;
+        return this;
+    }
+
+    public ResourceCollection withHref(String href) {
+        this.href = href;
         return this;
     }
 
