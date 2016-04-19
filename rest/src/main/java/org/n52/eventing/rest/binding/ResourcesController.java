@@ -39,6 +39,8 @@ public class ResourcesController {
                 String.format("%s/%s", fullUrl, UrlSettings.DELIVERY_METHODS_RESOURCE));
         resources.put(UrlSettings.SUBSCRIPTIONS_RESOURCE,
                 String.format("%s/%s", fullUrl, UrlSettings.SUBSCRIPTIONS_RESOURCE));
+        resources.put(UrlSettings.TEMPLATES_RESOURCE,
+                String.format("%s/%s", fullUrl, UrlSettings.TEMPLATES_RESOURCE));
 
         return resources;
     }

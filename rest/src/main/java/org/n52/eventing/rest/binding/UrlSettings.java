@@ -14,4 +14,6 @@ public interface UrlSettings {
 
     String SUBSCRIPTIONS_RESOURCE = "subscriptions";
 
+    String TEMPLATES_RESOURCE = "templates";
+
 }

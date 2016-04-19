@@ -65,7 +65,7 @@ public class ResourceCollection {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-    
+
     public ResourceCollection withLabel(String label) {
         this.label = label;
         return this;
@@ -85,7 +85,7 @@ public class ResourceCollection {
         this.href = href;
         return this;
     }
-    
+
     public ResourceCollection withUserId(String id) {
         this.userId = id;
         return this;

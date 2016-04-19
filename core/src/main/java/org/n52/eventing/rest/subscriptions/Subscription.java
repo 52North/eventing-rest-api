@@ -14,7 +14,7 @@ import org.n52.eventing.rest.users.User;
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public class Subscription {
-    
+
     public enum Status {
         ENABLED,
         DISABLED
@@ -28,7 +28,7 @@ public class Subscription {
     private String templateId;
     private String deliveryMethodId;
     private Status status;
-    private Date endOfLife;
+    private String endOfLife;
     private List<Map<String, Object>> parameters = new ArrayList<>();
 
     public Subscription() {
@@ -108,11 +108,11 @@ public class Subscription {
         this.status = status;
     }
 
-    public Date getEndOfLife() {
+    public String getEndOfLife() {
         return endOfLife;
     }
 
-    public void setEndOfLife(Date endOfLife) {
+    public void setEndOfLife(String endOfLife) {
         this.endOfLife = endOfLife;
     }
 
@@ -123,7 +123,7 @@ public class Subscription {
     public void setParameters(List<Map<String, Object>> parameters) {
         this.parameters = parameters;
     }
-    
-    
+
+
 
 }
