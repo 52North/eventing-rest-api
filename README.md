@@ -5,4 +5,5 @@ providing publish/subscribe functionality within the Sensor Web domain.
 
 # License
 
-subverse is licensed under the GNU General Public License, Version 2.0
+the eventing REST API is licensed under the GNU General Public License,
+Version 2.0
