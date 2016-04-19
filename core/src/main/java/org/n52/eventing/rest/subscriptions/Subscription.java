@@ -29,6 +29,7 @@ public class Subscription {
     private String deliveryMethodId;
     private Status status;
     private String endOfLife;
+    private String consumer;
     private List<Map<String, Object>> parameters = new ArrayList<>();
 
     public Subscription() {
@@ -115,6 +116,16 @@ public class Subscription {
     public void setEndOfLife(String endOfLife) {
         this.endOfLife = endOfLife;
     }
+
+    public String getConsumer() {
+        return consumer;
+    }
+
+    public void setConsumer(String consumer) {
+        this.consumer = consumer;
+    }
+    
+    
 
     public List<Map<String, Object>> getParameters() {
         return parameters;

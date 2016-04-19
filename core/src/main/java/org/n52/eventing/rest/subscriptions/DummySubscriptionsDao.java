@@ -3,11 +3,9 @@ package org.n52.eventing.rest.subscriptions;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -21,7 +19,6 @@ import org.n52.eventing.rest.users.UnknownUserException;
 import org.n52.eventing.rest.users.UsersDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -54,6 +51,7 @@ public class DummySubscriptionsDao implements SubscriptionsDao {
             sub.setEndOfLife(new DateTime().plusMonths(2).toString(ISO_FORMATTER));
             sub.setStatus(Subscription.Status.ENABLED);
             sub.setTemplateId(this.templatesDao.getTemplate("overshootUndershoot").getId());
+            sub.setConsumer("peterchen@paulchen.de");
             subscriptions.put("dummy-sub", sub);
         } catch (UnknownPublicationsException | UnknownUserException
                 | UnknownTemplateException | UnknownDeliveryMethodException ex) {
