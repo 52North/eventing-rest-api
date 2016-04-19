@@ -205,20 +205,6 @@
         </resources>
 
         <plugins>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>sources</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                </plugin>
-            
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
@@ -344,7 +330,6 @@
                             <exclude>**/logback.xml</exclude>
                             <exclude>**/logback-test.xml</exclude>
                             <exclude>**/src/test/resources/**</exclude>
-                            <exclude>**/generated-sources/xml-pdf-format</exclude>
                             <exclude>**/src/main/resources/*</exclude>
                             <exclude>**/src/main/assembly/*</exclude>
                         </excludes>
