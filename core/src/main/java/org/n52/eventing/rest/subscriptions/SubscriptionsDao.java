@@ -14,4 +14,6 @@ public interface SubscriptionsDao {
 
     Subscription getSubscription(String id) throws UnknownSubscriptionException;
 
+    void addSubscription(String subId, Subscription subscription);
+
 }

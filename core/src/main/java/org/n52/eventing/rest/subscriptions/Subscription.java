@@ -2,10 +2,7 @@
 package org.n52.eventing.rest.subscriptions;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.n52.eventing.rest.users.User;
 
 
@@ -30,11 +27,10 @@ public class Subscription {
     private Status status;
     private String endOfLife;
     private String consumer;
-    private List<Map<String, Object>> parameters = new ArrayList<>();
+    private List<ParameterValue> parameters = new ArrayList<>();
 
     public Subscription() {
-        Map<String, Object> param1 = new HashMap<>();
-        param1.put("waterGauge", 1.44);
+        ParameterValue param1 = new ParameterValue("waterGauge", 1.44, "number");
         parameters.add(param1);
     }
 
@@ -124,14 +120,12 @@ public class Subscription {
     public void setConsumer(String consumer) {
         this.consumer = consumer;
     }
-    
-    
 
-    public List<Map<String, Object>> getParameters() {
+    public List<ParameterValue> getParameters() {
         return parameters;
     }
 
-    public void setParameters(List<Map<String, Object>> parameters) {
+    public void setParameters(List<ParameterValue> parameters) {
         this.parameters = parameters;
     }
 

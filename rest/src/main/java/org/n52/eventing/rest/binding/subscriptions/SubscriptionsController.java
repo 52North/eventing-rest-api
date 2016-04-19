@@ -1,21 +1,27 @@
 
 package org.n52.eventing.rest.binding.subscriptions;
 
+import org.n52.eventing.rest.subscriptions.SubscriptionDefinition;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.UrlSettings;
+import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
+import org.n52.eventing.rest.subscriptions.SubscriptionManager;
 import org.n52.eventing.rest.subscriptions.SubscriptionsDao;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,6 +37,9 @@ public class SubscriptionsController {
 
     @Autowired
     private SubscriptionsDao dao;
+
+    @Autowired
+    private SubscriptionManager manager;
 
     @RequestMapping("")
     public ModelAndView getSubscriptions(@RequestParam(required = false) MultiValueMap<String, String> query)
@@ -68,6 +77,14 @@ public class SubscriptionsController {
         } catch (UnknownSubscriptionException ex) {
             throw new ResourceNotAvailableException(ex.getMessage(), ex);
         }
+    }
+
+
+    @RequestMapping(value = "", method = POST)
+    public ModelAndView subscribe(@RequestBody SubscriptionDefinition subDef) throws InvalidSubscriptionException {
+        String subId = this.manager.subscribe(subDef);
+
+        return new ModelAndView().addObject(Collections.singletonMap("id", subId));
     }
 
 }

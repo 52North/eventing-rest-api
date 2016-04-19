@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -27,13 +28,15 @@ import org.slf4j.LoggerFactory;
 public class DummySubscriptionsDao implements SubscriptionsDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(DummySubscriptionsDao.class);
+    private static final DateTimeFormatter ISO_FORMATTER = ISODateTimeFormat.dateTime();
+
     private final Map<String, Subscription> subscriptions = new HashMap<>();
 
-    private PublicationsDao publicationsDao;
-    private UsersDao usersDao;
+    private final PublicationsDao publicationsDao;
+    private final UsersDao usersDao;
     private final DeliveryMethodsDao deliveryMethodsDao;
     private final TemplatesDao templatesDao;
-    private static final DateTimeFormatter ISO_FORMATTER = ISODateTimeFormat.dateTime();
+
 
     public DummySubscriptionsDao(UsersDao usersDao, PublicationsDao publicationsDao,
             DeliveryMethodsDao deliveryMethodsDao, TemplatesDao templatesDao) {
@@ -76,6 +79,11 @@ public class DummySubscriptionsDao implements SubscriptionsDao {
         }
 
         return subscriptions.get(id);
+    }
+
+    @Override
+    public synchronized void addSubscription(String subId, Subscription subscription) {
+        this.subscriptions.put(subId, subscription);
     }
 
 }
