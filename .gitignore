@@ -2,7 +2,5 @@ target
 .classpath
 .project
 .settings
-**/subverse.log
-**/subverse/*.log
 
-/amqp-client/logs/
+webapp/nbactions.xml
