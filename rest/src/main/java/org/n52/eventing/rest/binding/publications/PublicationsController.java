@@ -9,6 +9,7 @@ import java.util.List;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.UrlSettings;
+import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,14 @@ public class PublicationsController {
     public ModelAndView getPublications(@RequestParam(required = false) MultiValueMap<String, String> query)
             throws IOException, URISyntaxException {
         String fullUrl = RequestUtils.resolveFullRequestUrl();
-        return new ModelAndView().addObject(createPublications(fullUrl));
+        
+        List<ResourceCollection> pubs = createPublications(fullUrl);
+        
+        if (pubs.isEmpty()) {
+            return EmptyArrayModel.create();
+        }
+        
+        return new ModelAndView().addObject(pubs);
     }
 
     private List<ResourceCollection> createPublications(String fullUrl) {

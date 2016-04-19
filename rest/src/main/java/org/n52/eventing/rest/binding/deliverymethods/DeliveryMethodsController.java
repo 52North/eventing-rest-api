@@ -9,6 +9,7 @@ import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.binding.UrlSettings;
+import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethod;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
@@ -41,6 +42,10 @@ public class DeliveryMethodsController {
                 .withDescription(dm.getDescription())
                 .withHref(String.format("%s/%s", fullUrl, dm.getId())));
         });
+        
+        if (list.isEmpty()) {
+            return EmptyArrayModel.create();
+        }
 
         return new ModelAndView().addObject(list);
     }

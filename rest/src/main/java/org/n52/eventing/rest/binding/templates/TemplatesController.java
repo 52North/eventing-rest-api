@@ -9,6 +9,7 @@ import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.binding.UrlSettings;
+import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.rest.templates.Template;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
@@ -41,6 +42,10 @@ public class TemplatesController {
                 .withHref(String.format("%s/%s", fullUrl, t.getId())));
         });
 
+        if (list.isEmpty()) {
+            return EmptyArrayModel.create();
+        }
+        
         return new ModelAndView().addObject(list);
     }
 

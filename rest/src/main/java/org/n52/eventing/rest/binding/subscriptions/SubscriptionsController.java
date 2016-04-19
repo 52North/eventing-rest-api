@@ -1,6 +1,7 @@
 
 package org.n52.eventing.rest.binding.subscriptions;
 
+import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.rest.subscriptions.SubscriptionUpdateDefinition;
 import org.n52.eventing.rest.subscriptions.SubscriptionDefinition;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
@@ -49,7 +50,14 @@ public class SubscriptionsController {
     public ModelAndView getSubscriptions(@RequestParam(required = false) MultiValueMap<String, String> query)
             throws IOException, URISyntaxException {
         String fullUrl = RequestUtils.resolveFullRequestUrl();
-        return new ModelAndView().addObject(createSubscriptions(fullUrl));
+        
+        List<ResourceCollection> subs = createSubscriptions(fullUrl);
+        
+        if (subs.isEmpty()) {
+            return EmptyArrayModel.create();
+        }
+        
+        return new ModelAndView().addObject(subs);
     }
 
     private List<ResourceCollection> createSubscriptions(String fullUrl) {
@@ -92,7 +100,7 @@ public class SubscriptionsController {
     }
     
     @RequestMapping(value = "/{item}", method = PUT)
-    public ResponseEntity<Void> updateSubscription(@RequestBody SubscriptionUpdateDefinition subDef,
+    public ResponseEntity<?> updateSubscription(@RequestBody SubscriptionUpdateDefinition subDef,
             @PathVariable("item") String id) throws InvalidSubscriptionException {
         subDef.setId(id);
         this.manager.updateSubscription(subDef);
@@ -101,7 +109,7 @@ public class SubscriptionsController {
     }
     
     @RequestMapping(value = "/{item}", method = DELETE)
-    public ResponseEntity<Void> remove(@PathVariable("item") String id) throws InvalidSubscriptionException {
+    public ResponseEntity<?> remove(@PathVariable("item") String id) throws InvalidSubscriptionException {
         this.manager.removeSubscription(id);
 
         return ResponseEntity.accepted().build();
