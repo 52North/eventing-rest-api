@@ -28,32 +28,32 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public class SubscriptionManagerImpl implements SubscriptionManager {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionManagerImpl.class);
-    
+
     @Autowired
     private SubscriptionsDao dao;
-    
+
     @Autowired
     private PublicationsDao publicationsDao;
-    
+
     @Autowired
     private UsersDao usersDao;
-    
+
     @Autowired
     private DeliveryMethodsDao deliveryMethodsDao;
-    
+
     @Autowired
     private TemplatesDao templatesDao;
-    
-    
+
+
     @Override
     public String subscribe(SubscriptionDefinition subDef) throws InvalidSubscriptionException {
-        Objects.requireNonNull(subDef.getPublicationId());
-        Objects.requireNonNull(subDef.getTemplateId());
-        Objects.requireNonNull(subDef.getConsumer());
-        Objects.requireNonNull(subDef.getDeliveryMethodId());
-        
+        throwExceptionOnNullOrEmpty(subDef.getPublicationId(), "publicationId");
+        throwExceptionOnNullOrEmpty(subDef.getTemplateId(), "templateId");
+        throwExceptionOnNullOrEmpty(subDef.getConsumer(), "consumer");
+        throwExceptionOnNullOrEmpty(subDef.getDeliveryMethodId(), "deliveryMethodId");
+
         //TODO implement using Spring security
         User user;
         try {
@@ -61,32 +61,32 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         } catch (UnknownUserException ex) {
             throw new InvalidSubscriptionException(ex.getMessage(), ex);
         }
-        
+
         String pubId = subDef.getPublicationId();
         if (!this.publicationsDao.hasPublication(pubId)) {
             throw new InvalidSubscriptionException("Publication unknown: "+pubId);
         }
-        
+
         String templateId = subDef.getTemplateId();
         if (!this.templatesDao.hasTemplate(templateId)) {
             throw new InvalidSubscriptionException("Template unknown: "+pubId);
         }
-        
+
         String deliveryMethodId = subDef.getDeliveryMethodId();
         if (!this.deliveryMethodsDao.hasDeliveryMethod(deliveryMethodId)) {
             throw new InvalidSubscriptionException("DeliveryMethod unknown: "+deliveryMethodId);
         }
-        
+
         String consumer = subDef.getConsumer();
-        
+
         String subId = UUID.randomUUID().toString();
-        
+
         String desc = String.format("Subscription using template %s (created: %s)", templateId, new DateTime());
         String label = Optional.ofNullable(subDef.getLabel()).orElse(desc);
-        
+
         Subscription subscription = new Subscription(subId, label,
                 desc);
-        
+
         subscription.setConsumer(consumer);
         subscription.setTemplateId(templateId);
         subscription.setDeliveryMethodId(deliveryMethodId);
@@ -95,9 +95,9 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         subscription.setParameters(resolveAndCreateParameters(subDef.getParameters(),
                 templateId));
         subscription.setStatus(resolveStatus(subDef.getStatus()));
-        
+
         this.dao.addSubscription(subId, subscription);
-        
+
                 String eol = subDef.getEndOfLife();
         if (eol != null && !eol.isEmpty()) {
             try {
@@ -106,24 +106,24 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
                 throw new InvalidSubscriptionException(ex.getMessage(), ex);
             }
         }
-        
+
         return subId;
     }
-    
+
     private Status resolveStatus(String status) throws InvalidSubscriptionException {
         if (status == null) {
             return Status.ENABLED;
         }
-        
+
         for (Status value : Status.values()) {
             if (status.equalsIgnoreCase(value.name())) {
                 return value;
             }
         }
-        
+
         throw new InvalidSubscriptionException("Invalid status provided: "+status);
     }
-    
+
     private List<ParameterValue> resolveAndCreateParameters(List<Map<String, Object>> parameters, String templateId)
             throws InvalidSubscriptionException {
         Template template;
@@ -132,9 +132,9 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         } catch (UnknownTemplateException ex) {
             throw new InvalidSubscriptionException("Template not available: "+ templateId, ex);
         }
-        
+
         final List<Parameter> templateParameters = template.getParameters();
-        
+
         try {
             return parameters.stream().map((Map<String, Object> t) -> {
                 for (String key : t.keySet()) {
@@ -151,16 +151,16 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             throw new InvalidSubscriptionException("Could not resolve parameters", e);
         }
     }
-    
+
     private Parameter resolveTemplateParameter(List<Parameter> templateParameters, String key) {
         Optional<Parameter> match = templateParameters.stream().filter((Parameter p) -> {
             return p.getName().equals(key);
         }).findFirst();
-        
+
         if (match.isPresent()) {
             return match.get();
         }
-        
+
         throw new RuntimeException(new InvalidSubscriptionException("Invalid template parameter: "+key));
     }
 
@@ -174,10 +174,10 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             } catch (UnknownSubscriptionException ex) {
                 throw new InvalidSubscriptionException(ex.getMessage(), ex);
             }
-            
+
             changeEndOfLife(subDef.getId(), eol);
         }
-        
+
         String statusString = subDef.getStatus();
         if (statusString != null && !statusString.isEmpty()) {
             Status status = resolveStatus(statusString);
@@ -209,7 +209,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             throw new InvalidSubscriptionException("Not a valid xs:date: "+eolString);
         }
     }
-    
+
     @Override
     public void removeSubscription(String id) throws InvalidSubscriptionException {
         if (this.dao.hasSubscription(id)) {
@@ -239,6 +239,12 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
 
     private void remove(String id) {
         LOG.debug("TODO: Implement remove");
+    }
+
+    private void throwExceptionOnNullOrEmpty(String value, String key) throws InvalidSubscriptionException {
+        if (value == null || value.isEmpty()) {
+            throw new InvalidSubscriptionException(String.format("Parameter %s cannot be null or empty", key));
+        }
     }
 
 }

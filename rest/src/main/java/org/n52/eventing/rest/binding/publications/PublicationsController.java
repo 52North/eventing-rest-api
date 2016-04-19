@@ -37,13 +37,13 @@ public class PublicationsController {
     public ModelAndView getPublications(@RequestParam(required = false) MultiValueMap<String, String> query)
             throws IOException, URISyntaxException {
         String fullUrl = RequestUtils.resolveFullRequestUrl();
-        
+
         List<ResourceCollection> pubs = createPublications(fullUrl);
-        
+
         if (pubs.isEmpty()) {
             return EmptyArrayModel.create();
         }
-        
+
         return new ModelAndView().addObject(pubs);
     }
 

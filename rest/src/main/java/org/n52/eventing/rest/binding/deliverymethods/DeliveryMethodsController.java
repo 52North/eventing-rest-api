@@ -42,7 +42,7 @@ public class DeliveryMethodsController {
                 .withDescription(dm.getDescription())
                 .withHref(String.format("%s/%s", fullUrl, dm.getId())));
         });
-        
+
         if (list.isEmpty()) {
             return EmptyArrayModel.create();
         }

@@ -50,13 +50,13 @@ public class SubscriptionsController {
     public ModelAndView getSubscriptions(@RequestParam(required = false) MultiValueMap<String, String> query)
             throws IOException, URISyntaxException {
         String fullUrl = RequestUtils.resolveFullRequestUrl();
-        
+
         List<ResourceCollection> subs = createSubscriptions(fullUrl);
-        
+
         if (subs.isEmpty()) {
             return EmptyArrayModel.create();
         }
-        
+
         return new ModelAndView().addObject(subs);
     }
 
@@ -98,7 +98,7 @@ public class SubscriptionsController {
 
         return new ModelAndView().addObject(Collections.singletonMap("id", subId));
     }
-    
+
     @RequestMapping(value = "/{item}", method = PUT)
     public ResponseEntity<?> updateSubscription(@RequestBody SubscriptionUpdateDefinition subDef,
             @PathVariable("item") String id) throws InvalidSubscriptionException {
@@ -107,7 +107,7 @@ public class SubscriptionsController {
 
         return ResponseEntity.noContent().build();
     }
-    
+
     @RequestMapping(value = "/{item}", method = DELETE)
     public ResponseEntity<?> remove(@PathVariable("item") String id) throws InvalidSubscriptionException {
         this.manager.removeSubscription(id);

@@ -13,7 +13,7 @@ public class EmptyArrayModel {
     public static ModelAndView create() {
         return new ModelAndView().addObject(new EmptyArrayModel().list);
     }
-    
+
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private Object[] list = new Object[0];
 

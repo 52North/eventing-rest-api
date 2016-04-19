@@ -45,7 +45,7 @@ public class TemplatesController {
         if (list.isEmpty()) {
             return EmptyArrayModel.create();
         }
-        
+
         return new ModelAndView().addObject(list);
     }
 
