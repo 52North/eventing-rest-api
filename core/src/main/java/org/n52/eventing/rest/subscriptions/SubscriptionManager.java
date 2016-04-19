@@ -8,4 +8,6 @@ public interface SubscriptionManager {
 
     String subscribe(SubscriptionDefinition subDef) throws InvalidSubscriptionException;
 
+    void updateSubscription(SubscriptionUpdateDefinition subDef) throws InvalidSubscriptionException;
+
 }

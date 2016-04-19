@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
@@ -21,6 +19,8 @@ import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.n52.eventing.rest.users.UnknownUserException;
 import org.n52.eventing.rest.users.User;
 import org.n52.eventing.rest.users.UsersDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -28,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public class SubscriptionManagerImpl implements SubscriptionManager {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionManagerImpl.class);
     
     @Autowired
     private SubscriptionsDao dao;
@@ -96,6 +98,15 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         
         this.dao.addSubscription(subId, subscription);
         
+                String eol = subDef.getEndOfLife();
+        if (eol != null && !eol.isEmpty()) {
+            try {
+                this.dao.updateEndOfLife(subId, parseEndOfLife(eol));
+            } catch (UnknownSubscriptionException ex) {
+                throw new InvalidSubscriptionException(ex.getMessage(), ex);
+            }
+        }
+        
         return subId;
     }
     
@@ -151,5 +162,63 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         }
         
         throw new RuntimeException(new InvalidSubscriptionException("Invalid template parameter: "+key));
+    }
+
+    @Override
+    public void updateSubscription(SubscriptionUpdateDefinition subDef) throws InvalidSubscriptionException {
+        String eolString = subDef.getEndOfLife();
+        if (eolString != null && !eolString.isEmpty()) {
+            DateTime eol = parseEndOfLife(eolString);
+            try {
+                this.dao.updateEndOfLife(subDef.getId(), eol);
+            } catch (UnknownSubscriptionException ex) {
+                throw new InvalidSubscriptionException(ex.getMessage(), ex);
+            }
+            
+            changeEndOfLife(subDef.getId(), eol);
+        }
+        
+        String statusString = subDef.getStatus();
+        if (statusString != null && !statusString.isEmpty()) {
+            Status status = resolveStatus(statusString);
+
+            try {
+                this.dao.updateStatus(subDef.getId(), status);
+            } catch (UnknownSubscriptionException ex) {
+                throw new InvalidSubscriptionException(ex.getMessage(), ex);
+            }
+
+            switch (status) {
+                case ENABLED:
+                    resume(subDef.getId());
+                    break;
+                case DISABLED:
+                    pause(subDef.getId());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private DateTime parseEndOfLife(String eolString) throws InvalidSubscriptionException {
+        try {
+            return new DateTime(eolString);
+        }
+        catch (IllegalArgumentException e) {
+            throw new InvalidSubscriptionException("Not a valid xs:date: "+eolString);
+        }
+    }
+
+    private void resume(String id) {
+        LOG.debug("TODO: Implement resume");
+    }
+
+    private void pause(String id) {
+        LOG.debug("TODO: Implement pause");
+    }
+
+    private void changeEndOfLife(String id, DateTime eol) {
+        LOG.debug("TODO: Implement end of life update");
     }
 }

@@ -1,6 +1,7 @@
 package org.n52.eventing.rest.subscriptions;
 
 import java.util.List;
+import org.joda.time.DateTime;
 
 /**
  *
@@ -15,5 +16,9 @@ public interface SubscriptionsDao {
     Subscription getSubscription(String id) throws UnknownSubscriptionException;
 
     void addSubscription(String subId, Subscription subscription);
+
+    void updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException;
+
+    void updateStatus(String id, Subscription.Status status) throws UnknownSubscriptionException;
 
 }

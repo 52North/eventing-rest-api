@@ -1,6 +1,7 @@
 
 package org.n52.eventing.rest.binding.subscriptions;
 
+import org.n52.eventing.rest.subscriptions.SubscriptionUpdateDefinition;
 import org.n52.eventing.rest.subscriptions.SubscriptionDefinition;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import java.io.IOException;
@@ -16,12 +17,14 @@ import org.n52.eventing.rest.subscriptions.SubscriptionManager;
 import org.n52.eventing.rest.subscriptions.SubscriptionsDao;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -85,6 +88,15 @@ public class SubscriptionsController {
         String subId = this.manager.subscribe(subDef);
 
         return new ModelAndView().addObject(Collections.singletonMap("id", subId));
+    }
+    
+    @RequestMapping(value = "/{item}", method = PUT)
+    public ResponseEntity<Void> subscribe(@RequestBody SubscriptionUpdateDefinition subDef,
+            @PathVariable("item") String id) throws InvalidSubscriptionException {
+        subDef.setId(id);
+        this.manager.updateSubscription(subDef);
+
+        return ResponseEntity.noContent().build();
     }
 
 }
