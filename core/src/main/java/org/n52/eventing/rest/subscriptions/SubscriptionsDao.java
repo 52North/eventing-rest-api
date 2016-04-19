@@ -21,4 +21,6 @@ public interface SubscriptionsDao {
 
     void updateStatus(String id, Subscription.Status status) throws UnknownSubscriptionException;
 
+    void remove(String id) throws UnknownSubscriptionException;
+
 }

@@ -86,7 +86,7 @@ public class DummySubscriptionsDao implements SubscriptionsDao {
     }
 
     @Override
-    public void updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException {
+    public synchronized void updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException {
         if (hasSubscription(id)) {
             this.subscriptions.get(id).setEndOfLife(eol.toString(ISO_FORMATTER));
         }
@@ -96,9 +96,19 @@ public class DummySubscriptionsDao implements SubscriptionsDao {
     }
 
     @Override
-    public void updateStatus(String id, Subscription.Status status) throws UnknownSubscriptionException {
+    public synchronized void updateStatus(String id, Subscription.Status status) throws UnknownSubscriptionException {
         if (hasSubscription(id)) {
             this.subscriptions.get(id).setStatus(status);
+        }
+        else {
+            throw new UnknownSubscriptionException("Subscription does not exist: "+id);
+        }
+    }
+
+    @Override
+    public synchronized void remove(String id) throws UnknownSubscriptionException {
+        if (hasSubscription(id)) {
+            this.subscriptions.remove(id);
         }
         else {
             throw new UnknownSubscriptionException("Subscription does not exist: "+id);

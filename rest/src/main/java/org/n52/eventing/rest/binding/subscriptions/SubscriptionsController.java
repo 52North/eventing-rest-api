@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -91,12 +92,19 @@ public class SubscriptionsController {
     }
     
     @RequestMapping(value = "/{item}", method = PUT)
-    public ResponseEntity<Void> subscribe(@RequestBody SubscriptionUpdateDefinition subDef,
+    public ResponseEntity<Void> updateSubscription(@RequestBody SubscriptionUpdateDefinition subDef,
             @PathVariable("item") String id) throws InvalidSubscriptionException {
         subDef.setId(id);
         this.manager.updateSubscription(subDef);
 
         return ResponseEntity.noContent().build();
+    }
+    
+    @RequestMapping(value = "/{item}", method = DELETE)
+    public ResponseEntity<Void> remove(@PathVariable("item") String id) throws InvalidSubscriptionException {
+        this.manager.removeSubscription(id);
+
+        return ResponseEntity.accepted().build();
     }
 
 }

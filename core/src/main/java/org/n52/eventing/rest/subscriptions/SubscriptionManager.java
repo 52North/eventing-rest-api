@@ -10,4 +10,6 @@ public interface SubscriptionManager {
 
     void updateSubscription(SubscriptionUpdateDefinition subDef) throws InvalidSubscriptionException;
 
+    void removeSubscription(String id) throws InvalidSubscriptionException;
+
 }

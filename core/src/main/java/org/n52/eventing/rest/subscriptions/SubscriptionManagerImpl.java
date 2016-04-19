@@ -209,6 +209,21 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             throw new InvalidSubscriptionException("Not a valid xs:date: "+eolString);
         }
     }
+    
+    @Override
+    public void removeSubscription(String id) throws InvalidSubscriptionException {
+        if (this.dao.hasSubscription(id)) {
+            try {
+                this.dao.remove(id);
+            } catch (UnknownSubscriptionException ex) {
+                throw new InvalidSubscriptionException(ex.getMessage(), ex);
+            }
+            remove(id);
+        }
+        else {
+            throw new InvalidSubscriptionException("Unknown subscription: "+id);
+        }
+    }
 
     private void resume(String id) {
         LOG.debug("TODO: Implement resume");
@@ -221,4 +236,9 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     private void changeEndOfLife(String id, DateTime eol) {
         LOG.debug("TODO: Implement end of life update");
     }
+
+    private void remove(String id) {
+        LOG.debug("TODO: Implement remove");
+    }
+
 }
