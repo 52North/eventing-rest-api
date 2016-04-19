@@ -1,5 +1,5 @@
 
-package org.n52.eventing.rest;
+package org.n52.eventing.rest.binding;
 
 import java.io.IOException;
 import java.net.URI;

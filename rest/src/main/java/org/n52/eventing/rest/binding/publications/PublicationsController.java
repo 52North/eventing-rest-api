@@ -1,16 +1,18 @@
 
-package org.n52.eventing.rest.publications;
+package org.n52.eventing.rest.binding.publications;
 
-import org.n52.eventing.rest.ResourceNotAvailableException;
+import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.n52.eventing.rest.RequestUtils;
-import org.n52.eventing.rest.ResourceCollection;
-import org.n52.eventing.rest.UrlSettings;
+import org.n52.eventing.rest.binding.RequestUtils;
+import org.n52.eventing.rest.binding.ResourceCollection;
+import org.n52.eventing.rest.binding.UrlSettings;
+import org.n52.eventing.rest.publications.PublicationsDao;
+import org.n52.eventing.rest.publications.UnknownPublicationsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;

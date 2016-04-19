@@ -10,6 +10,11 @@
 
     <mvc:annotation-driven />
 
-    <bean class="org.n52.eventing.rest.publications.DummyPublicationsDao" />
+    <bean class="org.n52.eventing.rest.publications.DummyPublicationsDao" name="publicationsDao" />
+    <bean class="org.n52.eventing.rest.users.DummyUsersDao" name="usersDao" />
+    <bean class="org.n52.eventing.rest.subscriptions.DummySubscriptionsDao">
+        <constructor-arg index="0" ref="usersDao"/>
+        <constructor-arg index="1" ref="publicationsDao"/>
+    </bean>
 
 </beans>

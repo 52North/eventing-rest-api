@@ -1,5 +1,5 @@
 
-package org.n52.eventing.rest;
+package org.n52.eventing.rest.binding;
 
 /**
  *
@@ -12,6 +12,7 @@ public class ResourceCollection {
     private String description;
     private Integer size;
     private String href;
+    private String userId;
 
     private ResourceCollection(String id) {
         this.id = id;
@@ -57,6 +58,14 @@ public class ResourceCollection {
         this.href = href;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+    
     public ResourceCollection withLabel(String label) {
         this.label = label;
         return this;
@@ -74,6 +83,11 @@ public class ResourceCollection {
 
     public ResourceCollection withHref(String href) {
         this.href = href;
+        return this;
+    }
+    
+    public ResourceCollection withUserId(String id) {
+        this.userId = id;
         return this;
     }
 
