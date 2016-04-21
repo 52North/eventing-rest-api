@@ -54,7 +54,6 @@
         <jackson.version>2.6.3</jackson.version>
         <geotools.version>14.0</geotools.version>
         <slf4j.version>1.7.12</slf4j.version>
-
         <java.compiler.source>1.8</java.compiler.source>
         <java.compiler.target>1.8</java.compiler.target>
         <timestamp>${maven.build.timestamp}</timestamp>
@@ -192,7 +191,6 @@
                 <version>1.3</version>
                 <scope>test</scope>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -203,7 +201,6 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-
         <plugins>
             <plugin>
                 <groupId>pl.project13.maven</groupId>
@@ -218,7 +215,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.groovy.maven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
@@ -231,31 +227,15 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <configuration>
+                    <!-- todo: remove once in release branch! atm some deps will break -->
                     <ignoreNonCompile>true</ignoreNonCompile>
                     <failOnWarning>false</failOnWarning>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <id>check-license</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>format</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -269,7 +249,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -282,7 +261,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.jasig.maven</groupId>
                 <artifactId>maven-notice-plugin</artifactId>
@@ -304,7 +282,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -343,35 +320,9 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
-
         <pluginManagement>
             <plugins>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.6</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.10</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.6</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.4</version>
-                </plugin>
-
                 <plugin>
                     <!-- dependencies' licenses -->
                     <groupId>org.codehaus.mojo</groupId>
@@ -391,12 +342,9 @@
                         </licenseMerges>
                     </configuration>
                 </plugin>
-
-
                 <plugin>
                     <groupId>org.codehaus.groovy.maven</groupId>
                     <artifactId>gmaven-plugin</artifactId>
-                    <version>1.0</version>
                     <configuration>
                         <source>
                             import java.util.Date
@@ -407,11 +355,9 @@
                         </source>
                     </configuration>
                 </plugin>
-
                 <plugin>
                     <groupId>pl.project13.maven</groupId>
                     <artifactId>git-commit-id-plugin</artifactId>
-                    <version>2.2.0</version>
                     <configuration>
                         <dateFormat>yyyy-MM-dd HH:mm:ssZ</dateFormat>
                         <gitDescribe>
@@ -421,11 +367,9 @@
                         <timestampFormat>{0,date,yyyy-MM-dd HH:mm:ss}</timestampFormat>
                     </configuration>
                 </plugin>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.3</version>
                     <configuration>
                         <source>${java.compiler.source}</source>
                         <target>${java.compiler.target}</target>
@@ -433,20 +377,16 @@
                         <maxmem>512m</maxmem>
                     </configuration>
                 </plugin>
-
                 <plugin>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.2</version>
                     <configuration>
                         <preparationGoals>clean</preparationGoals>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                     </configuration>
                 </plugin>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.6</version>
                     <configuration>
                         <descriptors>
                             <descriptor>src/main/assembly/release.xml</descriptor>
