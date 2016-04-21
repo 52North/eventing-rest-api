@@ -36,6 +36,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.n52.eventing.rest.Constructable;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
 import org.n52.eventing.rest.publications.PublicationsDao;
@@ -46,47 +47,30 @@ import org.n52.eventing.rest.users.UnknownUserException;
 import org.n52.eventing.rest.users.UsersDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DummySubscriptionsDao implements SubscriptionsDao {
+public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DummySubscriptionsDao.class);
     public static final DateTimeFormatter ISO_FORMATTER = ISODateTimeFormat.dateTime();
 
     private final Map<String, Subscription> subscriptions = new HashMap<>();
 
-    private final PublicationsDao publicationsDao;
-    private final UsersDao usersDao;
-    private final DeliveryMethodsDao deliveryMethodsDao;
-    private final TemplatesDao templatesDao;
+    @Autowired
+    private PublicationsDao publicationsDao;
 
+    @Autowired
+    private UsersDao usersDao;
 
-    public DummySubscriptionsDao(UsersDao usersDao, PublicationsDao publicationsDao,
-            DeliveryMethodsDao deliveryMethodsDao, TemplatesDao templatesDao) {
-        this.usersDao = usersDao;
-        this.publicationsDao = publicationsDao;
-        this.deliveryMethodsDao = deliveryMethodsDao;
-        this.templatesDao = templatesDao;
-        LOG.info("initializing subscriptions...");
+    @Autowired
+    private DeliveryMethodsDao deliveryMethodsDao;
 
-        try {
-            Subscription sub = new Subscription("dummy-sub", "dummy-sub yeah", "this subscription is set up!");
-            sub.setUser(this.usersDao.getUser("dummy-user"));
-            sub.setPublicationId(this.publicationsDao.getPublication("dummy-pub").getId());
-            sub.setDeliveryMethodId(this.deliveryMethodsDao.getDeliveryMethod("email").getId());
-            sub.setEndOfLife(new DateTime().plusMonths(2).toString(ISO_FORMATTER));
-            sub.setStatus(Subscription.Status.ENABLED);
-            sub.setTemplateId(this.templatesDao.getTemplate("overshootUndershoot").getId());
-            sub.setConsumer("peterchen@paulchen.de");
-            subscriptions.put("dummy-sub", sub);
-        } catch (UnknownPublicationsException | UnknownUserException
-                | UnknownTemplateException | UnknownDeliveryMethodException ex) {
-            LOG.warn(ex.getMessage(), ex);
-        }
-    }
+    @Autowired
+    private TemplatesDao templatesDao;
 
     @Override
     public synchronized boolean hasSubscription(String id) {
@@ -139,6 +123,26 @@ public class DummySubscriptionsDao implements SubscriptionsDao {
         }
         else {
             throw new UnknownSubscriptionException("Subscription does not exist: "+id);
+        }
+    }
+
+    @Override
+    public void construct() {
+        LOG.info("initializing subscriptions...");
+
+        try {
+            Subscription sub = new Subscription("dummy-sub", "dummy-sub yeah", "this subscription is set up!");
+            sub.setUser(this.usersDao.getUser("dummy-user"));
+            sub.setPublicationId(this.publicationsDao.getPublication("dummy-pub").getId());
+            sub.setDeliveryMethodId(this.deliveryMethodsDao.getDeliveryMethod("email").getId());
+            sub.setEndOfLife(new DateTime().plusMonths(2).toString(ISO_FORMATTER));
+            sub.setStatus(Subscription.Status.ENABLED);
+            sub.setTemplateId(this.templatesDao.getTemplate("overshootUndershoot").getId());
+            sub.setConsumer("peterchen@paulchen.de");
+            subscriptions.put("dummy-sub", sub);
+        } catch (UnknownPublicationsException | UnknownUserException
+                | UnknownTemplateException | UnknownDeliveryMethodException ex) {
+            LOG.warn(ex.getMessage(), ex);
         }
     }
 

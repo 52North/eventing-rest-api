@@ -37,6 +37,9 @@ public class Definition {
     private String content;
     private String contentType;
 
+    public Definition() {
+    }
+
     public Definition(String content, String contentType) {
         this.content = content;
         this.contentType = contentType;

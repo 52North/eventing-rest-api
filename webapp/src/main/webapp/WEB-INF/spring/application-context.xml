@@ -14,16 +14,19 @@
     <mvc:annotation-driven />
     <ctx:annotation-config />
 
+    <bean class="org.n52.eventing.rest.LifecycleBeanPostProcessor">
+        <description>This calls Constructable#construct and Destroyable#destroy for all beans.</description>
+    </bean>
+
+    <!-- dummy DAOs -->
     <bean class="org.n52.eventing.rest.publications.DummyPublicationsDao" name="publicationsDao" />
     <bean class="org.n52.eventing.rest.users.DummyUsersDao" name="usersDao" />
     <bean class="org.n52.eventing.rest.deliverymethods.DummyDeliveryMethodsDao" name="deliveryMethodsDao" />
-    <bean class="org.n52.eventing.rest.templates.DummyTemplatesDao" name="templatesDao" />
+    <bean class="org.n52.eventing.rest.templates.ConfigurationTemplatesDao" name="templatesDao" />
     <bean class="org.n52.eventing.rest.subscriptions.SubscriptionManagerImpl" name="subscriptionManager" />
-    <bean class="org.n52.eventing.rest.subscriptions.DummySubscriptionsDao">
-        <constructor-arg index="0" ref="usersDao"/>
-        <constructor-arg index="1" ref="publicationsDao"/>
-        <constructor-arg index="2" ref="deliveryMethodsDao"/>
-        <constructor-arg index="3" ref="templatesDao"/>
-    </bean>
+    <bean class="org.n52.eventing.rest.subscriptions.DummySubscriptionsDao" />
+
+    <!-- helper beans -->
+    <bean class="org.n52.eventing.rest.ConfigurationImpl" name="config" />
 
 </beans>

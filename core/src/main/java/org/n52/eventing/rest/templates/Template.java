@@ -44,6 +44,9 @@ public class Template {
     private Definition definition;
     private List<Parameter> parameters = new ArrayList<>();
 
+    public Template() {
+    }
+
     public Template(String id, String label, String description, Definition definition) {
         this.id = id;
         this.label = label;

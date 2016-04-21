@@ -25,40 +25,20 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
+package org.n52.eventing.rest;
 
-package org.n52.eventing.rest.templates;
+import java.util.Optional;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Parameter {
+public interface Configuration {
 
-    private String name;
-    private String dataType;
+    Optional<String> getParameter(String key);
 
-    public Parameter() {
-    }
+    Optional<Integer> getParameterAsInt(String key);
 
-    public Parameter(String name, String dataType) {
-        this.name = name;
-        this.dataType = dataType;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
+    Optional<Double> getParameterAsDouble(String key);
 
 }

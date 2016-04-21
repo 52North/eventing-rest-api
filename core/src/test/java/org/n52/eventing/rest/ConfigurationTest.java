@@ -26,39 +26,29 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.templates;
+package org.n52.eventing.rest;
+
+import java.util.Optional;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Parameter {
+public class ConfigurationTest {
 
-    private String name;
-    private String dataType;
+    @Test
+    public void testConfig() {
+        Configuration config = new ConfigurationImpl("/test-config.json");
+        Optional<Double> val = config.getParameterAsDouble("doubleVal");
 
-    public Parameter() {
-    }
+        Assert.assertThat(val.get(), CoreMatchers.is(2.3));
 
-    public Parameter(String name, String dataType) {
-        this.name = name;
-        this.dataType = dataType;
-    }
+        Optional<String> stringVal = config.getParameter("stringVal");
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+        Assert.assertThat(stringVal.get(), CoreMatchers.is("testString"));
     }
 
 }
