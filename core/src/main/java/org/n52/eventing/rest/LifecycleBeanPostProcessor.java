@@ -37,7 +37,7 @@ import org.springframework.core.PriorityOrdered;
 
 
 /**
- * Bean post processor that calls {@link Constructable#init() } and
+ * Bean post processor that calls {@link Constructable#construct() } and
  * {@link Destroyable#destroy()} for every bean that implements these
  * interfaces. In contrast to the {@link javax.annotation.PostConstruct} and
  * {@link javax.annotation.PreDestroy} annotations, these methods will also be
