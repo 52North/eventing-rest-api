@@ -30,6 +30,8 @@ package org.n52.eventing.rest.binding;
 
 import javax.servlet.http.HttpServletRequest;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,6 +44,8 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @ControllerAdvice
 public class ExceptionHandlerImpl {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandlerImpl.class);
 
     public static final String DEFAULT_ERROR_VIEW = "error";
     private static final String BACKLINK = "href";
@@ -67,6 +71,7 @@ public class ExceptionHandlerImpl {
 
 
     private ModelAndView createModelAndView(Exception e, HttpServletRequest req) {
+        LOG.warn("Returning exception", e);
         ModelAndView mav = new ModelAndView();
         mav.addObject(DEFAULT_ERROR_VIEW, e.getMessage());
         mav.addObject(BACKLINK, req.getRequestURL());

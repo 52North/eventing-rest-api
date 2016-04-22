@@ -29,16 +29,20 @@
 package org.n52.eventing.rest.subscriptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.joda.time.DateTime;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethod;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
+import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
+import org.n52.eventing.rest.filtering.FilterEngine;
 import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.subscriptions.Subscription.Status;
+import org.n52.eventing.rest.templates.InstanceGenerator;
 import org.n52.eventing.rest.templates.Parameter;
 import org.n52.eventing.rest.templates.Template;
 import org.n52.eventing.rest.templates.TemplatesDao;
@@ -46,6 +50,12 @@ import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.n52.eventing.rest.users.UnknownUserException;
 import org.n52.eventing.rest.users.User;
 import org.n52.eventing.rest.users.UsersDao;
+import org.n52.subverse.delivery.DeliveryDefinition;
+import org.n52.subverse.delivery.DeliveryEndpoint;
+import org.n52.subverse.delivery.DeliveryProvider;
+import org.n52.subverse.delivery.DeliveryProviderRepository;
+import org.n52.subverse.delivery.UnsupportedDeliveryDefinitionException;
+import org.n52.subverse.delivery.streamable.StringStreamable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +83,15 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     @Autowired
     private TemplatesDao templatesDao;
 
+    @Autowired
+    private FilterEngine engine;
+
+    @Autowired
+    private DeliveryProviderRepository deliveryRepository;
+
+    private InstanceGenerator filterInstanceGenerator = new InstanceGenerator();
+    private Map<String, String> subscriptionToRuleMap = new HashMap<>();
+
 
     @Override
     public String subscribe(SubscriptionDefinition subDef) throws InvalidSubscriptionException {
@@ -94,8 +113,10 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             throw new InvalidSubscriptionException("Publication unknown: "+pubId);
         }
 
-        String templateId = subDef.getTemplateId();
-        if (!this.templatesDao.hasTemplate(templateId)) {
+        Template template;
+        try {
+            template = this.templatesDao.getTemplate(subDef.getTemplateId());
+        } catch (UnknownTemplateException ex) {
             throw new InvalidSubscriptionException("Template unknown: "+pubId);
         }
 
@@ -104,28 +125,43 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             throw new InvalidSubscriptionException("DeliveryMethod unknown: "+deliveryMethodId);
         }
 
+        /*
+         * resolve delivery endpoint
+         */
+        DeliveryEndpoint endpoint = createDeliveryEndpoint(deliveryMethodId, subDef.getConsumer(), pubId);
+
         String consumer = subDef.getConsumer();
 
         String subId = UUID.randomUUID().toString();
 
-        String desc = String.format("Subscription using template %s (created: %s)", templateId, new DateTime());
+        String desc = String.format("Subscription using template %s (created: %s)", template.getId(), new DateTime());
         String label = Optional.ofNullable(subDef.getLabel()).orElse(desc);
 
-        Subscription subscription = new Subscription(subId, label,
-                desc);
+        Subscription subscription = createSubscription(subId, label, desc, consumer,
+                template, deliveryMethodId, pubId, user, subDef);
 
-        subscription.setConsumer(consumer);
-        subscription.setTemplateId(templateId);
-        subscription.setDeliveryMethodId(deliveryMethodId);
-        subscription.setPublicationId(pubId);
-        subscription.setUser(user);
-        subscription.setParameters(resolveAndCreateParameters(subDef.getParameters(),
-                templateId));
-        subscription.setStatus(resolveStatus(subDef.getStatus()));
 
+        /*
+         * register at engine
+         */
+        String filterInstance = this.filterInstanceGenerator.generateFilterInstance(
+                template, subscription.getParameters());
+        String ruleId = this.engine.registerRule(filterInstance, template.getDefinition().getContentType(),
+                msg -> {
+                    endpoint.deliver(Optional.of(
+                            new StringStreamable(msg.getContent().toString(), msg.getContentType())
+                    ));
+                });
+
+        synchronized (this) {
+            this.subscriptionToRuleMap.put(subId, ruleId);
+        }
+
+        /*
+         * finally add to the DAO
+         */
         this.dao.addSubscription(subId, subscription);
-
-                String eol = subDef.getEndOfLife();
+        String eol = subDef.getEndOfLife();
         if (eol != null && !eol.isEmpty()) {
             try {
                 this.dao.updateEndOfLife(subId, parseEndOfLife(eol));
@@ -135,6 +171,22 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         }
 
         return subId;
+    }
+
+    private Subscription createSubscription(String subId, String label, String desc, String consumer,
+            Template template, String deliveryMethodId, String pubId, User user, SubscriptionDefinition subDef)
+            throws InvalidSubscriptionException {
+        Subscription subscription = new Subscription(subId, label,
+                desc);
+        subscription.setConsumer(consumer);
+        subscription.setTemplateId(template.getId());
+        subscription.setDeliveryMethodId(deliveryMethodId);
+        subscription.setPublicationId(pubId);
+        subscription.setUser(user);
+        subscription.setParameters(resolveAndCreateParameters(subDef.getParameters(),
+                template.getId()));
+        subscription.setStatus(resolveStatus(subDef.getStatus()));
+        return subscription;
     }
 
     private Status resolveStatus(String status) throws InvalidSubscriptionException {
@@ -271,6 +323,22 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     private void throwExceptionOnNullOrEmpty(String value, String key) throws InvalidSubscriptionException {
         if (value == null || value.isEmpty()) {
             throw new InvalidSubscriptionException(String.format("Parameter %s cannot be null or empty", key));
+        }
+    }
+
+    private DeliveryEndpoint createDeliveryEndpoint(String deliveryMethodId, String consumer, String pubId) throws InvalidSubscriptionException {
+        try {
+            DeliveryMethod method = this.deliveryMethodsDao.getDeliveryMethod(deliveryMethodId);
+            DeliveryDefinition definition = new DeliveryDefinition(method.getId(), consumer, pubId);
+            DeliveryProvider provider = deliveryRepository.getProvider(Optional.of(definition));
+
+            if (provider == null) {
+                throw new InvalidSubscriptionException("No delivery provider found for delivery: "+deliveryMethodId);
+            }
+
+            return provider.createDeliveryEndpoint(definition);
+        } catch (UnsupportedDeliveryDefinitionException | UnknownDeliveryMethodException ex) {
+            throw new InvalidSubscriptionException(ex.getMessage(), ex);
         }
     }
 

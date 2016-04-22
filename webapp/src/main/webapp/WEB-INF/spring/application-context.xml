@@ -26,7 +26,12 @@
     <bean class="org.n52.eventing.rest.subscriptions.SubscriptionManagerImpl" name="subscriptionManager" />
     <bean class="org.n52.eventing.rest.subscriptions.DummySubscriptionsDao" />
 
-    <!-- helper beans -->
+    <!-- core beans -->
     <bean class="org.n52.eventing.rest.ConfigurationImpl" name="config" />
+    <bean class="org.n52.eventing.rest.filtering.FilterEngineImpl" />
+
+    <!-- delivery -->
+    <bean class="org.n52.subverse.delivery.DeliveryProviderRepository" />
+    <bean class="org.n52.eventing.rest.deliverymethods.email.EmailDeliveryProvider" />
 
 </beans>

@@ -11,8 +11,10 @@ This project includes:
   CORS Filter under The Apache Software License, Version 2.0
   Eventing REST API under GNU General Public License, Version 2.0
   Eventing REST API - core module under GNU General Public License, Version 2.0
+  Eventing REST API - filtering module under GNU General Public License, Version 2.0
   Eventing REST API - REST module under GNU General Public License, Version 2.0
   Eventing REST API - Webapp under GNU General Public License, Version 2.0
+  Guava: Google Core Libraries for Java under The Apache Software License, Version 2.0
   Hamcrest Core under New BSD License
   Jackson-annotations under The Apache Software License, Version 2.0
   Jackson-core under The Apache Software License, Version 2.0
@@ -35,4 +37,5 @@ This project includes:
   Spring Object/XML Marshalling under The Apache Software License, Version 2.0
   Spring Web under The Apache Software License, Version 2.0
   Spring Web MVC under The Apache Software License, Version 2.0
+  subverse delivery API under GNU General Public License, version 2
 
