@@ -127,7 +127,14 @@ public class ConfigurationTemplatesDao implements TemplatesDao, Constructable {
                 return t.toFile().toString().endsWith(".json");
             }).forEach(p -> {
                 try {
-                    loadTemplate(p);
+                    Template t = loadTemplate(p);
+                    if (templates.containsKey(t.getId())) {
+                        LOG.warn("Template with id '{}' already registered!", t.getId());
+                    }
+                    else {
+                        templates.put(t.getId(), t);
+                        LOG.info("Added template '{}'", t.getId());
+                    }
                 } catch (IOException e) {
                     LOG.warn("Could not template instance {}", p, e);
                 }
@@ -139,18 +146,10 @@ public class ConfigurationTemplatesDao implements TemplatesDao, Constructable {
 
     }
 
-    private void loadTemplate(Path p) throws IOException {
+    protected Template loadTemplate(Path p) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-
         Template t = mapper.readValue(p.toFile(), Template.class);
-
-        if (templates.containsKey(t.getId())) {
-            LOG.warn("Template with id '{}' already registered!", t.getId());
-        }
-        else {
-            templates.put(t.getId(), t);
-            LOG.info("Added template '{}'", t.getId());
-        }
+        return t;
     }
 
 }
