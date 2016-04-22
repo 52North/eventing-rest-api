@@ -21,7 +21,7 @@
     <!-- dummy DAOs -->
     <bean class="org.n52.eventing.rest.publications.DummyPublicationsDao" name="publicationsDao" />
     <bean class="org.n52.eventing.rest.users.DummyUsersDao" name="usersDao" />
-    <bean class="org.n52.eventing.rest.deliverymethods.DummyDeliveryMethodsDao" name="deliveryMethodsDao" />
+    <bean class="org.n52.eventing.rest.deliverymethods.DeliveryMethodsDaoImpl" name="deliveryMethodsDao" />
     <bean class="org.n52.eventing.rest.templates.ConfigurationTemplatesDao" name="templatesDao" />
     <bean class="org.n52.eventing.rest.subscriptions.SubscriptionManagerImpl" name="subscriptionManager" />
     <bean class="org.n52.eventing.rest.subscriptions.DummySubscriptionsDao" />

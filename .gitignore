@@ -4,3 +4,4 @@ target
 .settings
 
 webapp/nbactions.xml
+webapp/logs/

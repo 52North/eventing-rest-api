@@ -29,6 +29,8 @@ package org.n52.eventing.rest.deliverymethods;
 
 
 import java.util.List;
+import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
+import org.n52.subverse.delivery.DeliveryEndpoint;
 
 
 /**
@@ -42,5 +44,7 @@ public interface DeliveryMethodsDao {
     boolean hasDeliveryMethod(String id);
 
     DeliveryMethod getDeliveryMethod(String id) throws UnknownDeliveryMethodException;
+
+    DeliveryEndpoint createDeliveryEndpoint(String deliveryMethodId, String consumer, String pubId) throws InvalidSubscriptionException;
 
 }
