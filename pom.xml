@@ -443,6 +443,31 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav-jackrabbit</artifactId>
+                <version>1.0</version>
+            </extension>
+        </extensions>
     </build>
+    
+    <profiles>
+        <profile>
+            <id>snapshot-dist</id>
+            <distributionManagement>
+                <repository>
+                    <id>n52-releases-dist</id>
+                    <name>repository for 52North releases</name>
+                    <url>dav:https://52north.org/maven/repo/releases</url>            
+                </repository>
+                <snapshotRepository>
+                    <id>n52-snapshots-dist</id>
+                    <name>repository for 52North snapshots</name>
+                    <url>dav:https://52north.org/maven/repo/snapshots</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+    </profiles>
     
 </project>
