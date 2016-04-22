@@ -29,8 +29,8 @@
 package org.n52.eventing.rest.templates;
 
 import java.util.List;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.n52.eventing.rest.subscriptions.ParameterValue;
-import org.n52.eventing.rest.templates.Template;
 
 /**
  *
@@ -41,6 +41,10 @@ public class InstanceGenerator {
     public String generateFilterInstance(Template t, List<ParameterValue> values) {
         String content = t.getDefinition().getContent();
 
+        if (content.contains("&lt;")) {
+            content = StringEscapeUtils.unescapeXml(content);
+        }
+        
         for (ParameterValue param : values) {
             content = content.replace(String.format("${%s}", param.getName()), param.getValue().toString());
         }

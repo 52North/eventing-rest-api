@@ -25,19 +25,49 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
+/*
+* Copyright (C) 2016-2016 52°North Initiative for Geospatial Open Source
+* Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2 as publishedby the Free
+* Software Foundation.
+*
+* If the program is linked with libraries which are licensed under one of the
+* following licenses, the combination of the program with the linked library is
+* not considered a "derivative work" of the program:
+*
+*     - Apache License, version 2.0
+*     - Apache Software License, version 1.0
+*     - GNU Lesser General Public License, version 3
+*     - Mozilla Public License, versions 1.0, 1.1 and 2.0
+*     - Common Development and Distribution License (CDDL), version 1.0
+*
+* Therefore the distribution of the program linked with libraries licensed under
+* the aforementioned licenses, is permitted by the copyright holders if the
+* distribution is compliant with both the GNU General Public License version 2
+* and the aforementioned licenses.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY
+* WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+* PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*/
 
 package org.n52.eventing.rest.subscriptions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
-import org.n52.eventing.rest.filtering.FilterEngine;
 import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.subscriptions.Subscription.Status;
 import org.n52.eventing.rest.templates.InstanceGenerator;
@@ -49,7 +79,9 @@ import org.n52.eventing.rest.users.UnknownUserException;
 import org.n52.eventing.rest.users.User;
 import org.n52.eventing.rest.users.UsersDao;
 import org.n52.subverse.delivery.DeliveryEndpoint;
-import org.n52.subverse.delivery.streamable.StringStreamable;
+import org.n52.subverse.engine.FilterEngine;
+import org.n52.subverse.engine.SubscriptionRegistrationException;
+import org.n52.subverse.subscription.SubscribeOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +113,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     private FilterEngine engine;
 
     private final InstanceGenerator filterInstanceGenerator = new InstanceGenerator();
-    private final Map<String, String> subscriptionToRuleMap = new HashMap<>();
+    private final Map<String, org.n52.subverse.subscription.Subscription> subscriptionToRuleMap = new HashMap<>();
 
 
     @Override
@@ -125,27 +157,35 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
                 template, deliveryMethodId, pubId, user, subDef);
 
         /*
-         * resolve delivery endpoint
-         */
+        * resolve delivery endpoint
+        */
         DeliveryEndpoint endpoint = this.deliveryMethodsDao.createDeliveryEndpoint(deliveryMethodId,
                 consumer, pubId);
 
         /*
-         * register at engine
-         */
+        * register at engine
+        */
         String filterInstance = this.filterInstanceGenerator.generateFilterInstance(
                 template, subscription.getParameters());
-        String ruleId = this.engine.registerRule(filterInstance, template.getDefinition().getContentType(),
-                msg -> {
-                    endpoint.deliver(Optional.of(
-                            new StringStreamable(msg.getContent().toString(), msg.getContentType())
-                    ));
-                });
+        try {
+            org.n52.subverse.subscription.Subscription subverseSub = wrapToSubverseSubscription(subscription,
+                    filterInstance, pubId);
+            this.engine.register(subverseSub, endpoint);
 
+            /*
+            * remember subverseSub for later removal
+            */
+            synchronized (this) {
+                this.subscriptionToRuleMap.put(subId, subverseSub);
+            }
+        } catch (SubscriptionRegistrationException ex) {
+            LOG.warn("Could not register subscription at engine", ex);
+            throw new InvalidSubscriptionException(ex.getMessage(), ex);
+        }
 
         /*
-         * finally add to the DAO
-         */
+        * finally add to the DAO
+        */
         this.dao.addSubscription(subId, subscription);
         String eol = subDef.getEndOfLife();
         if (eol != null && !eol.isEmpty()) {
@@ -154,13 +194,6 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             } catch (UnknownSubscriptionException ex) {
                 throw new InvalidSubscriptionException(ex.getMessage(), ex);
             }
-        }
-
-        /*
-         * remember ruleId for later removal
-         */
-        synchronized (this) {
-            this.subscriptionToRuleMap.put(subId, ruleId);
         }
 
         return subId;
@@ -316,6 +349,24 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     private void throwExceptionOnNullOrEmpty(String value, String key) throws InvalidSubscriptionException {
         if (value == null || value.isEmpty()) {
             throw new InvalidSubscriptionException(String.format("Parameter %s cannot be null or empty", key));
+        }
+    }
+
+    private org.n52.subverse.subscription.Subscription wrapToSubverseSubscription(Subscription subscription,
+            String filterInstance, String pubId) throws InvalidSubscriptionException {
+        try {
+            XmlObject filterXml = XmlObject.Factory.parse(filterInstance);
+            org.n52.subverse.subscription.Subscription result = new org.n52.subverse.subscription.Subscription(
+                    subscription.getId(), new SubscribeOptions(pubId,
+                            Optional.empty(),
+                            Optional.of(filterXml),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Collections.emptyMap(),
+                            Optional.empty()), null);
+            return result;
+        } catch (XmlException ex) {
+            throw new InvalidSubscriptionException("Currently only valid XML filter definitions allowed", ex);
         }
     }
 

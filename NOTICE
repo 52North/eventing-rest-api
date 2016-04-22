@@ -3,12 +3,28 @@ Copyright 2013 52°North Initiative for Geospatial Open Source Software GmbH
 Licensed under GNU General Public License, Version 2.0
 
 This project includes: 
+  52°North Iceland under The Apache Software License, Version 2.0
+  52°North Iceland Util module under The Apache Software License, Version 2.0
+  Antlr 3 Runtime under BSD License
+  AntLR Parser Generator under BSD License
+  ANTLR StringTemplate under BSD licence
   AOP alliance under Public Domain
   Apache Commons Codec under Apache License, Version 2.0
+  Apache Commons Lang under Apache License, Version 2.0
   Apache Commons Logging under The Apache Software License, Version 2.0
+  Apache Log4j under The Apache Software License, Version 2.0
   c3p0:JDBC DataSources/Resource Pools under GNU LESSER GENERAL PUBLIC LICENSE
+  Code Generation Library under ASF 2.0
   Commons IO under The Apache Software License, Version 2.0
   CORS Filter under The Apache Software License, Version 2.0
+  EPOS API module under GNU GENERAL PUBLIC LICENSE Version 2, June 1991
+  EPOS Basic filters module under GNU GENERAL PUBLIC LICENSE Version 2, June 1991
+  EPOS Core module under GNU GENERAL PUBLIC LICENSE Version 2, June 1991
+  EPOS EML Patterns under GNU GENERAL PUBLIC LICENSE Version 2, June 1991
+  EPOS Esper Pattern Engine under GNU GENERAL PUBLIC LICENSE Version 2, June 1991
+  EPOS Patterns Tools under GNU GENERAL PUBLIC LICENSE Version 2, June 1991
+  Esper under GNU General Public License Version 2
+  Event Model schema version 0.2.0 under The Apache Software License, Version 2.0
   Eventing REST API under GNU General Public License, Version 2.0
   Eventing REST API - core module under GNU General Public License, Version 2.0
   Eventing REST API - filtering module under GNU General Public License, Version 2.0
@@ -21,13 +37,25 @@ This project includes:
   jackson-databind under The Apache Software License, Version 2.0
   Java Property Utility under The Apache Software License, Version 2.0
   Java Servlet API under CDDL 1.1 or GPL2 w/ CPE
+  javax.inject under The Apache Software License, Version 2.0
   Joda-Time under Apache 2
+  JTS Topology Suite under Lesser General Public License (LGPL)
   JUnit under Eclipse Public License 1.0
   Logback Classic Module under Eclipse Public License - v 1.0 or GNU Lesser General Public License
   Logback Core Module under Eclipse Public License - v 1.0 or GNU Lesser General Public License
   Mockito under The MIT License
   Objenesis under Apache 2
+  OGC EML schema 0.0.1 (OGC Discussion Paper 08-132) under The Apache Software License, Version 2.0
+  OGC Filter schema (spec. v2.0) under The Apache Software License, Version 2.0
+  OGC GML schema (spec. v3.1.1) under The Apache Software License, Version 2.0
+  OGC GML schema (spec. v3.2.1) under The Apache Software License, Version 2.0
+  OGC OWS schema (spec. v1.1.0) under The Apache Software License, Version 2.0
+  OGC SWECommon schema (spec. v1.0.1) under The Apache Software License, Version 2.0
+  org.n52.sensorweb:52n-oxf-conversion under GNU GENERAL PUBLIC LICENSE Version 2, June 1991
+  org.n52.sensorweb:52n-oxf-xmlbeans under GNU GENERAL PUBLIC LICENSE Version 2, June 1991
+  org.vast:swe-common-data-framework under GNU GENERAL PUBLIC LICENSE Version 2, June 1991
   Quartz Enterprise Job Scheduler under Apache 2.0
+  Saxon-HE under Mozilla Public License Version 1.0
   SLF4J API Module under MIT License
   Spring AOP under The Apache Software License, Version 2.0
   Spring Beans under The Apache Software License, Version 2.0
@@ -37,5 +65,15 @@ This project includes:
   Spring Object/XML Marshalling under The Apache Software License, Version 2.0
   Spring Web under The Apache Software License, Version 2.0
   Spring Web MVC under The Apache Software License, Version 2.0
+  StAX API under The Apache Software License, Version 2.0
   subverse delivery API under GNU General Public License, version 2
+  subverse filter engine under GNU General Public License, version 2
+  svalbard under The Apache Software License, Version 2.0
+  vecmath under Sun Binary Code License Agreement
+  W3C SOAP specification recommondation (v1.2 part 1) under The Apache Software License, Version 2.0
+  W3C xlink schema (spec. v1.1.0) under The Apache Software License, Version 2.0
+  Xerces2 Java Parser under The Apache Software License, Version 2.0
+  XML Commons External Components XML APIs under The Apache Software License, Version 2.0
+  XmlBeans under The Apache Software License, Version 2.0
+  XmlBeansXPath under The Apache Software License, Version 2.0
 

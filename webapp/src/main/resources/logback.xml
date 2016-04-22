@@ -26,6 +26,7 @@
         </encoder>
     </appender>
     <logger name="org.n52.eventing" level="DEBUG" />
+    <logger name="org.n52.epos" level="DEBUG" />
     <root level="WARN">
         <appender-ref ref="eventing-rest-file" />
         <appender-ref ref="eventing-rest-console" />

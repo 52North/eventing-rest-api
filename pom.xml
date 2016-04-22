@@ -85,7 +85,12 @@
                 <artifactId>webapp</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            
+
+            <dependency>
+                <groupId>org.n52.subverse</groupId>
+                <artifactId>engine</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>            
             <dependency>
                 <groupId>org.n52.subverse</groupId>
                 <artifactId>delivery</artifactId>
@@ -159,6 +164,11 @@
                 <version>2.1.7</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.4</version>
+            </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
@@ -300,6 +310,7 @@
                     <noticeTemplate>misc/NOTICE.template</noticeTemplate>
                     <licenseMapping>
                         <param>http://52north.github.io/cdn/licenses/license-mappings.xml</param>
+                        <param>misc/license-mappings.xml</param>
                     </licenseMapping>
                     <generateChildNotices>false</generateChildNotices>
                 </configuration>
