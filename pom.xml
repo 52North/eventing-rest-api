@@ -468,6 +468,20 @@
                 </snapshotRepository>
             </distributionManagement>
         </profile>
+        <profile>
+            <id>disable-notice</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jasig.maven</groupId>
+                        <artifactId>maven-notice-plugin</artifactId>
+                        <configuration>
+                            <skipChecks>true</skipChecks>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
     
 </project>
