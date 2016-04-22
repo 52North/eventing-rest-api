@@ -41,4 +41,6 @@ public interface Configuration {
 
     Optional<Double> getParameterAsDouble(String key);
 
+    Optional<Boolean> getParameterAsBoolean(String key);
+
 }

@@ -104,4 +104,13 @@ public class ConfigurationImpl implements Configuration {
         return Optional.empty();
     }
 
+    @Override
+    public Optional<Boolean> getParameterAsBoolean(String key) {
+        JsonNode value = this.config.get(key);
+        if (value != null && value.isBoolean()) {
+            return Optional.of(value.asBoolean());
+        }
+        return Optional.empty();
+    }
+
 }
