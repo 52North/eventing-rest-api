@@ -1,3 +1,4 @@
 {
-    "templateDirectory": "/templates"
+    "templateDirectory": "/templates",
+    "publishDummyMessages": false
 }

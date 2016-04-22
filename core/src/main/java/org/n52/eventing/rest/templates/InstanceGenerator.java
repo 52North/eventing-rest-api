@@ -44,7 +44,7 @@ public class InstanceGenerator {
         if (content.contains("&lt;")) {
             content = StringEscapeUtils.unescapeXml(content);
         }
-        
+
         for (ParameterValue param : values) {
             content = content.replace(String.format("${%s}", param.getName()), param.getValue().toString());
         }

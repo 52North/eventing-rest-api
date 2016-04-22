@@ -33,14 +33,33 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.n52.epos.event.MapEposEvent;
+import org.n52.eventing.rest.Configuration;
+import org.n52.eventing.rest.Constructable;
+import org.n52.eventing.rest.Destroyable;
+import org.n52.subverse.engine.FilterEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DummyPublicationsDao implements PublicationsDao {
+public class DummyPublicationsDao implements PublicationsDao, Constructable, Destroyable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DummyPublicationsDao.class);
 
     private final Map<String, Publication> publications = new HashMap<>();
+
+    @Autowired
+    private Configuration config;
+
+    @Autowired
+    private FilterEngine engine;
+
+    private boolean running = true;
 
     public DummyPublicationsDao() {
         publications.put("dummy-pub", new Publication("dummy-pub", "dummy-pub ftw", "this publication provides niiiice data"));
@@ -64,6 +83,40 @@ public class DummyPublicationsDao implements PublicationsDao {
         }
 
         return publications.get(id);
+    }
+
+    @Override
+    public void construct() {
+        Optional<Boolean> dummy = config.getParameterAsBoolean("publishDummyMessages");
+        if (dummy.isPresent() && dummy.get()) {
+            new Thread(() -> {
+                LOG.info("Dummy publication thread started...");
+
+                int count = 0;
+                while (running) {
+                    count++;
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ex) {
+                        LOG.warn(ex.getMessage(), ex);
+                    }
+
+                    long now = System.currentTimeMillis();
+                    MapEposEvent e = new MapEposEvent(now, now);
+                    e.put("observedProperty", "Wasserstand");
+                    e.put("sensorID", "Wasserstand_Opladen");
+                    double val = count % 10 == 0 ? 0.3 : 0.7;
+                    e.put(MapEposEvent.DOUBLE_VALUE_KEY, val);
+                    e.put(MapEposEvent.ORIGNIAL_OBJECT_KEY, "{\"Wasserstand\": "+ val +"}");
+                    engine.filterMessage(e);
+                }
+            }).start();
+        }
+    }
+
+    @Override
+    public void destroy() {
+        this.running = false;
     }
 
 }
