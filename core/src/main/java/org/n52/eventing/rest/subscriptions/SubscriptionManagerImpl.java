@@ -63,7 +63,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
@@ -343,7 +342,16 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     private void remove(String id) {
-        LOG.debug("TODO: Implement remove");
+        org.n52.subverse.subscription.Subscription sub;
+        synchronized (this) {
+            sub = this.subscriptionToRuleMap.get(id);
+        }
+
+        try {
+            this.engine.removeSubscription(sub.getId());
+        } catch (org.n52.subverse.subscription.UnknownSubscriptionException ex) {
+            LOG.warn("Could not remove subscription", ex);
+        }
     }
 
     private void throwExceptionOnNullOrEmpty(String value, String key) throws InvalidSubscriptionException {
