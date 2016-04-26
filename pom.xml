@@ -90,7 +90,7 @@
                 <groupId>org.n52.subverse</groupId>
                 <artifactId>engine</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
-            </dependency>            
+            </dependency>
             <dependency>
                 <groupId>org.n52.subverse</groupId>
                 <artifactId>delivery</artifactId>
@@ -232,7 +232,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <repositories>
         <repository>
             <id>52n-snapshots</id>
@@ -336,7 +336,7 @@
                         <exclude>**/log4j*</exclude>
                         <exclude>**/*.xml</exclude>
                         <exclude>**/*.html</exclude>
-                        <exclude>**/webapp/static/lib/*</exclude>
+                        <exclude>**/webapp/api-docs/js/*</exclude>
                         <exclude>**/webapp/WEB-INF/web.xml</exclude>
                         <exclude>**/buildNumber.properties</exclude>
                     </excludes>
@@ -451,7 +451,7 @@
             </extension>
         </extensions>
     </build>
-    
+
     <profiles>
         <profile>
             <id>snapshot-dist</id>
@@ -459,7 +459,7 @@
                 <repository>
                     <id>n52-releases-dist</id>
                     <name>repository for 52North releases</name>
-                    <url>dav:https://52north.org/maven/repo/releases</url>            
+                    <url>dav:https://52north.org/maven/repo/releases</url>
                 </repository>
                 <snapshotRepository>
                     <id>n52-snapshots-dist</id>
@@ -483,5 +483,5 @@
             </build>
         </profile>
     </profiles>
-    
+
 </project>
