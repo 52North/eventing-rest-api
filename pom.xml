@@ -238,6 +238,10 @@
             <id>52n-snapshots</id>
             <url>https://52north.org/maven/repo/snapshots</url>
         </repository>
+        <repository>
+            <id>52n-releases</id>
+            <url>http://52north.org/maven/repo/releases</url>
+        </repository>
     </repositories>
 
     <build>
