@@ -25,15 +25,20 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-
 package org.n52.eventing.rest.templates;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.n52.eventing.rest.Configuration;
+import org.n52.eventing.rest.ConfigurationImpl;
 
 /**
  *
@@ -51,6 +56,31 @@ public class ConfigurationTemplatesDaoTest {
         Assert.assertThat(t.getLabel(), CoreMatchers.is("Generic overshoot/undershoot pattern"));
         Assert.assertThat(t.getParameters().size(), CoreMatchers.is(2));
         Assert.assertThat(t.getParameters().get(0).getName(), CoreMatchers.is("observedProperty"));
+    }
+
+    @Test
+    public void testFolderCreationIfAbsent() throws IOException, URISyntaxException {
+        ConfigurationTemplatesDao dao = new ConfigurationTemplatesDao();
+        ConfigurationImplSeam config = new ConfigurationImplSeam("/test-config.json");
+        config.setParameter("templateDirectory", new TextNode("not-existing-directory"));
+
+        dao.loadTemplates(config);
+        Path expected = Paths.get(getClass().getResource("/not-existing-directory").toURI());
+        Assert.assertTrue(expected.toFile().exists());
+        Files.delete(expected);
+    }
+
+    private static class ConfigurationImplSeam extends ConfigurationImpl {
+
+        public ConfigurationImplSeam(String configFileResource) {
+            super(configFileResource);
+        }
+
+        @Override
+        protected void setParameter(String key, JsonNode node) {
+            super.setParameter(key, node); //To change body of generated methods, choose Tools | Templates.
+        }
+
     }
 
 }
