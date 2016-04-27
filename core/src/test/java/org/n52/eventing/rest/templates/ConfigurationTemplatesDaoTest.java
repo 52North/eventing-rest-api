@@ -34,9 +34,11 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.n52.eventing.rest.Configuration;
 import org.n52.eventing.rest.ConfigurationImpl;
 
@@ -61,26 +63,14 @@ public class ConfigurationTemplatesDaoTest {
     @Test
     public void testFolderCreationIfAbsent() throws IOException, URISyntaxException {
         ConfigurationTemplatesDao dao = new ConfigurationTemplatesDao();
-        ConfigurationImplSeam config = new ConfigurationImplSeam("/test-config.json");
-        config.setParameter("templateDirectory", new TextNode("not-existing-directory"));
+
+        ConfigurationImpl config = Mockito.spy(ConfigurationImpl.class);
+        Mockito.when(config.getParameter("templateDirectory"))
+                .thenReturn(Optional.of("not-existing-directory"));
 
         dao.loadTemplates(config);
         Path expected = Paths.get(getClass().getResource("/not-existing-directory").toURI());
         Assert.assertTrue(expected.toFile().exists());
         Files.delete(expected);
     }
-
-    private static class ConfigurationImplSeam extends ConfigurationImpl {
-
-        public ConfigurationImplSeam(String configFileResource) {
-            super(configFileResource);
-        }
-
-        @Override
-        protected void setParameter(String key, JsonNode node) {
-            super.setParameter(key, node); //To change body of generated methods, choose Tools | Templates.
-        }
-
-    }
-
 }

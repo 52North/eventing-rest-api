@@ -111,9 +111,4 @@ public class ConfigurationImpl implements Configuration {
         return Optional.empty();
     }
 
-    // just for testing
-    protected void setParameter(String key, JsonNode node) {
-        this.config.put(key, node);
-    }
-
 }
