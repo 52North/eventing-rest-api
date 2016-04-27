@@ -147,7 +147,7 @@ public class ConfigurationTemplatesDao implements TemplatesDao, Constructable {
         final Path root = Paths.get(getClass().getResource("/").toURI());
         final Path target = root.resolve(baseDir);
         return !Files.exists(target)
-                ? Files.createDirectory(target)
+                ? Files.createDirectories(target)
                 : target;
     }
 
