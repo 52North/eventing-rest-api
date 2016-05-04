@@ -65,27 +65,27 @@ public class Parameter {
         this.label = label;
     }
 
-    public double getMin() {
+    public Double getMin() {
         return min;
     }
 
-    public void setMin(double min) {
+    public void setMin(Double min) {
         this.min = min;
     }
 
-    public double getMax() {
+    public Double getMax() {
         return max;
     }
 
-    public void setMax(double max) {
+    public void setMax(Double max) {
         this.max = max;
     }
 
-    public int getMaxlength() {
+    public Integer getMaxlength() {
         return maxlength;
     }
 
-    public void setMaxlength(int maxlength) {
+    public void setMaxlength(Integer maxlength) {
         this.maxlength = maxlength;
     }
 

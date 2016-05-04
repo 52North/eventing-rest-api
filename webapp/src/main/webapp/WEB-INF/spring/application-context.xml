@@ -28,7 +28,6 @@
 
     <!-- core beans -->
     <bean class="org.n52.eventing.rest.ConfigurationImpl" name="config" />
-    <bean class="org.n52.eventing.rest.filtering.FilterEngineImpl" />
 
     <!-- delivery -->
     <bean class="org.n52.subverse.delivery.DeliveryProviderRepository" />

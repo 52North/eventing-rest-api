@@ -14,7 +14,20 @@
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-    <mvc:annotation-driven />
+
+    <bean id="nonNullObjectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
+        <property name="serializationInclusion" value="NON_NULL"></property>
+    </bean>
+
+    <bean id="nonNullJacksonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+        <property name="objectMapper" ref="nonNullObjectMapper" />
+    </bean>
+
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <ref bean="nonNullJacksonConverter" />
+        </mvc:message-converters>
+    </mvc:annotation-driven>
     <ctx:annotation-config />
 
     <!-- MVC beans -->
@@ -28,32 +41,24 @@
     <bean id="contentNegotiationManager"
           class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
         <property name="mediaTypes">
-            <value>
-                json=application/json*
-            </value>
+            <value>json=application/json*</value>
         </property>
     </bean>
 
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
         <property name="messageConverters">
             <util:list>
-                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+                <ref bean="nonNullJacksonConverter" />
             </util:list>
         </property>
     </bean>
 
-    <bean
-        class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
         <property name="defaultViews">
             <list>
-                <bean
-                    class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+                <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
                     <property name="extractValueFromSingleKeyModel" value="true" />
-                    <property name="objectMapper">
-                        <bean class="com.fasterxml.jackson.databind.ObjectMapper">
-                            <property name="serializationInclusion" value="NON_NULL"/>
-                        </bean>
-                    </property>
+                    <property name="objectMapper" ref="nonNullObjectMapper" />
                 </bean>
             </list>
         </property>
