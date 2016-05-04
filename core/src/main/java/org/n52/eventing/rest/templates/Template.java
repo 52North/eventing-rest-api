@@ -29,6 +29,7 @@
 package org.n52.eventing.rest.templates;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class Template {
     private String label;
     private String description;
     private Definition definition;
-    private List<Parameter> parameters = new ArrayList<>();
+    private Map<String, Parameter> parameters = new HashMap<>();
 
     public Template() {
     }
@@ -86,16 +87,12 @@ public class Template {
         this.definition = definition;
     }
 
-    public List<Parameter> getParameters() {
+    public Map<String, Parameter> getParameters() {
         return parameters;
     }
 
-    public void setParameters(List<Parameter> parameters) {
-        this.parameters = parameters;
-    }
-
-    void addParameter(String name, String dataType) {
-        this.parameters.add(new Parameter(name, dataType));
+    void addParameter(String name, Parameter param) {
+        this.parameters.put(name, param);
     }
 
 }

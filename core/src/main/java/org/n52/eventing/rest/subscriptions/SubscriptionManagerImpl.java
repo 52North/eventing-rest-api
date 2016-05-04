@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
@@ -237,13 +238,13 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             throw new InvalidSubscriptionException("Template not available: "+ templateId, ex);
         }
 
-        final List<Parameter> templateParameters = template.getParameters();
+        final Map<String, Parameter> templateParameters = template.getParameters();
 
         try {
             return parameters.stream().map((Map<String, Object> t) -> {
                 for (String key : t.keySet()) {
                     Parameter templateParameter = resolveTemplateParameter(templateParameters, key);
-                    return new ParameterValue(templateParameter.getName(), t.get(key), templateParameter.getDataType());
+                    return new ParameterValue(key, t.get(key), templateParameter.getType());
                 }
 
                 throw new RuntimeException(new InvalidSubscriptionException("No parameter values available"));
@@ -256,10 +257,10 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         }
     }
 
-    private Parameter resolveTemplateParameter(List<Parameter> templateParameters, String key) {
-        Optional<Parameter> match = templateParameters.stream().filter((Parameter p) -> {
-            return p.getName().equals(key);
-        }).findFirst();
+    private Parameter resolveTemplateParameter(Map<String, Parameter> templateParameters, String key) {
+        Optional<Parameter> match = templateParameters.keySet().stream().filter((String p) -> {
+            return p.equals(key);
+        }).findFirst().map((String t) -> templateParameters.get(t));
 
         if (match.isPresent()) {
             return match.get();
