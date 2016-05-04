@@ -40,7 +40,8 @@ public class SubscriptionDefinition {
     private String templateId;
     private String publicationId;
     private String label;
-    private String status;
+    private String description;
+    private boolean enabled;
     private String endOfLife;
     private String deliveryMethodId;
     private String consumer;
@@ -73,12 +74,12 @@ public class SubscriptionDefinition {
         this.label = label;
     }
 
-    public String getStatus() {
-        return status;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getEndOfLife() {
@@ -111,6 +112,14 @@ public class SubscriptionDefinition {
 
     public void setParameters(List<Map<String, Object>> parameters) {
         this.parameters = parameters;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

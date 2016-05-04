@@ -39,11 +39,6 @@ import org.n52.eventing.rest.users.User;
  */
 public class Subscription {
 
-    public enum Status {
-        ENABLED,
-        DISABLED
-    }
-
     private String id;
     private String label;
     private String description;
@@ -51,10 +46,11 @@ public class Subscription {
     private String publicationId;
     private String templateId;
     private String deliveryMethodId;
-    private Status status;
+    private Boolean enabled;
     private String endOfLife;
     private String consumer;
     private List<ParameterValue> parameters = new ArrayList<>();
+    private Boolean expired = false;
 
     public Subscription() {
         ParameterValue param1 = new ParameterValue("waterGauge", 1.44, "number");
@@ -124,12 +120,12 @@ public class Subscription {
         this.deliveryMethodId = deliveryMethodId;
     }
 
-    public Status getStatus() {
-        return status;
+    public Boolean getEnabled() {
+        return enabled;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getEndOfLife() {
@@ -156,6 +152,12 @@ public class Subscription {
         this.parameters = parameters;
     }
 
+    public Boolean getExpired() {
+        return expired;
+    }
 
+    public void setExpired(Boolean expired) {
+        this.expired = expired;
+    }
 
 }

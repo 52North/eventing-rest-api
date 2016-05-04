@@ -62,14 +62,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.publications.PublicationsDao;
-import org.n52.eventing.rest.subscriptions.Subscription.Status;
 import org.n52.eventing.rest.templates.InstanceGenerator;
 import org.n52.eventing.rest.templates.Parameter;
 import org.n52.eventing.rest.templates.Template;
@@ -211,23 +209,10 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         subscription.setUser(user);
         subscription.setParameters(resolveAndCreateParameters(subDef.getParameters(),
                 template.getId()));
-        subscription.setStatus(resolveStatus(subDef.getStatus()));
+        subscription.setEnabled(subDef.isEnabled());
         return subscription;
     }
 
-    private Status resolveStatus(String status) throws InvalidSubscriptionException {
-        if (status == null) {
-            return Status.ENABLED;
-        }
-
-        for (Status value : Status.values()) {
-            if (status.equalsIgnoreCase(value.name())) {
-                return value;
-            }
-        }
-
-        throw new InvalidSubscriptionException("Invalid status provided: "+status);
-    }
 
     private List<ParameterValue> resolveAndCreateParameters(List<Map<String, Object>> parameters, String templateId)
             throws InvalidSubscriptionException {
@@ -283,26 +268,18 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             changeEndOfLife(subDef.getId(), eol);
         }
 
-        String statusString = subDef.getStatus();
-        if (statusString != null && !statusString.isEmpty()) {
-            Status status = resolveStatus(statusString);
+        Boolean enabled = subDef.getEnabled();
+        try {
+            this.dao.updateStatus(subDef.getId(), enabled);
+        } catch (UnknownSubscriptionException ex) {
+            throw new InvalidSubscriptionException(ex.getMessage(), ex);
+        }
 
-            try {
-                this.dao.updateStatus(subDef.getId(), status);
-            } catch (UnknownSubscriptionException ex) {
-                throw new InvalidSubscriptionException(ex.getMessage(), ex);
-            }
-
-            switch (status) {
-                case ENABLED:
-                    resume(subDef.getId());
-                    break;
-                case DISABLED:
-                    pause(subDef.getId());
-                    break;
-                default:
-                    break;
-            }
+        if (enabled) {
+            resume(subDef.getId());
+        }
+        else {
+            pause(subDef.getId());
         }
     }
 
