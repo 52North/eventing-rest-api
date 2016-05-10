@@ -64,7 +64,7 @@ public class EmailDeliveryProvider implements DeliveryProvider {
         return new EmailDeliveryEndpoint(def.getLocation());
     }
 
-    
+
     @Override
     public DeliveryParameter[] getParameters() {
         DeliveryParameter[] params = new DeliveryParameter[3];

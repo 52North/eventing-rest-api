@@ -59,7 +59,7 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
     private static final Logger LOG = LoggerFactory.getLogger(DummySubscriptionsDao.class);
     public static final DateTimeFormatter ISO_FORMATTER = ISODateTimeFormat.dateTime();
 
-    private final Map<String, Subscription> subscriptions = new HashMap<>();
+    private final Map<String, SubscriptionRepresentation> subscriptions = new HashMap<>();
 
     @Autowired
     private PublicationsDao publicationsDao;
@@ -79,12 +79,12 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
     }
 
     @Override
-    public synchronized List<Subscription> getSubscriptions() {
+    public synchronized List<SubscriptionRepresentation> getSubscriptions() {
         return Collections.unmodifiableList(new ArrayList<>(subscriptions.values()));
     }
 
     @Override
-    public synchronized Subscription getSubscription(String id) throws UnknownSubscriptionException {
+    public synchronized SubscriptionRepresentation getSubscription(String id) throws UnknownSubscriptionException {
         if (!hasSubscription(id)) {
             throw new UnknownSubscriptionException("Subscription does not exist: "+id);
         }
@@ -93,7 +93,7 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
     }
 
     @Override
-    public synchronized void addSubscription(String subId, Subscription subscription) {
+    public synchronized void addSubscription(String subId, SubscriptionRepresentation subscription) {
         this.subscriptions.put(subId, subscription);
     }
 
@@ -132,7 +132,7 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
         LOG.info("initializing subscriptions...");
 
         try {
-            Subscription sub = new Subscription("dummy-sub", "dummy-sub yeah", "this subscription is set up!");
+            SubscriptionRepresentation sub = new SubscriptionRepresentation("dummy-sub", "dummy-sub yeah", "this subscription is set up!");
             sub.setUser(this.usersDao.getUser("dummy-user"));
             sub.setPublicationId(this.publicationsDao.getPublication("dummy-pub").getId());
             sub.setDeliveryMethodId(this.deliveryMethodsDao.getDeliveryMethod("email").getId());

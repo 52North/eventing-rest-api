@@ -38,11 +38,11 @@ public interface SubscriptionsDao {
 
     boolean hasSubscription(String id);
 
-    List<Subscription> getSubscriptions();
+    List<SubscriptionRepresentation> getSubscriptions();
 
-    Subscription getSubscription(String id) throws UnknownSubscriptionException;
+    SubscriptionRepresentation getSubscription(String id) throws UnknownSubscriptionException;
 
-    void addSubscription(String subId, Subscription subscription);
+    void addSubscription(String subId, SubscriptionRepresentation subscription);
 
     void updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException;
 

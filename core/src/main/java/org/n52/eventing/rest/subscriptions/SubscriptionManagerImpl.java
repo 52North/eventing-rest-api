@@ -83,6 +83,7 @@ import org.n52.subverse.delivery.DeliveryEndpoint;
 import org.n52.subverse.engine.FilterEngine;
 import org.n52.subverse.engine.SubscriptionRegistrationException;
 import org.n52.subverse.subscription.SubscribeOptions;
+import org.n52.subverse.subscription.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,7 +115,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
     private FilterEngine engine;
 
     private final InstanceGenerator filterInstanceGenerator = new InstanceGenerator();
-    private final Map<String, org.n52.subverse.subscription.Subscription> subscriptionToRuleMap = new HashMap<>();
+    private final Map<String, Subscription> subscriptionToRuleMap = new HashMap<>();
 
     @Override
     public void construct() {
@@ -171,7 +172,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         String desc = String.format("Subscription using template %s (created: %s)", template.getId(), new DateTime());
         String label = Optional.ofNullable(subDef.getLabel()).orElse(desc);
 
-        Subscription subscription = createSubscription(subId, label, desc, consumer,
+        SubscriptionRepresentation subscription = createSubscription(subId, label, desc, consumer,
                 template, deliveryMethodId, pubId, user, subDef);
 
         //do the actual subscription part
@@ -185,7 +186,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         return subId;
     }
 
-    private void internalSubscribe(Subscription subscription, Template template) throws InvalidSubscriptionException {
+    private void internalSubscribe(SubscriptionRepresentation subscription, Template template) throws InvalidSubscriptionException {
         /*
         * resolve delivery endpoint
         */
@@ -198,7 +199,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         String filterInstance = this.filterInstanceGenerator.generateFilterInstance(
                 template, subscription.getParameters());
         try {
-            org.n52.subverse.subscription.Subscription subverseSub = wrapToSubverseSubscription(subscription,
+            Subscription subverseSub = wrapToSubverseSubscription(subscription,
                     filterInstance, subscription.getPublicationId());
             this.engine.register(subverseSub, endpoint);
 
@@ -214,10 +215,10 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         }
     }
 
-    private Subscription createSubscription(String subId, String label, String desc, String consumer,
+    private SubscriptionRepresentation createSubscription(String subId, String label, String desc, String consumer,
             Template template, String deliveryMethodId, String pubId, User user, SubscriptionDefinition subDef)
             throws InvalidSubscriptionException {
-        Subscription subscription = new Subscription(subId, label,
+        SubscriptionRepresentation subscription = new SubscriptionRepresentation(subId, label,
                 desc);
         subscription.setConsumer(consumer);
         subscription.setTemplateId(template.getId());
@@ -338,7 +339,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
     }
 
     private void remove(String id) {
-        org.n52.subverse.subscription.Subscription sub;
+        Subscription sub;
         synchronized (this) {
             sub = this.subscriptionToRuleMap.get(id);
         }
@@ -356,11 +357,11 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         }
     }
 
-    private org.n52.subverse.subscription.Subscription wrapToSubverseSubscription(Subscription subscription,
+    private Subscription wrapToSubverseSubscription(SubscriptionRepresentation subscription,
             String filterInstance, String pubId) throws InvalidSubscriptionException {
         try {
             XmlObject filterXml = XmlObject.Factory.parse(filterInstance);
-            org.n52.subverse.subscription.Subscription result = new org.n52.subverse.subscription.Subscription(
+            Subscription result = new Subscription(
                     subscription.getId(), new SubscribeOptions(pubId,
                             null,
                             filterXml,

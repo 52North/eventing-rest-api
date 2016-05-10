@@ -38,7 +38,7 @@ import org.n52.eventing.rest.users.User;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Subscription {
+public class SubscriptionRepresentation {
 
     private String id;
     private String label;
@@ -53,12 +53,12 @@ public class Subscription {
     private List<ParameterValue> parameters = new ArrayList<>();
     private Boolean expired = false;
 
-    public Subscription() {
+    public SubscriptionRepresentation() {
         ParameterValue param1 = new ParameterValue("waterGauge", 1.44, "number");
         parameters.add(param1);
     }
 
-    public Subscription(String id, String label, String description) {
+    public SubscriptionRepresentation(String id, String label, String description) {
         this();
         this.id = id;
         this.label = label;
