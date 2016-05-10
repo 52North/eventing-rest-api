@@ -25,15 +25,22 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-
 package org.n52.eventing.rest.templates;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.n52.eventing.rest.Configuration;
+import org.n52.eventing.rest.ConfigurationImpl;
 
 /**
  *
@@ -58,4 +65,17 @@ public class ConfigurationTemplatesDaoTest {
         Assert.assertThat(thresholdValue.getPattern(), CoreMatchers.is("regex"));
     }
 
+    @Test
+    public void testFolderCreationIfAbsent() throws IOException, URISyntaxException {
+        ConfigurationTemplatesDao dao = new ConfigurationTemplatesDao();
+
+        ConfigurationImpl config = Mockito.spy(ConfigurationImpl.class);
+        Mockito.when(config.getParameter("templateDirectory"))
+                .thenReturn(Optional.of("not-existing-directory"));
+
+        dao.loadTemplates(config);
+        Path expected = Paths.get(getClass().getResource("/not-existing-directory").toURI());
+        Assert.assertTrue(expected.toFile().exists());
+        Files.delete(expected);
+    }
 }

@@ -25,7 +25,6 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-
 package org.n52.eventing.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -69,8 +68,7 @@ public class ConfigurationImpl implements Configuration {
                     .constructMapLikeType(HashMap.class, String.class, JsonNode.class));
             configResource.close();
             return result;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             LOG.error("Could not load files {}, {}. Using empty config.", configFileResource,
                     CONFIG_DEFAULT_FILE, e);
             return new HashMap<>();
