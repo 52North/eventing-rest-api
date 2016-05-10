@@ -57,7 +57,12 @@ public class ConfigurationTemplatesDaoTest {
         Assert.assertThat(t.getId(), CoreMatchers.is("overshootUndershoot"));
         Assert.assertThat(t.getLabel(), CoreMatchers.is("Generic overshoot/undershoot pattern"));
         Assert.assertThat(t.getParameters().size(), CoreMatchers.is(2));
-        Assert.assertThat(t.getParameters().get(0).getName(), CoreMatchers.is("observedProperty"));
+        Assert.assertThat(t.getParameters().get("observedProperty").getType(), CoreMatchers.is("text"));
+
+        Parameter thresholdValue = t.getParameters().get("thresholdValue");
+        Assert.assertThat(thresholdValue.getMin(), CoreMatchers.is(1.3));
+        Assert.assertThat(thresholdValue.getMax(), CoreMatchers.is(2.2));
+        Assert.assertThat(thresholdValue.getPattern(), CoreMatchers.is("regex"));
     }
 
     @Test

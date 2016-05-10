@@ -35,23 +35,23 @@ package org.n52.eventing.rest.subscriptions;
 public class SubscriptionUpdateDefinition {
 
     private String id;
-    private String status;
+    private Boolean enabled;
     private String endOfLife;
 
     public SubscriptionUpdateDefinition() {
     }
 
-    public SubscriptionUpdateDefinition(String status, String endOfLife) {
-        this.status = status;
+    public SubscriptionUpdateDefinition(boolean enabled, String endOfLife) {
+        this.enabled = enabled;
         this.endOfLife = endOfLife;
     }
 
-    public String getStatus() {
-        return status;
+    public Boolean getEnabled() {
+        return enabled;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getEndOfLife() {

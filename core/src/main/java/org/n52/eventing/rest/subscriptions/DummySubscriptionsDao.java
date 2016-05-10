@@ -107,9 +107,9 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
     }
 
     @Override
-    public synchronized void updateStatus(String id, Subscription.Status status) throws UnknownSubscriptionException {
+    public synchronized void updateStatus(String id, boolean enabled) throws UnknownSubscriptionException {
         if (hasSubscription(id)) {
-            this.subscriptions.get(id).setStatus(status);
+            this.subscriptions.get(id).setEnabled(enabled);
         }
         else {
             throw new UnknownSubscriptionException("Subscription does not exist: "+id);
@@ -136,7 +136,7 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
             sub.setPublicationId(this.publicationsDao.getPublication("dummy-pub").getId());
             sub.setDeliveryMethodId(this.deliveryMethodsDao.getDeliveryMethod("email").getId());
             sub.setEndOfLife(new DateTime().plusMonths(2).toString(ISO_FORMATTER));
-            sub.setStatus(Subscription.Status.ENABLED);
+            sub.setEnabled(true);
             sub.setTemplateId(this.templatesDao.getTemplate("overshootUndershoot").getId());
             sub.setConsumer("peterchen@paulchen.de");
             subscriptions.put("dummy-sub", sub);

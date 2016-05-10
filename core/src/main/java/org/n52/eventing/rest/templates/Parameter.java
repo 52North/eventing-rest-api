@@ -34,31 +34,68 @@ package org.n52.eventing.rest.templates;
  */
 public class Parameter {
 
-    private String name;
-    private String dataType;
+    private String type;
+    private String label;
+    private Double min;
+    private Double max;
+    private Integer maxlength;
+    private String pattern;
 
     public Parameter() {
     }
 
-    public Parameter(String name, String dataType) {
-        this.name = name;
-        this.dataType = dataType;
+    public Parameter(String type, String label) {
+        this.type = type;
+        this.label = label;
     }
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getDataType() {
-        return dataType;
+    public String getLabel() {
+        return label;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+    public void setLabel(String label) {
+        this.label = label;
     }
+
+    public Double getMin() {
+        return min;
+    }
+
+    public void setMin(Double min) {
+        this.min = min;
+    }
+
+    public Double getMax() {
+        return max;
+    }
+
+    public void setMax(Double max) {
+        this.max = max;
+    }
+
+    public Integer getMaxlength() {
+        return maxlength;
+    }
+
+    public void setMaxlength(Integer maxlength) {
+        this.maxlength = maxlength;
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
 
 }
