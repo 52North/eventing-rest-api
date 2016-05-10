@@ -139,11 +139,17 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
             sub.setEnabled(true);
             sub.setTemplateId(this.templatesDao.getTemplate("overshootUndershoot").getId());
             sub.setConsumer("peterchen@paulchen.de");
+            List<ParameterValue> params = new ArrayList<>();
+            params.add(new ParameterValue("observedProperty", "my_dummy_property", "text"));
+            params.add(new ParameterValue("sensorID", "my_dummy_sensor", "text"));
+            params.add(new ParameterValue("thresholdValue", 5000.0123, "number"));
+            sub.setParameters(params);
             subscriptions.put("dummy-sub", sub);
         } catch (UnknownPublicationsException | UnknownUserException
                 | UnknownTemplateException | UnknownDeliveryMethodException ex) {
             LOG.warn(ex.getMessage(), ex);
         }
+
     }
 
 }

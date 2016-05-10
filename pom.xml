@@ -54,6 +54,7 @@
         <jackson.version>2.7.3</jackson.version>
         <geotools.version>14.0</geotools.version>
         <commom.xml.version>2.1.1-SNAPSHOT</commom.xml.version>
+        <subverse.version>1.0.0-SNAPSHOT</subverse.version>
         <slf4j.version>1.7.12</slf4j.version>
         <java.compiler.source>1.8</java.compiler.source>
         <java.compiler.target>1.8</java.compiler.target>
@@ -83,8 +84,8 @@
 
             <dependency>
                 <groupId>org.n52.subverse</groupId>
-                <artifactId>engine</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <artifactId>filtering</artifactId>
+                <version>${subverse.version}</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>
@@ -99,18 +100,29 @@
             <dependency>
                 <groupId>org.n52.subverse</groupId>
                 <artifactId>delivery</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${subverse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.n52.subverse</groupId>
+                <artifactId>delivery-amqp</artifactId>
+                <version>${subverse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.n52.subverse</groupId>
+                <artifactId>core</artifactId>
+                <version>${subverse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.n52.subverse</groupId>
+                <artifactId>storage-fs</artifactId>
+                <version>${subverse.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.n52.epos</groupId>
                 <artifactId>epos-api</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
-            <dependency>
-                <groupId>org.n52.subverse</groupId>
-                <artifactId>delivery-amqp</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-            </dependency>
+
             
             <dependency>
                 <groupId>org.n52.sensorweb</groupId>

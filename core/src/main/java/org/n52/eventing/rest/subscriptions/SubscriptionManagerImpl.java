@@ -62,10 +62,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
+import org.n52.eventing.rest.Constructable;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.templates.InstanceGenerator;
@@ -88,7 +90,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class SubscriptionManagerImpl implements SubscriptionManager {
+public class SubscriptionManagerImpl implements SubscriptionManager, Constructable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionManagerImpl.class);
 
@@ -113,6 +115,23 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     private final InstanceGenerator filterInstanceGenerator = new InstanceGenerator();
     private final Map<String, org.n52.subverse.subscription.Subscription> subscriptionToRuleMap = new HashMap<>();
 
+    @Override
+    public void construct() {
+        LOG.info("Retrieveing persisted subscriptions...");
+        AtomicInteger count = new AtomicInteger();
+        this.dao.getSubscriptions().stream().forEach(s -> {
+            LOG.info("Registering subscription {}", s.getId());
+            try {
+                internalSubscribe(s, templatesDao.getTemplate(s.getTemplateId()));
+                count.getAndIncrement();
+            } catch (UnknownTemplateException ex) {
+                LOG.warn("Could not find template for subscription", ex);
+            } catch (InvalidSubscriptionException ex) {
+                LOG.warn("Could not create subscription", ex);
+            }
+        });
+        LOG.info("Registered {} persisted subscriptions...", count);
+    }
 
     @Override
     public String subscribe(SubscriptionDefinition subDef) throws InvalidSubscriptionException {
@@ -154,11 +173,23 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         Subscription subscription = createSubscription(subId, label, desc, consumer,
                 template, deliveryMethodId, pubId, user, subDef);
 
+        //do the actual subscription part
+        internalSubscribe(subscription, template);
+
+        /*
+        * finally add to the DAO
+        */
+        this.dao.addSubscription(subId, subscription);
+
+        return subId;
+    }
+
+    private void internalSubscribe(Subscription subscription, Template template) throws InvalidSubscriptionException {
         /*
         * resolve delivery endpoint
         */
-        DeliveryEndpoint endpoint = this.deliveryMethodsDao.createDeliveryEndpoint(deliveryMethodId,
-                consumer, pubId);
+        DeliveryEndpoint endpoint = this.deliveryMethodsDao.createDeliveryEndpoint(subscription.getDeliveryMethodId(),
+                subscription.getConsumer(), subscription.getPublicationId());
 
         /*
         * register at engine
@@ -167,34 +198,19 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
                 template, subscription.getParameters());
         try {
             org.n52.subverse.subscription.Subscription subverseSub = wrapToSubverseSubscription(subscription,
-                    filterInstance, pubId);
+                    filterInstance, subscription.getPublicationId());
             this.engine.register(subverseSub, endpoint);
 
             /*
             * remember subverseSub for later removal
             */
             synchronized (this) {
-                this.subscriptionToRuleMap.put(subId, subverseSub);
+                this.subscriptionToRuleMap.put(subscription.getId(), subverseSub);
             }
         } catch (SubscriptionRegistrationException ex) {
-            LOG.warn("Could not register subscription at engine", ex);
+            LOG.warn("Could not register subscription at engine");
             throw new InvalidSubscriptionException(ex.getMessage(), ex);
         }
-
-        /*
-        * finally add to the DAO
-        */
-        this.dao.addSubscription(subId, subscription);
-        String eol = subDef.getEndOfLife();
-        if (eol != null && !eol.isEmpty()) {
-            try {
-                this.dao.updateEndOfLife(subId, parseEndOfLife(eol));
-            } catch (UnknownSubscriptionException ex) {
-                throw new InvalidSubscriptionException(ex.getMessage(), ex);
-            }
-        }
-
-        return subId;
     }
 
     private Subscription createSubscription(String subId, String label, String desc, String consumer,
@@ -210,6 +226,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         subscription.setParameters(resolveAndCreateParameters(subDef.getParameters(),
                 template.getId()));
         subscription.setEnabled(subDef.isEnabled());
+        subscription.setEndOfLife(subDef.getEndOfLife());
         return subscription;
     }
 
@@ -344,12 +361,12 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             XmlObject filterXml = XmlObject.Factory.parse(filterInstance);
             org.n52.subverse.subscription.Subscription result = new org.n52.subverse.subscription.Subscription(
                     subscription.getId(), new SubscribeOptions(pubId,
-                            Optional.empty(),
-                            Optional.of(filterXml),
-                            Optional.empty(),
-                            Optional.empty(),
+                            null,
+                            filterXml,
+                            null,
+                            null,
                             Collections.emptyMap(),
-                            Optional.empty()), null);
+                            null), null);
             return result;
         } catch (XmlException ex) {
             throw new InvalidSubscriptionException("Currently only valid XML filter definitions allowed", ex);
