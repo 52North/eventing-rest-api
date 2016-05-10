@@ -45,6 +45,6 @@ public interface DeliveryMethodsDao {
 
     DeliveryMethod getDeliveryMethod(String id) throws UnknownDeliveryMethodException;
 
-    DeliveryEndpoint createDeliveryEndpoint(String deliveryMethodId, String consumer, String pubId) throws InvalidSubscriptionException;
+    DeliveryEndpoint createDeliveryEndpoint(DeliveryMethodInstance deliveryMethod, String pubId) throws InvalidSubscriptionException;
 
 }

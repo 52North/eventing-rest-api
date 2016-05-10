@@ -28,9 +28,8 @@
 
 package org.n52.eventing.rest.subscriptions;
 
-import org.n52.eventing.rest.parameters.ParameterValue;
-import java.util.ArrayList;
-import java.util.List;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
+import org.n52.eventing.rest.templates.TemplateInstance;
 import org.n52.eventing.rest.users.User;
 
 
@@ -38,27 +37,23 @@ import org.n52.eventing.rest.users.User;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class SubscriptionRepresentation {
+public class SubscriptionInstance {
 
     private String id;
     private String label;
     private String description;
     private User user;
     private String publicationId;
-    private String templateId;
-    private String deliveryMethodId;
+    private TemplateInstance template;
+    private DeliveryMethodInstance deliveryMethod;
     private Boolean enabled;
     private String endOfLife;
-    private String consumer;
-    private List<ParameterValue> parameters = new ArrayList<>();
     private Boolean expired = false;
 
-    public SubscriptionRepresentation() {
-        ParameterValue param1 = new ParameterValue("waterGauge", 1.44, "number");
-        parameters.add(param1);
+    public SubscriptionInstance() {
     }
 
-    public SubscriptionRepresentation(String id, String label, String description) {
+    public SubscriptionInstance(String id, String label, String description) {
         this();
         this.id = id;
         this.label = label;
@@ -105,22 +100,6 @@ public class SubscriptionRepresentation {
         this.publicationId = publicationId;
     }
 
-    public String getTemplateId() {
-        return templateId;
-    }
-
-    public void setTemplateId(String templateId) {
-        this.templateId = templateId;
-    }
-
-    public String getDeliveryMethodId() {
-        return deliveryMethodId;
-    }
-
-    public void setDeliveryMethodId(String deliveryMethodId) {
-        this.deliveryMethodId = deliveryMethodId;
-    }
-
     public Boolean getEnabled() {
         return enabled;
     }
@@ -137,22 +116,6 @@ public class SubscriptionRepresentation {
         this.endOfLife = endOfLife;
     }
 
-    public String getConsumer() {
-        return consumer;
-    }
-
-    public void setConsumer(String consumer) {
-        this.consumer = consumer;
-    }
-
-    public List<ParameterValue> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(List<ParameterValue> parameters) {
-        this.parameters = parameters;
-    }
-
     public Boolean getExpired() {
         return expired;
     }
@@ -160,5 +123,22 @@ public class SubscriptionRepresentation {
     public void setExpired(Boolean expired) {
         this.expired = expired;
     }
+
+    public TemplateInstance getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(TemplateInstance template) {
+        this.template = template;
+    }
+
+    public DeliveryMethodInstance getDeliveryMethod() {
+        return deliveryMethod;
+    }
+
+    public void setDeliveryMethod(DeliveryMethodInstance deliveryMethod) {
+        this.deliveryMethod = deliveryMethod;
+    }
+
 
 }

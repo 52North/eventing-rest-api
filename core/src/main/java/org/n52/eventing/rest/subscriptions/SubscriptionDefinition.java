@@ -28,8 +28,8 @@
 
 package org.n52.eventing.rest.subscriptions;
 
-import java.util.List;
-import java.util.Map;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
+import org.n52.eventing.rest.templates.TemplateInstance;
 
 /**
  *
@@ -37,26 +37,17 @@ import java.util.Map;
  */
 public class SubscriptionDefinition {
 
-    private String templateId;
+    private TemplateInstance template;
     private String publicationId;
     private String label;
     private String description;
     private boolean enabled;
     private String endOfLife;
-    private String deliveryMethodId;
-    private String consumer;
-    private List<Map<String, Object>> parameters;
+    private DeliveryMethodInstance deliveryMethod;
 
     public SubscriptionDefinition() {
     }
 
-    public String getTemplateId() {
-        return templateId;
-    }
-
-    public void setTemplateId(String templateId) {
-        this.templateId = templateId;
-    }
 
     public String getPublicationId() {
         return publicationId;
@@ -90,30 +81,6 @@ public class SubscriptionDefinition {
         this.endOfLife = endOfLife;
     }
 
-    public String getDeliveryMethodId() {
-        return deliveryMethodId;
-    }
-
-    public void setDeliveryMethodId(String deliveryMethodId) {
-        this.deliveryMethodId = deliveryMethodId;
-    }
-
-    public String getConsumer() {
-        return consumer;
-    }
-
-    public void setConsumer(String consumer) {
-        this.consumer = consumer;
-    }
-
-    public List<Map<String, Object>> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(List<Map<String, Object>> parameters) {
-        this.parameters = parameters;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -121,5 +88,22 @@ public class SubscriptionDefinition {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public TemplateInstance getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(TemplateInstance template) {
+        this.template = template;
+    }
+
+    public DeliveryMethodInstance getDeliveryMethod() {
+        return deliveryMethod;
+    }
+
+    public void setDeliveryMethod(DeliveryMethodInstance deliveryMethod) {
+        this.deliveryMethod = deliveryMethod;
+    }
+
 
 }

@@ -55,7 +55,7 @@
 
 package org.n52.eventing.rest.subscriptions;
 
-import org.n52.eventing.rest.parameters.ParameterValue;
+import org.n52.eventing.rest.parameters.ParameterInstance;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,14 +64,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.Constructable;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethod;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
+import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
 import org.n52.eventing.rest.publications.PublicationsDao;
-import org.n52.eventing.rest.templates.InstanceGenerator;
+import org.n52.eventing.rest.templates.FilterInstanceGenerator;
 import org.n52.eventing.rest.parameters.Parameter;
 import org.n52.eventing.rest.templates.Template;
 import org.n52.eventing.rest.templates.TemplatesDao;
@@ -114,7 +117,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
     @Autowired
     private FilterEngine engine;
 
-    private final InstanceGenerator filterInstanceGenerator = new InstanceGenerator();
+    private final FilterInstanceGenerator filterInstanceGenerator = new FilterInstanceGenerator();
     private final Map<String, Subscription> subscriptionToRuleMap = new HashMap<>();
 
     @Override
@@ -124,7 +127,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         this.dao.getSubscriptions().stream().forEach(s -> {
             LOG.info("Registering subscription {}", s.getId());
             try {
-                internalSubscribe(s, templatesDao.getTemplate(s.getTemplateId()));
+                internalSubscribe(s, templatesDao.getTemplate(s.getTemplate().getId()));
                 count.getAndIncrement();
             } catch (UnknownTemplateException ex) {
                 LOG.warn("Could not find template for subscription", ex);
@@ -138,9 +141,6 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
     @Override
     public String subscribe(SubscriptionDefinition subDef) throws InvalidSubscriptionException {
         throwExceptionOnNullOrEmpty(subDef.getPublicationId(), "publicationId");
-        throwExceptionOnNullOrEmpty(subDef.getTemplateId(), "templateId");
-        throwExceptionOnNullOrEmpty(subDef.getConsumer(), "consumer");
-        throwExceptionOnNullOrEmpty(subDef.getDeliveryMethodId(), "deliveryMethodId");
 
         //TODO implement using Spring security
         User user;
@@ -157,23 +157,24 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
 
         Template template;
         try {
-            template = this.templatesDao.getTemplate(subDef.getTemplateId());
+            template = this.templatesDao.getTemplate(subDef.getTemplate().getId());
         } catch (UnknownTemplateException ex) {
             throw new InvalidSubscriptionException("Template unknown: "+pubId);
         }
 
-        String deliveryMethodId = subDef.getDeliveryMethodId();
-        if (!this.deliveryMethodsDao.hasDeliveryMethod(deliveryMethodId)) {
-            throw new InvalidSubscriptionException("DeliveryMethod unknown: "+deliveryMethodId);
+        DeliveryMethod deliveryMethod;
+        try {
+            deliveryMethod = deliveryMethodsDao.getDeliveryMethod(subDef.getDeliveryMethod().getId());
+        } catch (UnknownDeliveryMethodException ex) {
+            throw new InvalidSubscriptionException("DeliveryMethod unknown", ex);
         }
 
-        String consumer = subDef.getConsumer();
         String subId = UUID.randomUUID().toString();
         String desc = String.format("Subscription using template %s (created: %s)", template.getId(), new DateTime());
         String label = Optional.ofNullable(subDef.getLabel()).orElse(desc);
 
-        SubscriptionRepresentation subscription = createSubscription(subId, label, desc, consumer,
-                template, deliveryMethodId, pubId, user, subDef);
+        SubscriptionInstance subscription = createSubscription(subId, label, desc,
+                pubId, user, subDef);
 
         //do the actual subscription part
         internalSubscribe(subscription, template);
@@ -186,18 +187,22 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         return subId;
     }
 
-    private void internalSubscribe(SubscriptionRepresentation subscription, Template template) throws InvalidSubscriptionException {
+    private void internalSubscribe(SubscriptionInstance subscription, Template template) throws InvalidSubscriptionException {
         /*
         * resolve delivery endpoint
         */
-        DeliveryEndpoint endpoint = this.deliveryMethodsDao.createDeliveryEndpoint(subscription.getDeliveryMethodId(),
-                subscription.getConsumer(), subscription.getPublicationId());
+        DeliveryEndpoint endpoint = this.deliveryMethodsDao.createDeliveryEndpoint(subscription.getDeliveryMethod(),
+                subscription.getPublicationId());
 
         /*
-        * register at engine
-        */
+         * register at engine
+         */
+        Map<String, ParameterInstance> params = subscription.getTemplate().getParameters();
+        params.forEach((String t, ParameterInstance u) -> {
+            u.setName(t);
+        });
         String filterInstance = this.filterInstanceGenerator.generateFilterInstance(
-                template, subscription.getParameters());
+                template, params.values());
         try {
             Subscription subverseSub = wrapToSubverseSubscription(subscription,
                     filterInstance, subscription.getPublicationId());
@@ -215,25 +220,22 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         }
     }
 
-    private SubscriptionRepresentation createSubscription(String subId, String label, String desc, String consumer,
-            Template template, String deliveryMethodId, String pubId, User user, SubscriptionDefinition subDef)
+    private SubscriptionInstance createSubscription(String subId, String label, String desc,
+            String pubId, User user, SubscriptionDefinition subDef)
             throws InvalidSubscriptionException {
-        SubscriptionRepresentation subscription = new SubscriptionRepresentation(subId, label,
+        SubscriptionInstance subscription = new SubscriptionInstance(subId, label,
                 desc);
-        subscription.setConsumer(consumer);
-        subscription.setTemplateId(template.getId());
-        subscription.setDeliveryMethodId(deliveryMethodId);
+        subscription.setTemplate(subDef.getTemplate());
+        subscription.setDeliveryMethod(subDef.getDeliveryMethod());
         subscription.setPublicationId(pubId);
         subscription.setUser(user);
-        subscription.setParameters(resolveAndCreateParameters(subDef.getParameters(),
-                template.getId()));
         subscription.setEnabled(subDef.isEnabled());
         subscription.setEndOfLife(subDef.getEndOfLife());
         return subscription;
     }
 
 
-    private List<ParameterValue> resolveAndCreateParameters(List<Map<String, Object>> parameters, String templateId)
+    private List<ParameterInstance> resolveAndCreateParameters(List<Map<String, Object>> parameters, String templateId)
             throws InvalidSubscriptionException {
         Template template;
         try {
@@ -248,7 +250,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
             return parameters.stream().map((Map<String, Object> t) -> {
                 for (String key : t.keySet()) {
                     Parameter templateParameter = resolveTemplateParameter(templateParameters, key);
-                    return new ParameterValue(key, t.get(key), templateParameter.getType());
+                    return new ParameterInstance(key, t.get(key), templateParameter.getType());
                 }
 
                 throw new RuntimeException(new InvalidSubscriptionException("No parameter values available"));
@@ -357,7 +359,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         }
     }
 
-    private Subscription wrapToSubverseSubscription(SubscriptionRepresentation subscription,
+    private Subscription wrapToSubverseSubscription(SubscriptionInstance subscription,
             String filterInstance, String pubId) throws InvalidSubscriptionException {
         try {
             XmlObject filterXml = XmlObject.Factory.parse(filterInstance);

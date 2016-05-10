@@ -28,20 +28,26 @@
 
 package org.n52.eventing.rest.subscriptions;
 
-import org.n52.eventing.rest.parameters.ParameterValue;
+import org.n52.eventing.rest.parameters.ParameterInstance;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.n52.eventing.rest.Constructable;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethod;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
 import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
+import org.n52.eventing.rest.templates.Template;
+import org.n52.eventing.rest.templates.TemplateInstance;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.n52.eventing.rest.users.UnknownUserException;
@@ -59,7 +65,7 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
     private static final Logger LOG = LoggerFactory.getLogger(DummySubscriptionsDao.class);
     public static final DateTimeFormatter ISO_FORMATTER = ISODateTimeFormat.dateTime();
 
-    private final Map<String, SubscriptionRepresentation> subscriptions = new HashMap<>();
+    private final Map<String, SubscriptionInstance> subscriptions = new HashMap<>();
 
     @Autowired
     private PublicationsDao publicationsDao;
@@ -79,12 +85,12 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
     }
 
     @Override
-    public synchronized List<SubscriptionRepresentation> getSubscriptions() {
+    public synchronized List<SubscriptionInstance> getSubscriptions() {
         return Collections.unmodifiableList(new ArrayList<>(subscriptions.values()));
     }
 
     @Override
-    public synchronized SubscriptionRepresentation getSubscription(String id) throws UnknownSubscriptionException {
+    public synchronized SubscriptionInstance getSubscription(String id) throws UnknownSubscriptionException {
         if (!hasSubscription(id)) {
             throw new UnknownSubscriptionException("Subscription does not exist: "+id);
         }
@@ -93,7 +99,7 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
     }
 
     @Override
-    public synchronized void addSubscription(String subId, SubscriptionRepresentation subscription) {
+    public synchronized void addSubscription(String subId, SubscriptionInstance subscription) {
         this.subscriptions.put(subId, subscription);
     }
 
@@ -132,25 +138,37 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
         LOG.info("initializing subscriptions...");
 
         try {
-            SubscriptionRepresentation sub = new SubscriptionRepresentation("dummy-sub", "dummy-sub yeah", "this subscription is set up!");
+            SubscriptionInstance sub = new SubscriptionInstance("dummy-sub", "dummy-sub yeah", "this subscription is set up!");
             sub.setUser(this.usersDao.getUser("dummy-user"));
             sub.setPublicationId(this.publicationsDao.getPublication("dummy-pub").getId());
-            sub.setDeliveryMethodId(this.deliveryMethodsDao.getDeliveryMethod("email").getId());
+            sub.setDeliveryMethod(createDeliveryInstance(this.deliveryMethodsDao.getDeliveryMethod("email"), "peterchen@paulchen.de"));
             sub.setEndOfLife(new DateTime().plusMonths(2).toString(ISO_FORMATTER));
             sub.setEnabled(true);
-            sub.setTemplateId(this.templatesDao.getTemplate("overshootUndershoot").getId());
-            sub.setConsumer("peterchen@paulchen.de");
-            List<ParameterValue> params = new ArrayList<>();
-            params.add(new ParameterValue("observedProperty", "my_dummy_property", "text"));
-            params.add(new ParameterValue("sensorID", "my_dummy_sensor", "text"));
-            params.add(new ParameterValue("thresholdValue", 5000.0123, "number"));
-            sub.setParameters(params);
+
+            List<ParameterInstance> params = new ArrayList<>();
+            params.add(new ParameterInstance("observedProperty", "my_dummy_property", "text"));
+            params.add(new ParameterInstance("sensorID", "my_dummy_sensor", "text"));
+            params.add(new ParameterInstance("thresholdValue", 5000.0123, "number"));
+            sub.setTemplate(createTemplateInstance(this.templatesDao.getTemplate("overshootUndershoot"), params));
+
             subscriptions.put("dummy-sub", sub);
         } catch (UnknownPublicationsException | UnknownUserException
                 | UnknownTemplateException | UnknownDeliveryMethodException ex) {
             LOG.warn(ex.getMessage(), ex);
         }
 
+    }
+
+    private DeliveryMethodInstance createDeliveryInstance(DeliveryMethod deliveryMethod, String to) {
+        DeliveryMethodInstance instance = new DeliveryMethodInstance(deliveryMethod.getId(),
+                Collections.singletonMap("to", new ParameterInstance("to", to, "text")));
+        return instance;
+    }
+
+    private TemplateInstance createTemplateInstance(Template template, List<ParameterInstance> params) {
+        TemplateInstance instance = new TemplateInstance(template.getId(),
+                params.stream().collect(Collectors.toMap(ParameterInstance::getName, Function.identity())));
+        return instance;
     }
 
 }

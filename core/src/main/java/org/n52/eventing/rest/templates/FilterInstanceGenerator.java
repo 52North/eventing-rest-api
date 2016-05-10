@@ -26,49 +26,30 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.parameters;
+package org.n52.eventing.rest.templates;
+
+import java.util.Collection;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.n52.eventing.rest.parameters.ParameterInstance;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class ParameterValue {
+public class FilterInstanceGenerator {
 
-    private String name;
-    private Object value;
-    private String dataType;
+    public String generateFilterInstance(Template t, Collection<ParameterInstance> values) {
+        String content = t.getDefinition().getContent();
 
-    public ParameterValue() {
-    }
+        if (content.contains("&lt;")) {
+            content = StringEscapeUtils.unescapeXml(content);
+        }
 
-    public ParameterValue(String name, Object value, String dataType) {
-        this.name = name;
-        this.value = value;
-        this.dataType = dataType;
-    }
+        for (ParameterInstance param : values) {
+            content = content.replace(String.format("${%s}", param.getName()), param.getValue().toString());
+        }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Object getValue() {
-        return value;
-    }
-
-    public void setValue(Object value) {
-        this.value = value;
-    }
-
-    public String getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+        return content;
     }
 
 }

@@ -25,48 +25,50 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.templates;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
-import org.junit.Test;
-import org.n52.eventing.rest.parameters.ParameterInstance;
-import org.n52.eventing.rest.templates.Definition;
-import org.n52.eventing.rest.templates.FilterInstanceGenerator;
-import org.n52.eventing.rest.templates.Template;
+package org.n52.eventing.rest.parameters;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class AbstractInstanceGeneratorTest {
+public class ParameterInstance {
 
-    @Test
-    public void testTemplateProcessing() {
-        FilterInstanceGenerator aig = new FilterInstanceGenerator();
+    private String name;
+    private Object value;
+    private String dataType;
 
-        String instance = aig.generateFilterInstance(createTemplate(), createValues());
-
-        Assert.assertThat(instance, CoreMatchers.is(
-                "<greaterThan><prop>temp</prop><val>22.03</val></greaterThan>"
-        ));
+    public ParameterInstance() {
     }
 
-    private Template createTemplate() {
-        Template t = new Template();
-        t.setDefinition(new Definition("<greaterThan><prop>${parama}</prop><val>${paramb}</val></greaterThan>", ""));
-        return t;
+    public ParameterInstance(String name, Object value, String dataType) {
+        this.name = name;
+        this.value = value;
+        this.dataType = dataType;
     }
 
-    private List<ParameterInstance> createValues() {
-        List<ParameterInstance> result = new ArrayList<>();
+    public String getName() {
+        return name;
+    }
 
-        result.add(new ParameterInstance("parama", "temp", "text"));
-        result.add(new ParameterInstance("paramb", 22.03, "number"));
+    public void setName(String name) {
+        this.name = name;
+    }
 
-        return result;
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
 }

@@ -42,6 +42,7 @@ import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.UrlSettings;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.n52.eventing.rest.subscriptions.SubscriptionManager;
+import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 import org.n52.eventing.rest.subscriptions.SubscriptionsDao;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +104,7 @@ public class SubscriptionsController {
     }
 
     @RequestMapping(value = "/{item}", method = GET)
-    public ModelAndView getSubscription(@RequestParam(required = false) MultiValueMap<String, String> query,
+    public SubscriptionInstance getSubscription(@RequestParam(required = false) MultiValueMap<String, String> query,
             @PathVariable("item") String id)
             throws IOException, URISyntaxException, ResourceNotAvailableException {
 
@@ -112,7 +113,7 @@ public class SubscriptionsController {
         }
 
         try {
-            return new ModelAndView().addObject(this.dao.getSubscription(id));
+            return this.dao.getSubscription(id);
         } catch (UnknownSubscriptionException ex) {
             throw new ResourceNotAvailableException(ex.getMessage(), ex);
         }

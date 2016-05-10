@@ -25,48 +25,37 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
+
 package org.n52.eventing.rest.templates;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.Map;
 import org.n52.eventing.rest.parameters.ParameterInstance;
-import org.n52.eventing.rest.templates.Definition;
-import org.n52.eventing.rest.templates.FilterInstanceGenerator;
-import org.n52.eventing.rest.templates.Template;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class AbstractInstanceGeneratorTest {
+public class TemplateInstance {
 
-    @Test
-    public void testTemplateProcessing() {
-        FilterInstanceGenerator aig = new FilterInstanceGenerator();
+    private final String id;
+    private final Map<String, ParameterInstance> parameters;
 
-        String instance = aig.generateFilterInstance(createTemplate(), createValues());
-
-        Assert.assertThat(instance, CoreMatchers.is(
-                "<greaterThan><prop>temp</prop><val>22.03</val></greaterThan>"
-        ));
+    public TemplateInstance() {
+        this.id = null;
+        this.parameters = null;
     }
 
-    private Template createTemplate() {
-        Template t = new Template();
-        t.setDefinition(new Definition("<greaterThan><prop>${parama}</prop><val>${paramb}</val></greaterThan>", ""));
-        return t;
+    public TemplateInstance(String id, Map<String, ParameterInstance> parameters) {
+        this.id = id;
+        this.parameters = parameters;
     }
 
-    private List<ParameterInstance> createValues() {
-        List<ParameterInstance> result = new ArrayList<>();
+    public String getId() {
+        return id;
+    }
 
-        result.add(new ParameterInstance("parama", "temp", "text"));
-        result.add(new ParameterInstance("paramb", 22.03, "number"));
-
-        return result;
+    public Map<String, ParameterInstance> getParameters() {
+        return parameters;
     }
 
 }

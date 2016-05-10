@@ -26,30 +26,36 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.templates;
+package org.n52.eventing.rest.deliverymethods;
 
-import java.util.List;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.n52.eventing.rest.parameters.ParameterValue;
+import java.util.Map;
+import org.n52.eventing.rest.parameters.ParameterInstance;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class InstanceGenerator {
+public class DeliveryMethodInstance {
 
-    public String generateFilterInstance(Template t, List<ParameterValue> values) {
-        String content = t.getDefinition().getContent();
+    private final String id;
+    private final Map<String, ParameterInstance> parameters;
 
-        if (content.contains("&lt;")) {
-            content = StringEscapeUtils.unescapeXml(content);
-        }
+    public DeliveryMethodInstance() {
+        this.id = null;
+        this.parameters = null;
+    }
 
-        for (ParameterValue param : values) {
-            content = content.replace(String.format("${%s}", param.getName()), param.getValue().toString());
-        }
+    public DeliveryMethodInstance(String id, Map<String, ParameterInstance> parameters) {
+        this.id = id;
+        this.parameters = parameters;
+    }
 
-        return content;
+    public String getId() {
+        return id;
+    }
+
+    public Map<String, ParameterInstance> getParameters() {
+        return parameters;
     }
 
 }
