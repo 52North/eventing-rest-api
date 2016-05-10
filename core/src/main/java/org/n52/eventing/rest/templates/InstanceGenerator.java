@@ -30,7 +30,7 @@ package org.n52.eventing.rest.templates;
 
 import java.util.List;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.n52.eventing.rest.subscriptions.ParameterValue;
+import org.n52.eventing.rest.parameters.ParameterValue;
 
 /**
  *

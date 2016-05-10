@@ -28,6 +28,7 @@
 
 package org.n52.eventing.rest.subscriptions;
 
+import org.n52.eventing.rest.parameters.ParameterValue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

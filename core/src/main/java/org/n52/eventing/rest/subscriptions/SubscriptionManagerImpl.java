@@ -55,6 +55,7 @@
 
 package org.n52.eventing.rest.subscriptions;
 
+import org.n52.eventing.rest.parameters.ParameterValue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -71,7 +72,7 @@ import org.n52.eventing.rest.Constructable;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.templates.InstanceGenerator;
-import org.n52.eventing.rest.templates.Parameter;
+import org.n52.eventing.rest.parameters.Parameter;
 import org.n52.eventing.rest.templates.Template;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;

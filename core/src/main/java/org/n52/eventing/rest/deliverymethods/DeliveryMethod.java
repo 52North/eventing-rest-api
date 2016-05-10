@@ -27,6 +27,8 @@
  */
 package org.n52.eventing.rest.deliverymethods;
 
+import java.util.Map;
+import org.n52.eventing.rest.parameters.Parameter;
 
 /**
  *
@@ -37,13 +39,13 @@ public class DeliveryMethod {
     private String id;
     private String label;
     private String description;
-    private String dataType;
+    private Map<String, Parameter> parameters;
 
-    public DeliveryMethod(String id, String label, String description, String dataType) {
+    public DeliveryMethod(String id, String label, String description, Map<String, Parameter> params) {
         this.id = id;
         this.label = label;
         this.description = description;
-        this.dataType = dataType;
+        this.parameters = params;
     }
 
     public String getId() {
@@ -70,12 +72,12 @@ public class DeliveryMethod {
         this.description = description;
     }
 
-    public String getDataType() {
-        return dataType;
+    public Map<String, Parameter> getParameters() {
+        return parameters;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+    public void setParameters(Map<String, Parameter> parameters) {
+        this.parameters = parameters;
     }
 
 }

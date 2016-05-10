@@ -35,9 +35,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.n52.eventing.rest.Constructable;
+import org.n52.eventing.rest.parameters.Parameter;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.n52.subverse.delivery.DeliveryDefinition;
 import org.n52.subverse.delivery.DeliveryEndpoint;
+import org.n52.subverse.delivery.DeliveryParameter;
 import org.n52.subverse.delivery.DeliveryProvider;
 import org.n52.subverse.delivery.DeliveryProviderRepository;
 import org.n52.subverse.delivery.UnsupportedDeliveryDefinitionException;
@@ -80,19 +82,11 @@ public class DeliveryMethodsDaoImpl implements DeliveryMethodsDao, Constructable
     public void construct() {
         this.deliveryProviderRepository.getProviders().stream().forEach(dp -> {
             DeliveryMethod method = new DeliveryMethod(dp.getIdentifier(), dp.getAbstract(),
-                    dp.getAbstract(), resolveDataType(dp.getIdentifier()));
+                    dp.getAbstract(), mapParameters(dp.getParameters()));
             methods.put(dp.getIdentifier(), method);
         });
     }
 
-    private String resolveDataType(String identifier) {
-        switch (identifier) {
-            case "email":
-                return "email";
-            default:
-                return "text";
-        }
-    }
 
     @Override
     public DeliveryEndpoint createDeliveryEndpoint(String deliveryMethodId, String consumer, String pubId) throws InvalidSubscriptionException {
@@ -108,6 +102,16 @@ public class DeliveryMethodsDaoImpl implements DeliveryMethodsDao, Constructable
         } catch (UnsupportedDeliveryDefinitionException ex) {
             throw new InvalidSubscriptionException(ex.getMessage(), ex);
         }
+    }
+
+    private Map<String, Parameter> mapParameters(DeliveryParameter[] parameters) {
+        Map<String, Parameter> result = new HashMap<>(parameters.length);
+        for (DeliveryParameter dp : parameters) {
+            Parameter p = new Parameter(dp.getType(), dp.getElementName());
+            p.setDefaultValue(dp.getValue());
+            result.put(dp.getElementName(), p);
+        }
+        return result;
     }
 
 }

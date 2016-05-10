@@ -28,6 +28,7 @@
 
 package org.n52.eventing.rest.templates;
 
+import org.n52.eventing.rest.parameters.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

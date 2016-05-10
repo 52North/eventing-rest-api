@@ -28,6 +28,7 @@
 
 package org.n52.eventing.rest.templates;
 
+import org.n52.eventing.rest.parameters.Parameter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;

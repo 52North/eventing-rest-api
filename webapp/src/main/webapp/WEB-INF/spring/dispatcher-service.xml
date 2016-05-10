@@ -15,9 +15,7 @@
         http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 
-    <bean id="nonNullObjectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
-        <property name="serializationInclusion" value="NON_NULL"></property>
-    </bean>
+    <bean id="nonNullObjectMapper" class="org.n52.eventing.rest.binding.json.CustomObjectMapper" />
 
     <bean id="nonNullJacksonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
         <property name="objectMapper" ref="nonNullObjectMapper" />

@@ -32,7 +32,7 @@ import java.util.List;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
-import org.n52.eventing.rest.subscriptions.ParameterValue;
+import org.n52.eventing.rest.parameters.ParameterValue;
 import org.n52.eventing.rest.templates.Definition;
 import org.n52.eventing.rest.templates.InstanceGenerator;
 import org.n52.eventing.rest.templates.Template;

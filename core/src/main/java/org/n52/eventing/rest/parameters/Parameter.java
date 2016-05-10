@@ -26,7 +26,7 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.templates;
+package org.n52.eventing.rest.parameters;
 
 /**
  *
@@ -40,6 +40,7 @@ public class Parameter {
     private Double max;
     private Integer maxlength;
     private String pattern;
+    private String defaultValue;
 
     public Parameter() {
     }
@@ -97,5 +98,12 @@ public class Parameter {
         this.pattern = pattern;
     }
 
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
 
 }

@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Map;
 import org.n52.subverse.delivery.DeliveryDefinition;
 import org.n52.subverse.delivery.DeliveryEndpoint;
+import org.n52.subverse.delivery.DeliveryParameter;
 import org.n52.subverse.delivery.DeliveryProvider;
 import org.n52.subverse.delivery.UnsupportedDeliveryDefinitionException;
 
@@ -61,6 +62,17 @@ public class EmailDeliveryProvider implements DeliveryProvider {
     @Override
     public DeliveryEndpoint createDeliveryEndpoint(DeliveryDefinition def) throws UnsupportedDeliveryDefinitionException {
         return new EmailDeliveryEndpoint(def.getLocation());
+    }
+
+    
+    @Override
+    public DeliveryParameter[] getParameters() {
+        DeliveryParameter[] params = new DeliveryParameter[3];
+        String namespace = "eventing-rest-api";
+        params[0] = new DeliveryParameter("text", namespace, "to", null);
+        params[1] = new DeliveryParameter("text", namespace, "cc", null);
+        params[2] = new DeliveryParameter("text", namespace, "subject", "[Notification] Rule matched");
+        return params;
     }
 
     @Override
