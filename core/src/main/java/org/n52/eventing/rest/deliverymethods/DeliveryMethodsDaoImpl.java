@@ -91,7 +91,7 @@ public class DeliveryMethodsDaoImpl implements DeliveryMethodsDao, Constructable
     @Override
     public DeliveryEndpoint createDeliveryEndpoint(DeliveryMethodInstance deliveryMethod, String pubId) throws InvalidSubscriptionException {
         try {
-            DeliveryDefinition definition = new DeliveryDefinition(deliveryMethod.getId(), null, pubId);
+            DeliveryDefinition definition = new DeliveryDefinition(deliveryMethod.getId(), null, pubId, false);
             DeliveryProvider provider = deliveryProviderRepository.getProvider(Optional.of(definition));
 
             if (provider == null) {

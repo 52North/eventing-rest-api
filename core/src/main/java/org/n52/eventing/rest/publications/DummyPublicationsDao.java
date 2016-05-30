@@ -108,7 +108,7 @@ public class DummyPublicationsDao implements PublicationsDao, Constructable, Des
                     double val = count % 10 == 0 ? 0.3 : 0.7;
                     e.put(MapEposEvent.DOUBLE_VALUE_KEY, val);
                     e.put(MapEposEvent.ORIGNIAL_OBJECT_KEY, "{\"Wasserstand\": "+ val +"}");
-                    engine.filterMessage(e);
+                    engine.filterMessage(e, "dummy-pub");
                 }
             }).start();
         }

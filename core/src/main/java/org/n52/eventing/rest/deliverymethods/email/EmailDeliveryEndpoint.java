@@ -48,7 +48,7 @@ public class EmailDeliveryEndpoint implements DeliveryEndpoint {
     }
 
     @Override
-    public void deliver(Optional<Streamable> o) {
+    public void deliver(Optional<Streamable> o, boolean useRaw) {
         LOG.info("Should send email to: {}", this.email);
     }
 
