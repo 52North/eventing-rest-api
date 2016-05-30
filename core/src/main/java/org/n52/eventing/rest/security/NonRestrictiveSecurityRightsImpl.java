@@ -25,57 +25,44 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
+
 package org.n52.eventing.rest.security;
 
-import org.n52.eventing.rest.Configuration;
-import org.n52.eventing.rest.Constructable;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethod;
 import org.n52.eventing.rest.publications.Publication;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 import org.n52.eventing.rest.templates.Template;
 import org.n52.eventing.rest.users.User;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class SecurityRightsImpl implements SecurityRights, Constructable {
-
-    @Autowired
-    private Configuration config;
-    private SecurityRights delegate = new DefaultSecurityRightsImpl();
+public class NonRestrictiveSecurityRightsImpl implements SecurityRights {
 
     @Override
-    public void construct() {
-        if (config.getParameterAsBoolean("securityDisabled").orElse(false)) {
-            this.delegate = new NonRestrictiveSecurityRightsImpl();
-        }
+    public boolean canSeeSubscription(User user, SubscriptionInstance sub) {
+        return true;
     }
 
     @Override
     public boolean canChangeSubscription(User user, SubscriptionInstance sub) {
-        return this.delegate.canChangeSubscription(user, sub);
+        return true;
     }
 
     @Override
     public boolean canSeePublication(User user, Publication pub) {
-        return this.delegate.canSeePublication(user, pub);
-    }
-
-    @Override
-    public boolean canSeeSubscription(User user, SubscriptionInstance sub) {
-        return this.delegate.canSeeSubscription(user, sub);
+        return true;
     }
 
     @Override
     public boolean canSeeTemplate(User user, Template template) {
-        return this.delegate.canSeeTemplate(user, template);
+        return true;
     }
 
     @Override
     public boolean canUseDeliveryMethod(User user, DeliveryMethod delivery) {
-        return this.delegate.canUseDeliveryMethod(user, delivery);
+        return true;
     }
 
 }

@@ -28,6 +28,8 @@
 
 package org.n52.eventing.rest.binding.security;
 
+import org.n52.eventing.rest.Configuration;
+import org.n52.eventing.rest.Constructable;
 import org.n52.eventing.rest.users.UnknownUserException;
 import org.n52.eventing.rest.users.User;
 import org.n52.eventing.rest.users.UsersDao;
@@ -42,15 +44,29 @@ import org.springframework.security.core.userdetails.UserDetails;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class SecurityServiceImpl implements SecurityService {
+public class SecurityServiceImpl implements SecurityService, Constructable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SecurityServiceImpl.class);
 
     @Autowired
     private UsersDao usersDao;
 
+    @Autowired
+    private Configuration config;
+
+    private boolean securityDisabled;
+
+    @Override
+    public void construct() {
+        this.securityDisabled = config.getParameterAsBoolean("securityDisabled").orElse(false);
+    }
+
     @Override
     public User resolveCurrentUser() throws NotAuthenticatedException {
+        if (this.securityDisabled) {
+            return WildcardUser.instance();
+        }
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
             Object principal = auth.getPrincipal();
@@ -69,6 +85,16 @@ public class SecurityServiceImpl implements SecurityService {
             }
         }
         throw new NotAuthenticatedException("No valid user object found");
+    }
+
+    private static class WildcardUser {
+
+        private static final User instance = new User("*", "*", "*", "*");
+
+        private static User instance() {
+            return instance;
+        }
+
     }
 
 }

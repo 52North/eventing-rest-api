@@ -133,6 +133,7 @@ public class TemplatesController {
                 if (!rights.canSeeTemplate(user, temp)) {
                     throw new ResourceNotAvailableException("not there: "+ id);
                 }
+                return temp;
 
             } catch (UnknownTemplateException ex) {
                 throw new ResourceNotAvailableException(ex.getMessage(), ex);
