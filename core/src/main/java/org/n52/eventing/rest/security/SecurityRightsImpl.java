@@ -25,37 +25,34 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
+package org.n52.eventing.rest.security;
 
-package org.n52.eventing.rest.users;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
+import org.n52.eventing.rest.users.User;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DummyUsersDao implements UsersDao {
-
-    private final Map<String, User> users = new HashMap<>();
-
-    public DummyUsersDao() {
-        users.put("dummy-user", new User("dummy-user", "Peter", "Paul", "peter@paul.de"));
-        users.put("dummy-user2", new User("dummy-user2", "Peter", "Paul", "peter@paul.de"));
-    }
+public class SecurityRightsImpl implements SecurityRights {
 
     @Override
-    public User getUser(String id) throws UnknownUserException {
-        if (hasUser(id)) {
-            return users.get(id);
+    public boolean canSeeSubscription(User user, SubscriptionInstance sub) {
+        if (user.isAdmin()) {
+            return true;
         }
 
-        throw new UnknownUserException("Unknown user: "+ id);
+        return user == sub.getUser();
     }
 
     @Override
-    public boolean hasUser(String id) {
-        return users.keySet().contains(id);
+    public boolean canChangeSubscription(User user, SubscriptionInstance sub) {
+        if (user.isAdmin()) {
+            return true;
+        }
+
+        return user == sub.getUser();
     }
+
 
 }

@@ -28,6 +28,10 @@
     <bean class="org.n52.eventing.rest.subscriptions.SubscriptionManagerImpl" name="subscriptionManager" />
     <bean class="org.n52.eventing.rest.subscriptions.DummySubscriptionsDao" />
 
+    <!-- utility beans -->
+    <bean class="org.n52.eventing.rest.binding.security.SecurityServiceImpl" />
+    <bean class="org.n52.eventing.rest.security.SecurityRightsImpl" />
+
     <!-- core beans -->
     <bean class="org.n52.eventing.rest.ConfigurationImpl" name="config" />
 

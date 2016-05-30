@@ -26,36 +26,16 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.users;
+package org.n52.eventing.rest.binding.security;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.n52.eventing.rest.users.User;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DummyUsersDao implements UsersDao {
+public interface SecurityService {
 
-    private final Map<String, User> users = new HashMap<>();
-
-    public DummyUsersDao() {
-        users.put("dummy-user", new User("dummy-user", "Peter", "Paul", "peter@paul.de"));
-        users.put("dummy-user2", new User("dummy-user2", "Peter", "Paul", "peter@paul.de"));
-    }
-
-    @Override
-    public User getUser(String id) throws UnknownUserException {
-        if (hasUser(id)) {
-            return users.get(id);
-        }
-
-        throw new UnknownUserException("Unknown user: "+ id);
-    }
-
-    @Override
-    public boolean hasUser(String id) {
-        return users.keySet().contains(id);
-    }
+    User resolveCurrentUser() throws NotAuthenticatedException;
 
 }

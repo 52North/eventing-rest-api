@@ -17,7 +17,9 @@
     <authentication-manager>
         <authentication-provider>
             <user-service>
-                <user name="user" password="asdf" authorities="ROLE_USER" />
+                <user name="dummy-user" password="asdf" authorities="ROLE_USER" />
+                <user name="dummy-user2" password="asdf" authorities="ROLE_USER" />
+                <user name="not-in-dao" password="asdf" authorities="ROLE_USER" />
             </user-service>
         </authentication-provider>
     </authentication-manager>

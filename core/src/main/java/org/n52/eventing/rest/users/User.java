@@ -38,6 +38,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
+    private boolean admin = false;
 
     public User(String id, String firstName, String lastName, String email) {
         this.id = id;
@@ -78,6 +79,9 @@ public class User {
         this.email = email;
     }
 
+    public boolean isAdmin() {
+        return this.admin;
+    }
 
 
 }

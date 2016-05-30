@@ -37,8 +37,13 @@ import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.UrlSettings;
 import org.n52.eventing.rest.binding.EmptyArrayModel;
+import org.n52.eventing.rest.binding.security.NotAuthenticatedException;
+import org.n52.eventing.rest.binding.security.SecurityService;
+import org.n52.eventing.rest.publications.Publication;
 import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
+import org.n52.eventing.rest.security.SecurityRights;
+import org.n52.eventing.rest.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,9 +65,16 @@ public class PublicationsController {
     @Autowired
     private PublicationsDao dao;
 
+    @Autowired
+    private SecurityService securityService;
+
+    @Autowired
+    private SecurityRights rights;
+
+
     @RequestMapping("")
     public ModelAndView getPublications(@RequestParam(required = false) MultiValueMap<String, String> query)
-            throws IOException, URISyntaxException {
+            throws IOException, URISyntaxException, NotAuthenticatedException {
         String fullUrl = RequestUtils.resolveFullRequestUrl();
 
         List<ResourceCollection> pubs = createPublications(fullUrl);
@@ -74,11 +86,18 @@ public class PublicationsController {
         return new ModelAndView().addObject(pubs);
     }
 
-    private List<ResourceCollection> createPublications(String fullUrl) {
+    private List<ResourceCollection> createPublications(String fullUrl) throws NotAuthenticatedException {
         List<ResourceCollection> pubs = new ArrayList<>();
+
+        User user = securityService.resolveCurrentUser();
 
         this.dao.getPublications().stream().forEach(p -> {
             String pubId = p.getId();
+
+            if (!rights.canSeePublication(user, p)) {
+                return;
+            }
+
             pubs.add(ResourceCollection.createResource(pubId)
                     .withLabel(p.getLabel())
                     .withDescription(p.getDescription())
@@ -91,14 +110,22 @@ public class PublicationsController {
     @RequestMapping(value = "/{item}", method = GET)
     public ModelAndView getPublication(@RequestParam(required = false) MultiValueMap<String, String> query,
             @PathVariable("item") String id)
-            throws IOException, URISyntaxException, ResourceNotAvailableException {
+            throws IOException, URISyntaxException, ResourceNotAvailableException, NotAuthenticatedException {
 
         if (!this.dao.hasPublication(id)) {
             throw new ResourceNotAvailableException("The publication is not available: "+id);
         }
 
         try {
-            return new ModelAndView().addObject(this.dao.getPublication(id));
+            User user = securityService.resolveCurrentUser();
+
+            Publication pub = this.dao.getPublication(id);
+
+            if (!rights.canSeePublication(user, pub)) {
+                throw new ResourceNotAvailableException("The publication is not available: "+id);
+            }
+
+            return new ModelAndView().addObject(pub);
         } catch (UnknownPublicationsException ex) {
             throw new ResourceNotAvailableException(ex.getMessage(), ex);
         }

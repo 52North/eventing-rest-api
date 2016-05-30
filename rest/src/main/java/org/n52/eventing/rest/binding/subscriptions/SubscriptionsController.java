@@ -40,11 +40,17 @@ import java.util.List;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.UrlSettings;
+import org.n52.eventing.rest.binding.security.NotAuthenticatedException;
+import org.n52.eventing.rest.binding.security.SecurityService;
+import org.n52.eventing.rest.security.SecurityRights;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.n52.eventing.rest.subscriptions.SubscriptionManager;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 import org.n52.eventing.rest.subscriptions.SubscriptionsDao;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
+import org.n52.eventing.rest.users.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -68,18 +74,26 @@ import org.springframework.web.servlet.ModelAndView;
         produces = {"application/json"})
 public class SubscriptionsController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionsController.class);
+
     @Autowired
     private SubscriptionsDao dao;
 
     @Autowired
     private SubscriptionManager manager;
 
+    @Autowired
+    private SecurityService securityService;
+
+    @Autowired
+    private SecurityRights rights;
+
     @RequestMapping("")
     public ModelAndView getSubscriptions(@RequestParam(required = false) MultiValueMap<String, String> query)
-            throws IOException, URISyntaxException {
+            throws IOException, URISyntaxException, NotAuthenticatedException {
         String fullUrl = RequestUtils.resolveFullRequestUrl();
 
-        List<ResourceCollection> subs = createSubscriptions(fullUrl);
+        List<ResourceCollection> subs = retrieveSubscriptions(fullUrl);
 
         if (subs.isEmpty()) {
             return EmptyArrayModel.create();
@@ -88,11 +102,16 @@ public class SubscriptionsController {
         return new ModelAndView().addObject(subs);
     }
 
-    private List<ResourceCollection> createSubscriptions(String fullUrl) {
+    private List<ResourceCollection> retrieveSubscriptions(String fullUrl) throws NotAuthenticatedException {
         List<ResourceCollection> pubs = new ArrayList<>();
+
+        final User user = securityService.resolveCurrentUser();
 
         this.dao.getSubscriptions().stream().forEach(s -> {
             String pubId = s.getId();
+            if (!rights.canSeeSubscription(user, s)) {
+                return;
+            }
             pubs.add(ResourceCollection.createResource(pubId)
                     .withLabel(s.getLabel())
                     .withDescription(s.getDescription())
@@ -106,14 +125,20 @@ public class SubscriptionsController {
     @RequestMapping(value = "/{item}", method = GET)
     public SubscriptionInstance getSubscription(@RequestParam(required = false) MultiValueMap<String, String> query,
             @PathVariable("item") String id)
-            throws IOException, URISyntaxException, ResourceNotAvailableException {
+            throws IOException, URISyntaxException, ResourceNotAvailableException, NotAuthenticatedException {
 
         if (!this.dao.hasSubscription(id)) {
             throw new ResourceNotAvailableException("The subscription is not available: "+id);
         }
 
+        final User user = securityService.resolveCurrentUser();
+
         try {
-            return this.dao.getSubscription(id);
+            SubscriptionInstance sub = this.dao.getSubscription(id);
+            if (!rights.canSeeSubscription(user, sub)) {
+                throw new ResourceNotAvailableException("The subscription is not available: "+id);
+            }
+            return sub;
         } catch (UnknownSubscriptionException ex) {
             throw new ResourceNotAvailableException(ex.getMessage(), ex);
         }
@@ -121,24 +146,30 @@ public class SubscriptionsController {
 
 
     @RequestMapping(value = "", method = POST)
-    public ModelAndView subscribe(@RequestBody SubscriptionDefinition subDef) throws InvalidSubscriptionException {
-        String subId = this.manager.subscribe(subDef);
+    public ModelAndView subscribe(@RequestBody SubscriptionDefinition subDef) throws InvalidSubscriptionException, NotAuthenticatedException {
+        final User user = securityService.resolveCurrentUser();
+
+        String subId = this.manager.subscribe(subDef, user);
 
         return new ModelAndView().addObject(Collections.singletonMap("id", subId));
     }
 
     @RequestMapping(value = "/{item}", method = PUT)
     public ResponseEntity<?> updateSubscription(@RequestBody SubscriptionUpdateDefinition subDef,
-            @PathVariable("item") String id) throws InvalidSubscriptionException {
+            @PathVariable("item") String id) throws InvalidSubscriptionException, NotAuthenticatedException {
         subDef.setId(id);
-        this.manager.updateSubscription(subDef);
+        final User user = securityService.resolveCurrentUser();
+
+        this.manager.updateSubscription(subDef, user);
 
         return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/{item}", method = DELETE)
-    public ResponseEntity<?> remove(@PathVariable("item") String id) throws InvalidSubscriptionException {
-        this.manager.removeSubscription(id);
+    public ResponseEntity<?> remove(@PathVariable("item") String id) throws InvalidSubscriptionException, NotAuthenticatedException {
+        final User user = securityService.resolveCurrentUser();
+
+        this.manager.removeSubscription(id, user);
 
         return ResponseEntity.accepted().build();
     }

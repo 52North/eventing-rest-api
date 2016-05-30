@@ -27,16 +27,18 @@
  */
 package org.n52.eventing.rest.subscriptions;
 
+import org.n52.eventing.rest.users.User;
+
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public interface SubscriptionManager {
 
-    String subscribe(SubscriptionDefinition subDef) throws InvalidSubscriptionException;
+    String subscribe(SubscriptionDefinition subDef, User user) throws InvalidSubscriptionException;
 
-    void updateSubscription(SubscriptionUpdateDefinition subDef) throws InvalidSubscriptionException;
+    void updateSubscription(SubscriptionUpdateDefinition subDef, User user) throws InvalidSubscriptionException;
 
-    void removeSubscription(String id) throws InvalidSubscriptionException;
+    void removeSubscription(String id, User user) throws InvalidSubscriptionException;
 
 }

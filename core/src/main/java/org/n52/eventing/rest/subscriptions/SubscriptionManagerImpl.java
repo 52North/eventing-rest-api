@@ -52,20 +52,43 @@
 * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 * PARTICULAR PURPOSE. See the GNU General Public License for more details.
 */
+/*
+* Copyright (C) 2016-2016 52°North Initiative for Geospatial Open Source
+* Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2 as publishedby the Free
+* Software Foundation.
+*
+* If the program is linked with libraries which are licensed under one of the
+* following licenses, the combination of the program with the linked library is
+* not considered a "derivative work" of the program:
+*
+*     - Apache License, version 2.0
+*     - Apache Software License, version 1.0
+*     - GNU Lesser General Public License, version 3
+*     - Mozilla Public License, versions 1.0, 1.1 and 2.0
+*     - Common Development and Distribution License (CDDL), version 1.0
+*
+* Therefore the distribution of the program linked with libraries licensed under
+* the aforementioned licenses, is permitted by the copyright holders if the
+* distribution is compliant with both the GNU General Public License version 2
+* and the aforementioned licenses.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY
+* WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+* PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*/
 
 package org.n52.eventing.rest.subscriptions;
 
 import org.n52.eventing.rest.parameters.ParameterInstance;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
@@ -75,11 +98,10 @@ import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
 import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.templates.FilterInstanceGenerator;
-import org.n52.eventing.rest.parameters.Parameter;
+import org.n52.eventing.rest.security.SecurityRights;
 import org.n52.eventing.rest.templates.Template;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
-import org.n52.eventing.rest.users.UnknownUserException;
 import org.n52.eventing.rest.users.User;
 import org.n52.eventing.rest.users.UsersDao;
 import org.n52.subverse.delivery.DeliveryEndpoint;
@@ -117,6 +139,9 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
     @Autowired
     private FilterEngine engine;
 
+    @Autowired
+    private SecurityRights rights;
+
     private final FilterInstanceGenerator filterInstanceGenerator = new FilterInstanceGenerator();
     private final Map<String, Subscription> subscriptionToRuleMap = new HashMap<>();
 
@@ -139,16 +164,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
     }
 
     @Override
-    public String subscribe(SubscriptionDefinition subDef) throws InvalidSubscriptionException {
+    public String subscribe(SubscriptionDefinition subDef, User user) throws InvalidSubscriptionException {
         throwExceptionOnNullOrEmpty(subDef.getPublicationId(), "publicationId");
-
-        //TODO implement using Spring security
-        User user;
-        try {
-            user = this.usersDao.getUser("dummy-user");
-        } catch (UnknownUserException ex) {
-            throw new InvalidSubscriptionException(ex.getMessage(), ex);
-        }
 
         String pubId = subDef.getPublicationId();
         if (!this.publicationsDao.hasPublication(pubId)) {
@@ -195,8 +212,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
                 subscription.getPublicationId());
 
         /*
-         * register at engine
-         */
+        * register at engine
+        */
         Map<String, ParameterInstance> params = subscription.getTemplate().getParameters();
         params.forEach((String t, ParameterInstance u) -> {
             u.setName(t);
@@ -235,48 +252,16 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
     }
 
 
-    private List<ParameterInstance> resolveAndCreateParameters(List<Map<String, Object>> parameters, String templateId)
-            throws InvalidSubscriptionException {
-        Template template;
-        try {
-            template = this.templatesDao.getTemplate(templateId);
-        } catch (UnknownTemplateException ex) {
-            throw new InvalidSubscriptionException("Template not available: "+ templateId, ex);
-        }
-
-        final Map<String, Parameter> templateParameters = template.getParameters();
-
-        try {
-            return parameters.stream().map((Map<String, Object> t) -> {
-                for (String key : t.keySet()) {
-                    Parameter templateParameter = resolveTemplateParameter(templateParameters, key);
-                    return new ParameterInstance(key, t.get(key), templateParameter.getType());
-                }
-
-                throw new RuntimeException(new InvalidSubscriptionException("No parameter values available"));
-            }).collect(Collectors.toCollection(ArrayList::new));
-        } catch (RuntimeException e) {
-            if (e.getCause() != null && e.getCause() instanceof InvalidSubscriptionException) {
-                throw (InvalidSubscriptionException) e.getCause();
-            }
-            throw new InvalidSubscriptionException("Could not resolve parameters", e);
-        }
-    }
-
-    private Parameter resolveTemplateParameter(Map<String, Parameter> templateParameters, String key) {
-        Optional<Parameter> match = templateParameters.keySet().stream().filter((String p) -> {
-            return p.equals(key);
-        }).findFirst().map((String t) -> templateParameters.get(t));
-
-        if (match.isPresent()) {
-            return match.get();
-        }
-
-        throw new RuntimeException(new InvalidSubscriptionException("Invalid template parameter: "+key));
-    }
-
     @Override
-    public void updateSubscription(SubscriptionUpdateDefinition subDef) throws InvalidSubscriptionException {
+    public void updateSubscription(SubscriptionUpdateDefinition subDef, User user) throws InvalidSubscriptionException {
+        try {
+            if (!rights.canChangeSubscription(user, this.dao.getSubscription(subDef.getId()))) {
+                throw new InvalidSubscriptionException("The current user is not allowed to remove the subscription with id "+subDef.getId());
+            }
+        } catch (UnknownSubscriptionException ex) {
+            throw new InvalidSubscriptionException(ex.getMessage(), ex);
+        }
+
         String eolString = subDef.getEndOfLife();
         if (eolString != null && !eolString.isEmpty()) {
             DateTime eol = parseEndOfLife(eolString);
@@ -314,9 +299,12 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
     }
 
     @Override
-    public void removeSubscription(String id) throws InvalidSubscriptionException {
+    public void removeSubscription(String id, User user) throws InvalidSubscriptionException {
         if (this.dao.hasSubscription(id)) {
             try {
+                if (!rights.canChangeSubscription(user, this.dao.getSubscription(id))) {
+                    throw new InvalidSubscriptionException("The current user is not allowed to remove the subscription with id "+id);
+                }
                 this.dao.remove(id);
             } catch (UnknownSubscriptionException ex) {
                 throw new InvalidSubscriptionException(ex.getMessage(), ex);

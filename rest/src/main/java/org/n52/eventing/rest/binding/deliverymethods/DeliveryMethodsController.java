@@ -37,9 +37,13 @@ import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.binding.UrlSettings;
 import org.n52.eventing.rest.binding.EmptyArrayModel;
+import org.n52.eventing.rest.binding.security.NotAuthenticatedException;
+import org.n52.eventing.rest.binding.security.SecurityService;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethod;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
+import org.n52.eventing.rest.security.SecurityRights;
+import org.n52.eventing.rest.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,12 +62,25 @@ public class DeliveryMethodsController {
     @Autowired
     private DeliveryMethodsDao dao;
 
+    @Autowired
+    private SecurityService securityService;
+
+    @Autowired
+    private SecurityRights rights;
+
+
     @RequestMapping("")
-    public ModelAndView getDeliveryMethods() throws IOException, URISyntaxException {
+    public ModelAndView getDeliveryMethods() throws IOException, URISyntaxException, NotAuthenticatedException {
         String fullUrl = RequestUtils.resolveFullRequestUrl();
         List<ResourceCollection> list = new ArrayList<>();
 
+        User user = securityService.resolveCurrentUser();
+
         this.dao.getDeliveryMethods().stream().forEach(dm -> {
+            if (!rights.canUseDeliveryMethod(user, dm)) {
+                return;
+            }
+
             list.add(ResourceCollection.createResource(dm.getId())
                 .withLabel(dm.getLabel())
                 .withDescription(dm.getDescription())
@@ -78,10 +95,14 @@ public class DeliveryMethodsController {
     }
 
     @RequestMapping("/{item}")
-    public DeliveryMethod getDeliveryMethod(@PathVariable("item") String id) throws ResourceNotAvailableException {
+    public DeliveryMethod getDeliveryMethod(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException {
         if (this.dao.hasDeliveryMethod(id)) {
             try {
-                return this.dao.getDeliveryMethod(id);
+                User user = securityService.resolveCurrentUser();
+                DeliveryMethod method = this.dao.getDeliveryMethod(id);
+                if (rights.canUseDeliveryMethod(user, method)) {
+                    return method;
+                }
             } catch (UnknownDeliveryMethodException ex) {
                 throw new ResourceNotAvailableException(ex.getMessage(), ex);
             }

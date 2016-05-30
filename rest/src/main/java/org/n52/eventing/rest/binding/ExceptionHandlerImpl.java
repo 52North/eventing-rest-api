@@ -29,6 +29,7 @@
 package org.n52.eventing.rest.binding;
 
 import javax.servlet.http.HttpServletRequest;
+import org.n52.eventing.rest.binding.security.NotAuthenticatedException;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,9 +70,14 @@ public class ExceptionHandlerImpl {
         return createModelAndView(e, req);
     }
 
+    @ExceptionHandler(value = NotAuthenticatedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ModelAndView notAuthenticatedException(HttpServletRequest req, Exception e) throws Exception {
+        return createModelAndView(e, req);
+    }
 
     private ModelAndView createModelAndView(Exception e, HttpServletRequest req) {
-        LOG.warn("Returning exception", e);
+        LOG.debug("Returning exception", e);
         ModelAndView mav = new ModelAndView();
         mav.addObject(DEFAULT_ERROR_VIEW, e.getMessage());
         mav.addObject(BACKLINK, req.getRequestURL());
