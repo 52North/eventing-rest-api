@@ -60,6 +60,9 @@ This project includes:
   Spring Object/XML Marshalling under The Apache Software License, Version 2.0
   Spring Web under The Apache Software License, Version 2.0
   Spring Web MVC under The Apache Software License, Version 2.0
+  spring-security-config under The Apache Software License, Version 2.0
+  spring-security-core under The Apache Software License, Version 2.0
+  spring-security-web under The Apache Software License, Version 2.0
   StAX API under The Apache Software License, Version 2.0
   subverse delivery API under GNU General Public License, version 2
   subverse filtering under GNU General Public License, version 2
