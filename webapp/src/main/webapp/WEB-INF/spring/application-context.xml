@@ -14,6 +14,8 @@
     <mvc:annotation-driven />
     <ctx:annotation-config />
 
+    <import resource="security.xml" />
+
     <bean class="org.n52.eventing.rest.LifecycleBeanPostProcessor">
         <description>This calls Constructable#construct and Destroyable#destroy for all beans.</description>
     </bean>

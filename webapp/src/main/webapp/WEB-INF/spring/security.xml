@@ -4,10 +4,22 @@
          xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <http />
+    <http auto-config="true">
+        <http-basic />
+        <intercept-url pattern="/v1" access="permitAll" />
+        <intercept-url pattern="/v1/templates" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/v1/subscriptions" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/v1/publications" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/v1/deliveryMethods" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/v1/events" access="hasRole('ROLE_USER')" />
+    </http>
 
-    <user-service>
-        <user name="user" password="password" authorities="ROLE_USER" />
-    </user-service>
+    <authentication-manager>
+        <authentication-provider>
+            <user-service>
+                <user name="user" password="asdf" authorities="ROLE_USER" />
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>
 
 </b:beans>
