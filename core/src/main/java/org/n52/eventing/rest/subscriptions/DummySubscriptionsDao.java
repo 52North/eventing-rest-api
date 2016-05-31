@@ -144,14 +144,14 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
             SubscriptionInstance sub = new SubscriptionInstance("dummy-sub", "dummy-sub yeah", "this subscription is set up!");
             sub.setUser(this.usersDao.getUser("dummy-user"));
             sub.setPublicationId(this.publicationsDao.getPublication("dummy-pub").getId());
-            sub.setDeliveryMethod(createDeliveryInstance(this.deliveryMethodsDao.getDeliveryMethod("email"), "peterchen@paulchen.de"));
+            sub.addDeliveryMethod(createDeliveryInstance(this.deliveryMethodsDao.getDeliveryMethod("email"), "peterchen@paulchen.de"));
             sub.setEndOfLife(new DateTime().plusMonths(2));
             sub.setEnabled(true);
 
             List<ParameterInstance> params = new ArrayList<>();
-            params.add(new ParameterInstance("observedProperty", "my_dummy_property", "text"));
-            params.add(new ParameterInstance("sensorID", "my_dummy_sensor", "text"));
-            params.add(new ParameterInstance("thresholdValue", 5000.0123, "number"));
+            params.add(new ParameterInstance("observedProperty", "Wasserstand", "text"));
+            params.add(new ParameterInstance("sensorID", "Wasserstand_Opladen", "text"));
+            params.add(new ParameterInstance("thresholdValue", 55.2, "number"));
             sub.setTemplate(createTemplateInstance(this.templatesDao.getTemplate("overshootUndershoot"), params));
 
             subscriptions.put("dummy-sub", sub);

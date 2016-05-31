@@ -71,7 +71,7 @@ public class ExceptionHandlerImpl {
     }
 
     @ExceptionHandler(value = NotAuthenticatedException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ModelAndView notAuthenticatedException(HttpServletRequest req, Exception e) throws Exception {
         return createModelAndView(e, req);
     }

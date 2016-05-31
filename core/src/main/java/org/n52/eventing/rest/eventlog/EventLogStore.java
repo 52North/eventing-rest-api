@@ -25,24 +25,28 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.binding;
+package org.n52.eventing.rest.eventlog;
+
+import java.util.Collection;
+import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface UrlSettings {
+public interface EventLogStore {
 
-    String API_V1_BASE = "/v1";
+    /**
+     * adds a new event to the store
+     *
+     * @param sub the subscription
+     * @param eh the event holder instance
+     * @param maximumCapacity the maximum capacity to store for this subscription ID
+     */
+    void addEvent(SubscriptionInstance sub, EventHolder eh, int maximumCapacity);
 
-    String PUBLICATIONS_RESOURCE = "publications";
+    Collection<EventHolder> getAllEvents();
 
-    String DELIVERY_METHODS_RESOURCE = "deliveryMethods";
-
-    String SUBSCRIPTIONS_RESOURCE = "subscriptions";
-
-    String TEMPLATES_RESOURCE = "templates";
-
-    String EVENTLOG_RESOURCE = "eventLog";
+    Collection<EventHolder> getEventsForSubscription(SubscriptionInstance subscription);
 
 }

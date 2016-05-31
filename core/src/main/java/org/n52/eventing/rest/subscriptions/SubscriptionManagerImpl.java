@@ -30,17 +30,20 @@ package org.n52.eventing.rest.subscriptions;
 import org.n52.eventing.rest.parameters.ParameterInstance;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.Constructable;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
-import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
+import org.n52.eventing.rest.eventlog.EventLogEndpoint;
+import org.n52.eventing.rest.eventlog.EventLogStore;
 import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.templates.FilterInstanceGenerator;
 import org.n52.eventing.rest.security.SecurityRights;
@@ -85,9 +88,12 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
 
     @Autowired
     private SecurityRights rights;
-    
+
     @Autowired
     private TerminationScheduler terminator;
+
+    @Autowired
+    private EventLogStore eventLogStore;
 
     private final FilterInstanceGenerator filterInstanceGenerator = new FilterInstanceGenerator();
     private final Map<String, Subscription> subscriptionToRuleMap = new HashMap<>();
@@ -127,13 +133,6 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
             throw new InvalidSubscriptionException("Template unknown: "+pubId);
         }
 
-        DeliveryMethodDefinition deliveryMethod;
-        try {
-            deliveryMethod = deliveryMethodsDao.getDeliveryMethod(subDef.getDeliveryMethod().getId());
-        } catch (UnknownDeliveryMethodException ex) {
-            throw new InvalidSubscriptionException("DeliveryMethod unknown", ex);
-        }
-
         DateTime now = new DateTime();
         String subId = UUID.randomUUID().toString();
         String desc = String.format("Subscription using template %s (created: %s)", template.getId(), now);
@@ -162,8 +161,16 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         /*
         * resolve delivery endpoint
         */
-        DeliveryEndpoint endpoint = this.deliveryMethodsDao.createDeliveryEndpoint(subscription.getDeliveryMethod(),
-                subscription.getPublicationId());
+        List<DeliveryEndpoint> endpoints = subscription.getDeliveryMethods().stream().map((DeliveryMethodInstance dm) -> {
+            try {
+                return this.deliveryMethodsDao.createDeliveryEndpoint(dm,
+                        subscription.getPublicationId());
+            } catch (InvalidSubscriptionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }).collect(Collectors.toList());
+        endpoints.add(new EventLogEndpoint(20, subscription, eventLogStore, template.getDescription()));
+        BrokeringDeliveryEndpoint brokeringEndpoint = new BrokeringDeliveryEndpoint(endpoints);
 
         /*
         * register at engine
@@ -177,7 +184,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         try {
             Subscription subverseSub = wrapToSubverseSubscription(subscription,
                     filterInstance, subscription.getPublicationId());
-            this.engine.register(subverseSub, endpoint);
+            this.engine.register(subverseSub, brokeringEndpoint);
 
             /*
             * remember subverseSub for later removal
@@ -189,7 +196,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
             LOG.warn("Could not register subscription at engine");
             throw new InvalidSubscriptionException(ex.getMessage(), ex);
         }
-        
+
         if (subscription.getEndOfLife() != null) {
             SubscriptionTerminatable term = new SubscriptionTerminatable(subscription);
             terminator.scheduleTermination(term);
@@ -217,7 +224,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
             } catch (UnknownSubscriptionException ex) {
                 throw new InvalidSubscriptionException(ex.getMessage(), ex);
             }
-            
+
         }
 
         Boolean enabled = subDef.getEnabled();
@@ -278,7 +285,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
                 LOG.warn("Could not cancel termination", ex);
             }
         }
-        
+
         SubscriptionTerminatable term = new SubscriptionTerminatable(subscription);
         terminator.scheduleTermination(term);
         subscriptionToTerminatableMap.put(subscription, term);
@@ -321,7 +328,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         }
     }
 
-    
+
     private class SubscriptionTerminatable implements Terminatable {
 
         private final SubscriptionInstance subscription;

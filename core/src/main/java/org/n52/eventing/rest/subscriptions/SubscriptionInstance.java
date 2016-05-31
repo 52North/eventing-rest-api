@@ -28,6 +28,8 @@
 
 package org.n52.eventing.rest.subscriptions;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
 import org.n52.eventing.rest.templates.TemplateInstance;
@@ -48,7 +50,7 @@ public class SubscriptionInstance {
     private User user;
     private String publicationId;
     private TemplateInstance template;
-    private DeliveryMethodInstance deliveryMethod;
+    private List<DeliveryMethodInstance> deliveryMethods = new ArrayList<>();
     private Boolean enabled;
     private DateTime endOfLife;
     private Boolean expired = false;
@@ -135,12 +137,16 @@ public class SubscriptionInstance {
         this.template = template;
     }
 
-    public DeliveryMethodInstance getDeliveryMethod() {
-        return deliveryMethod;
+    public List<DeliveryMethodInstance> getDeliveryMethods() {
+        return deliveryMethods;
     }
 
-    public void setDeliveryMethod(DeliveryMethodInstance deliveryMethod) {
-        this.deliveryMethod = deliveryMethod;
+    public void setDeliveryMethods(List<DeliveryMethodInstance> deliveryMethods) {
+        this.deliveryMethods = deliveryMethods;
+    }
+
+    public void addDeliveryMethod(DeliveryMethodInstance deliveryMethod) {
+        this.deliveryMethods.add(deliveryMethod);
     }
 
     public DateTime getCreated() {

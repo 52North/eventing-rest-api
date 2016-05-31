@@ -89,28 +89,28 @@ public class DummyPublicationsDao implements PublicationsDao, Constructable, Des
     public void construct() {
         Optional<Boolean> dummy = config.getParameterAsBoolean("publishDummyMessages");
         if (dummy.isPresent() && dummy.get()) {
-//            new Thread(() -> {
-//                LOG.info("Dummy publication thread started...");
-//
-//                int count = 0;
-//                while (running) {
-//                    count++;
-//                    try {
-//                        Thread.sleep(5000);
-//                    } catch (InterruptedException ex) {
-//                        LOG.warn(ex.getMessage(), ex);
-//                    }
-//
-//                    long now = System.currentTimeMillis();
-//                    MapEposEvent e = new MapEposEvent(now, now);
-//                    e.put("observedProperty", "Wasserstand");
-//                    e.put("sensorID", "Wasserstand_Opladen");
-//                    double val = count % 10 == 0 ? 0.3 : 0.7;
-//                    e.put(MapEposEvent.DOUBLE_VALUE_KEY, val);
-//                    e.put(MapEposEvent.ORIGNIAL_OBJECT_KEY, "{\"Wasserstand\": "+ val +"}");
-//                    engine.filterMessage(e, "dummy-pub");
-//                }
-//            }).start();
+            new Thread(() -> {
+                LOG.info("Dummy publication thread started...");
+
+                int count = 0;
+                while (running) {
+                    count++;
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ex) {
+                        LOG.warn(ex.getMessage(), ex);
+                    }
+
+                    long now = System.currentTimeMillis();
+                    MapEposEvent e = new MapEposEvent(now, now);
+                    e.put("observedProperty", "Wasserstand");
+                    e.put("sensorID", "Wasserstand_Opladen");
+                    double val = count % 10 == 0 ? 0.3 : 0.7;
+                    e.put(MapEposEvent.DOUBLE_VALUE_KEY, val);
+                    e.put(MapEposEvent.ORIGNIAL_OBJECT_KEY, "{\"Wasserstand\": "+ val +"}");
+                    engine.filterMessage(e, "dummy-pub");
+                }
+            }).start();
         }
     }
 

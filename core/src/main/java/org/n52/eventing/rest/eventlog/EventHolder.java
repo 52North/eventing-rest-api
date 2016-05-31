@@ -25,24 +25,67 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.binding;
+
+package org.n52.eventing.rest.eventlog;
+
+import java.util.Optional;
+import org.joda.time.DateTime;
+import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
+import org.n52.subverse.delivery.Streamable;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface UrlSettings {
+public class EventHolder implements Comparable<EventHolder> {
 
-    String API_V1_BASE = "/v1";
+    private final String id;
+    private final DateTime time;
+    private final SubscriptionInstance subscription;
+    private final String label;
+    private transient final Optional<Streamable> streamable;
 
-    String PUBLICATIONS_RESOURCE = "publications";
+    public EventHolder(String id, DateTime time, SubscriptionInstance subscription, String label, Optional<Streamable> streamable) {
+        this.id = id;
+        this.time = time;
+        this.subscription = subscription;
+        this.label = label;
+        this.streamable = streamable;
+    }
 
-    String DELIVERY_METHODS_RESOURCE = "deliveryMethods";
+    public String getId() {
+        return id;
+    }
 
-    String SUBSCRIPTIONS_RESOURCE = "subscriptions";
+    public DateTime getTime() {
+        return time;
+    }
 
-    String TEMPLATES_RESOURCE = "templates";
+    public SubscriptionInstance getSubscription() {
+        return subscription;
+    }
 
-    String EVENTLOG_RESOURCE = "eventLog";
+    public String getLabel() {
+        return label;
+    }
+
+    public Optional<Streamable> getStreamable() {
+        return streamable;
+    }
+
+
+    @Override
+    public int compareTo(EventHolder o) {
+        if (this.time == null) {
+            return -1;
+        }
+        if (o.time == null) {
+            return 1;
+        }
+
+        return this.time.compareTo(o.time);
+    }
+
+
 
 }

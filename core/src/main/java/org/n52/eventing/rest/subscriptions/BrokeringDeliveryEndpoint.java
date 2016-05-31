@@ -25,24 +25,40 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.binding;
+
+package org.n52.eventing.rest.subscriptions;
+
+import java.util.List;
+import java.util.Optional;
+import org.n52.subverse.delivery.DeliveryEndpoint;
+import org.n52.subverse.delivery.Streamable;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface UrlSettings {
+class BrokeringDeliveryEndpoint implements DeliveryEndpoint {
 
-    String API_V1_BASE = "/v1";
+    private final List<DeliveryEndpoint> endpoints;
 
-    String PUBLICATIONS_RESOURCE = "publications";
+    public BrokeringDeliveryEndpoint(List<DeliveryEndpoint> endpoints) {
+        this.endpoints = endpoints;
+    }
 
-    String DELIVERY_METHODS_RESOURCE = "deliveryMethods";
+    @Override
+    public void deliver(Optional<Streamable> o, boolean asRaw) {
+        this.endpoints.stream().parallel().forEach(e -> {
+            e.deliver(o, asRaw);
+        });
+    }
 
-    String SUBSCRIPTIONS_RESOURCE = "subscriptions";
+    @Override
+    public String getEffectiveLocation() {
+        return "/dev/null";
+    }
 
-    String TEMPLATES_RESOURCE = "templates";
-
-    String EVENTLOG_RESOURCE = "eventLog";
+    @Override
+    public void destroy() {
+    }
 
 }

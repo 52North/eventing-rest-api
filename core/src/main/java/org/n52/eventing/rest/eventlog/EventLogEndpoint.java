@@ -25,24 +25,50 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.binding;
+
+package org.n52.eventing.rest.eventlog;
+
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.joda.time.DateTime;
+import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
+import org.n52.subverse.delivery.DeliveryEndpoint;
+import org.n52.subverse.delivery.Streamable;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface UrlSettings {
+public class EventLogEndpoint implements DeliveryEndpoint {
 
-    String API_V1_BASE = "/v1";
+    private final int maximumCapacity;
+    private final SubscriptionInstance subscription;
+    private final EventLogStore store;
+    private final String holderLabel;
+    private final AtomicInteger count = new AtomicInteger(1);
 
-    String PUBLICATIONS_RESOURCE = "publications";
+    public EventLogEndpoint(int maximumCapacity, SubscriptionInstance subscription, EventLogStore store, String holderLabel) {
+        this.maximumCapacity = maximumCapacity;
+        this.subscription = subscription;
+        this.store = store;
+        this.holderLabel = holderLabel;
+    }
 
-    String DELIVERY_METHODS_RESOURCE = "deliveryMethods";
 
-    String SUBSCRIPTIONS_RESOURCE = "subscriptions";
+    @Override
+    public void deliver(Optional<Streamable> o, boolean asRaw) {
+        EventHolder eh = new EventHolder(String.format("%s_match_%s", subscription.getId(), count.getAndIncrement()),
+                new DateTime(), subscription, holderLabel, o);
+        this.store.addEvent(subscription, eh, maximumCapacity);
+    }
 
-    String TEMPLATES_RESOURCE = "templates";
+    @Override
+    public String getEffectiveLocation() {
+        return "/eventLog";
+    }
 
-    String EVENTLOG_RESOURCE = "eventLog";
+    @Override
+    public void destroy() {
+    }
 
 }
