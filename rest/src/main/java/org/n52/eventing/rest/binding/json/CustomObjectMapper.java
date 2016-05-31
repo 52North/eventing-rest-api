@@ -31,6 +31,7 @@ package org.n52.eventing.rest.binding.json;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 /**
  *
@@ -42,6 +43,8 @@ public class CustomObjectMapper extends ObjectMapper {
         super();
         this.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         this.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        this.registerModule(new JodaModule());
+        this.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
 }

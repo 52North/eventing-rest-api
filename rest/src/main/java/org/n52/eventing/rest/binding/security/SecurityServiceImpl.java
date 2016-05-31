@@ -64,7 +64,7 @@ public class SecurityServiceImpl implements SecurityService, Constructable {
     @Override
     public User resolveCurrentUser() throws NotAuthenticatedException {
         if (this.securityDisabled) {
-            return WildcardUser.instance();
+            return null;
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -85,16 +85,6 @@ public class SecurityServiceImpl implements SecurityService, Constructable {
             }
         }
         throw new NotAuthenticatedException("No valid user object found");
-    }
-
-    private static class WildcardUser {
-
-        private static final User instance = new User("*", "*", "*", "*");
-
-        private static User instance() {
-            return instance;
-        }
-
     }
 
 }

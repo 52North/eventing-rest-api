@@ -114,7 +114,7 @@ public class SubscriptionsController {
             pubs.add(ResourceCollection.createResource(pubId)
                     .withLabel(s.getLabel())
                     .withDescription(s.getDescription())
-                    .withUserId(s.getUser().getId())
+                    .withUserId(s.getUser() != null ? s.getUser().getId() : null)
                     .withHref(String.format("%s/%s", fullUrl, pubId)));
         });
 

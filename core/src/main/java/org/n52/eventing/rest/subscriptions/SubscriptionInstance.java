@@ -28,6 +28,7 @@
 
 package org.n52.eventing.rest.subscriptions;
 
+import org.joda.time.DateTime;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
 import org.n52.eventing.rest.templates.TemplateInstance;
 import org.n52.eventing.rest.users.User;
@@ -42,12 +43,14 @@ public class SubscriptionInstance {
     private String id;
     private String label;
     private String description;
+    private DateTime created;
+    private DateTime modified;
     private User user;
     private String publicationId;
     private TemplateInstance template;
     private DeliveryMethodInstance deliveryMethod;
     private Boolean enabled;
-    private String endOfLife;
+    private DateTime endOfLife;
     private Boolean expired = false;
 
     public SubscriptionInstance() {
@@ -108,11 +111,11 @@ public class SubscriptionInstance {
         this.enabled = enabled;
     }
 
-    public String getEndOfLife() {
+    public DateTime getEndOfLife() {
         return endOfLife;
     }
 
-    public void setEndOfLife(String endOfLife) {
+    public void setEndOfLife(DateTime endOfLife) {
         this.endOfLife = endOfLife;
     }
 
@@ -138,6 +141,22 @@ public class SubscriptionInstance {
 
     public void setDeliveryMethod(DeliveryMethodInstance deliveryMethod) {
         this.deliveryMethod = deliveryMethod;
+    }
+
+    public DateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(DateTime created) {
+        this.created = created;
+    }
+
+    public DateTime getModified() {
+        return modified;
+    }
+
+    public void setModified(DateTime modified) {
+        this.modified = modified;
     }
 
 

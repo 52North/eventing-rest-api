@@ -63,7 +63,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DummySubscriptionsDao.class);
-    public static final DateTimeFormatter ISO_FORMATTER = ISODateTimeFormat.dateTime();
 
     private final Map<String, SubscriptionInstance> subscriptions = new HashMap<>();
 
@@ -106,7 +105,9 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
     @Override
     public synchronized void updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException {
         if (hasSubscription(id)) {
-            this.subscriptions.get(id).setEndOfLife(eol.toString(ISO_FORMATTER));
+            SubscriptionInstance sub = this.subscriptions.get(id);
+            sub.setModified(new DateTime());
+            sub.setEndOfLife(eol);
         }
         else {
             throw new UnknownSubscriptionException("Subscription does not exist: "+id);
@@ -116,7 +117,9 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
     @Override
     public synchronized void updateStatus(String id, boolean enabled) throws UnknownSubscriptionException {
         if (hasSubscription(id)) {
-            this.subscriptions.get(id).setEnabled(enabled);
+            SubscriptionInstance sub = this.subscriptions.get(id);
+            sub.setModified(new DateTime());
+            sub.setEnabled(enabled);
         }
         else {
             throw new UnknownSubscriptionException("Subscription does not exist: "+id);
@@ -142,7 +145,7 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
             sub.setUser(this.usersDao.getUser("dummy-user"));
             sub.setPublicationId(this.publicationsDao.getPublication("dummy-pub").getId());
             sub.setDeliveryMethod(createDeliveryInstance(this.deliveryMethodsDao.getDeliveryMethod("email"), "peterchen@paulchen.de"));
-            sub.setEndOfLife(new DateTime().plusMonths(2).toString(ISO_FORMATTER));
+            sub.setEndOfLife(new DateTime().plusMonths(2));
             sub.setEnabled(true);
 
             List<ParameterInstance> params = new ArrayList<>();
