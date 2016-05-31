@@ -63,12 +63,12 @@ public class RequestUtils {
         URI uri = new URI(scheme, userInfo, host, port, path, query, null);
         return uri.toString();
     }
-    
+
     public static HttpServletRequest resolveRequestObject() {
         return ((ServletRequestAttributes)
                 RequestContextHolder.currentRequestAttributes()).getRequest();
     }
-    
+
     public static HttpServletResponse resolveResponseObject() {
         return ((ServletRequestAttributes)
                 RequestContextHolder.currentRequestAttributes()).getResponse();
