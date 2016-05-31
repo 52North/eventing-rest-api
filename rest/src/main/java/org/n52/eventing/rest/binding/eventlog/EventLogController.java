@@ -1,73 +1,16 @@
-/*
- * Copyright (C) 2016-2016 52°North Initiative for Geospatial Open Source
- * Software GmbH
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 2 as publishedby the Free
- * Software Foundation.
- *
- * If the program is linked with libraries which are licensed under one of the
- * following licenses, the combination of the program with the linked library is
- * not considered a "derivative work" of the program:
- *
- *     - Apache License, version 2.0
- *     - Apache Software License, version 1.0
- *     - GNU Lesser General Public License, version 3
- *     - Mozilla Public License, versions 1.0, 1.1 and 2.0
- *     - Common Development and Distribution License (CDDL), version 1.0
- *
- * Therefore the distribution of the program linked with libraries licensed under
- * the aforementioned licenses, is permitted by the copyright holders if the
- * distribution is compliant with both the GNU General Public License version 2
- * and the aforementioned licenses.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- * PARTICULAR PURPOSE. See the GNU General Public License for more details.
- */
-/*
-* Copyright (C) 2016-2016 52°North Initiative for Geospatial Open Source
-* Software GmbH
-*
-* This program is free software; you can redistribute it and/or modify it under
-* the terms of the GNU General Public License version 2 as publishedby the Free
-* Software Foundation.
-*
-* If the program is linked with libraries which are licensed under one of the
-* following licenses, the combination of the program with the linked library is
-* not considered a "derivative work" of the program:
-*
-*     - Apache License, version 2.0
-*     - Apache Software License, version 1.0
-*     - GNU Lesser General Public License, version 3
-*     - Mozilla Public License, versions 1.0, 1.1 and 2.0
-*     - Common Development and Distribution License (CDDL), version 1.0
-*
-* Therefore the distribution of the program linked with libraries licensed under
-* the aforementioned licenses, is permitted by the copyright holders if the
-* distribution is compliant with both the GNU General Public License version 2
-* and the aforementioned licenses.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY
-* WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-* PARTICULAR PURPOSE. See the GNU General Public License for more details.
-*/
 
 package org.n52.eventing.rest.binding.eventlog;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import org.joda.time.DateTime;
-import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.rest.binding.RequestUtils;
-import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.binding.UrlSettings;
 import org.n52.eventing.rest.binding.security.NotAuthenticatedException;
@@ -119,11 +62,11 @@ public class EventLogController {
         User user = securityService.resolveCurrentUser();
 
         return store.getAllEvents().stream()
-                .filter(eh -> rights.canSeeSubscription(user, eh.getSubscription()))
+                .filter(eh -> rights.canSeeSubscription(user, eh.subscription()))
                 .map((EventHolder t) -> {
                     String id = t.getId();
-                    return new EventHolderView(id, t.getTime(), t.getSubscription().getId(), t.getLabel(),
-                            String.format("%s/%s/%s", fullUrl, t.getSubscription().getId(), id));
+                    return new EventHolderView(id, t.getTime(), t.subscription().getId(), t.getLabel(),
+                            String.format("%s/%s/%s", fullUrl, t.subscription().getId(), id));
                 })
                 .collect(Collectors.toList());
     }
@@ -143,31 +86,70 @@ public class EventLogController {
         return store.getEventsForSubscription(subscription).stream()
                 .map((EventHolder t) -> {
                     String id = t.getId();
-                    return new EventHolderView(id, t.getTime(), t.getSubscription().getId(), t.getLabel(),
+                    return new EventHolderView(id, t.getTime(), t.subscription().getId(), t.getLabel(),
                             String.format("%s/%s", fullUrl, id));
                 })
                 .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/{subId}/{eventId}", method = GET)
-    public EventHolder getSingleEvent(@PathVariable("subId") String subId, @PathVariable("eventId") String eventId)
+    public ModelAndView getSingleEvent(@PathVariable("subId") String subId, @PathVariable("eventId") String eventId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
-        SubscriptionInstance subscription = subDao.getSubscription(subId);
-        User user = securityService.resolveCurrentUser();
-
-        if (!rights.canSeeSubscription(user, subscription)) {
-            throw new NotAuthenticatedException("Access denied");
-        }
-
-        Optional<EventHolder> result = store.getEventsForSubscription(subscription).stream()
-                .filter(t -> t.getId().equals(eventId))
-                .findFirst();
+        Optional<EventHolder> result = retrieveSingleEvent(subId, eventId);
 
         if (result.isPresent()) {
-            return result.get();
+            final String fullUrl = RequestUtils.resolveFullRequestUrl();
+            ModelAndView mav = new ModelAndView();
+            mav.addObject("event", result.get());
+            mav.addObject("href", fullUrl.concat("/content"));
+            return mav;
         }
 
         throw new ResourceNotAvailableException("Could not find event");
+    }
+
+    private Optional<EventHolder> retrieveSingleEvent(String subId, String eventId) throws NotAuthenticatedException, UnknownSubscriptionException {
+        SubscriptionInstance subscription = subDao.getSubscription(subId);
+        User user = securityService.resolveCurrentUser();
+        if (!rights.canSeeSubscription(user, subscription)) {
+            throw new NotAuthenticatedException("Access denied");
+        }
+        Optional<EventHolder> result = store.getEventsForSubscription(subscription).stream()
+                .filter(t -> t.getId().equals(eventId))
+                .findFirst();
+        return result;
+    }
+    
+    @RequestMapping(value = "/{subId}/{eventId}/content", method = GET)
+    public void getSingleEventContent(@PathVariable("subId") String subId, @PathVariable("eventId") String eventId)
+            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
+        Optional<EventHolder> holder = retrieveSingleEvent(subId, eventId);
+        
+        if (!holder.isPresent()) {
+            throw new ResourceNotAvailableException("Could not find event");
+        }
+        
+        Optional<Streamable> streamable = holder.get().streamableObject();
+        if (streamable.isPresent()) {
+            Streamable obj = streamable.get();
+            HttpServletResponse resp = RequestUtils.resolveResponseObject();
+            String ct = obj.getContentType();
+            resp.setContentType(ct);
+            resp.setStatus(200);
+            
+            InputStream is = obj.asStream();
+            try (ServletOutputStream os = resp.getOutputStream()) {
+                byte[] buffer = new byte[1024];
+                int count;
+                while ((count = is.read(buffer)) > 0) {
+                    os.write(buffer, 0, count);
+                    os.flush();
+                }
+            }
+        }
+        else {
+            throw new ResourceNotAvailableException("No content for this event available");
+        }
     }
 
     public static class EventHolderView {

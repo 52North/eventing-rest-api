@@ -33,6 +33,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -43,8 +44,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class RequestUtils {
 
     public static String resolveFullRequestUrl() throws IOException, URISyntaxException {
-        HttpServletRequest request = ((ServletRequestAttributes)
-                RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpServletRequest request = resolveRequestObject();
 
         URL url = new URL(request.getRequestURL().toString());
 
@@ -62,6 +62,16 @@ public class RequestUtils {
 
         URI uri = new URI(scheme, userInfo, host, port, path, query, null);
         return uri.toString();
+    }
+    
+    public static HttpServletRequest resolveRequestObject() {
+        return ((ServletRequestAttributes)
+                RequestContextHolder.currentRequestAttributes()).getRequest();
+    }
+    
+    public static HttpServletResponse resolveResponseObject() {
+        return ((ServletRequestAttributes)
+                RequestContextHolder.currentRequestAttributes()).getResponse();
     }
 
 }

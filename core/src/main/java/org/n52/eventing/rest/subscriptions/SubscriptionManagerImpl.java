@@ -135,7 +135,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
 
         DateTime now = new DateTime();
         String subId = UUID.randomUUID().toString();
-        String desc = String.format("Subscription using template %s (created: %s)", template.getId(), now);
+        String desc = String.format("Subscription using template %s. Parameters: %s", template.getId(), subDef.getTemplate().getParameters());
         String label = Optional.ofNullable(subDef.getLabel()).orElse(desc);
 
         subDef.setId(subId);
@@ -169,7 +169,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
                 throw new RuntimeException(ex);
             }
         }).collect(Collectors.toList());
-        endpoints.add(new EventLogEndpoint(20, subscription, eventLogStore, template.getDescription()));
+        endpoints.add(new EventLogEndpoint(20, subscription, eventLogStore, String.format("Rule match for Template '%s' with Parameters: %s",
+                template.getId(), subscription.getTemplate().getParameters())));
         BrokeringDeliveryEndpoint brokeringEndpoint = new BrokeringDeliveryEndpoint(endpoints);
 
         /*

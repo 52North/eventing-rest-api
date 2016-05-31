@@ -61,7 +61,7 @@ public class EventHolder implements Comparable<EventHolder> {
         return time;
     }
 
-    public SubscriptionInstance getSubscription() {
+    public SubscriptionInstance subscription() {
         return subscription;
     }
 
@@ -69,7 +69,7 @@ public class EventHolder implements Comparable<EventHolder> {
         return label;
     }
 
-    public Optional<Streamable> getStreamable() {
+    public Optional<Streamable> streamableObject() {
         return streamable;
     }
 
