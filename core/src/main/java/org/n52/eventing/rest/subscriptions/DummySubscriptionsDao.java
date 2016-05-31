@@ -37,8 +37,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.n52.eventing.rest.Constructable;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
@@ -103,11 +101,12 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
     }
 
     @Override
-    public synchronized void updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException {
+    public synchronized SubscriptionInstance updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException {
         if (hasSubscription(id)) {
             SubscriptionInstance sub = this.subscriptions.get(id);
             sub.setModified(new DateTime());
             sub.setEndOfLife(eol);
+            return sub;
         }
         else {
             throw new UnknownSubscriptionException("Subscription does not exist: "+id);
@@ -115,11 +114,12 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
     }
 
     @Override
-    public synchronized void updateStatus(String id, boolean enabled) throws UnknownSubscriptionException {
+    public synchronized SubscriptionInstance updateStatus(String id, boolean enabled) throws UnknownSubscriptionException {
         if (hasSubscription(id)) {
             SubscriptionInstance sub = this.subscriptions.get(id);
             sub.setModified(new DateTime());
             sub.setEnabled(enabled);
+            return sub;
         }
         else {
             throw new UnknownSubscriptionException("Subscription does not exist: "+id);

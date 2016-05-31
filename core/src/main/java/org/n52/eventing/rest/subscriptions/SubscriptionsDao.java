@@ -44,9 +44,9 @@ public interface SubscriptionsDao {
 
     void addSubscription(String subId, SubscriptionInstance subscription);
 
-    void updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException;
+    SubscriptionInstance updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException;
 
-    void updateStatus(String id, boolean enabled) throws UnknownSubscriptionException;
+    SubscriptionInstance updateStatus(String id, boolean enabled) throws UnknownSubscriptionException;
 
     void remove(String id) throws UnknownSubscriptionException;
 

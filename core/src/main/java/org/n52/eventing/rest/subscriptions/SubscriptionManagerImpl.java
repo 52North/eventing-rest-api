@@ -48,12 +48,14 @@ import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.n52.eventing.rest.users.User;
-import org.n52.eventing.rest.users.UsersDao;
 import org.n52.subverse.delivery.DeliveryEndpoint;
 import org.n52.subverse.engine.FilterEngine;
 import org.n52.subverse.engine.SubscriptionRegistrationException;
 import org.n52.subverse.subscription.SubscribeOptions;
 import org.n52.subverse.subscription.Subscription;
+import org.n52.subverse.termination.Terminatable;
+import org.n52.subverse.termination.TerminationScheduler;
+import org.n52.subverse.termination.UnknownTerminatableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,9 +75,6 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
     private PublicationsDao publicationsDao;
 
     @Autowired
-    private UsersDao usersDao;
-
-    @Autowired
     private DeliveryMethodsDao deliveryMethodsDao;
 
     @Autowired
@@ -86,9 +85,13 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
 
     @Autowired
     private SecurityRights rights;
+    
+    @Autowired
+    private TerminationScheduler terminator;
 
     private final FilterInstanceGenerator filterInstanceGenerator = new FilterInstanceGenerator();
     private final Map<String, Subscription> subscriptionToRuleMap = new HashMap<>();
+    private final Map<SubscriptionInstance, SubscriptionTerminatable> subscriptionToTerminatableMap = new HashMap<>();
 
     @Override
     public void construct() {
@@ -186,6 +189,12 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
             LOG.warn("Could not register subscription at engine");
             throw new InvalidSubscriptionException(ex.getMessage(), ex);
         }
+        
+        if (subscription.getEndOfLife() != null) {
+            SubscriptionTerminatable term = new SubscriptionTerminatable(subscription);
+            terminator.scheduleTermination(term);
+            subscriptionToTerminatableMap.put(subscription, term);
+        }
     }
 
 
@@ -203,12 +212,12 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         if (eolString != null && !eolString.isEmpty()) {
             DateTime eol = parseEndOfLife(eolString);
             try {
-                this.dao.updateEndOfLife(subDef.getId(), eol);
+                SubscriptionInstance subInstance = this.dao.updateEndOfLife(subDef.getId(), eol);
+                changeEndOfLife(subInstance, eol);
             } catch (UnknownSubscriptionException ex) {
                 throw new InvalidSubscriptionException(ex.getMessage(), ex);
             }
-
-            changeEndOfLife(subDef.getId(), eol);
+            
         }
 
         Boolean enabled = subDef.getEnabled();
@@ -261,8 +270,18 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         LOG.debug("TODO: Implement pause");
     }
 
-    private void changeEndOfLife(String id, DateTime eol) {
-        LOG.debug("TODO: Implement end of life update");
+    private void changeEndOfLife(SubscriptionInstance subscription, DateTime eol) {
+        if (subscriptionToTerminatableMap.containsKey(subscription)) {
+            try {
+                terminator.cancelTermination(subscriptionToTerminatableMap.get(subscription));
+            } catch (UnknownTerminatableException ex) {
+                LOG.warn("Could not cancel termination", ex);
+            }
+        }
+        
+        SubscriptionTerminatable term = new SubscriptionTerminatable(subscription);
+        terminator.scheduleTermination(term);
+        subscriptionToTerminatableMap.put(subscription, term);
     }
 
     private void remove(String id) {
@@ -300,6 +319,35 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         } catch (XmlException ex) {
             throw new InvalidSubscriptionException("Currently only valid XML filter definitions allowed", ex);
         }
+    }
+
+    
+    private class SubscriptionTerminatable implements Terminatable {
+
+        private final SubscriptionInstance subscription;
+
+        public SubscriptionTerminatable(SubscriptionInstance subscription) {
+            this.subscription = subscription;
+        }
+
+        public SubscriptionInstance getSubscription() {
+            return subscription;
+        }
+
+        @Override
+        public void terminate() {
+            try {
+                removeSubscription(subscription.getId(), subscription.getUser());
+            } catch (InvalidSubscriptionException ex) {
+                LOG.warn("Could not terminate subscription", ex);
+            }
+        }
+
+        @Override
+        public DateTime getEndOfLife() {
+            return subscription.getEndOfLife();
+        }
+
     }
 
 }
