@@ -13,6 +13,7 @@ This project includes:
   ANTLR StringTemplate under BSD licence
   AOP alliance under Public Domain
   Apache Commons Lang under Apache License, Version 2.0
+  c3p0:JDBC DataSources/Resource Pools under GNU LESSER GENERAL PUBLIC LICENSE
   Code Generation Library under ASF 2.0
   CORS Filter under The Apache Software License, Version 2.0
   EPOS API module under GNU GENERAL PUBLIC LICENSE Version 2, June 1991
@@ -51,6 +52,7 @@ This project includes:
   OGC GML schema (spec. v3.2.1) under The Apache Software License, Version 2.0
   OGC OWS schema (spec. v1.1.0) under The Apache Software License, Version 2.0
   OGC SWECommon schema (spec. v1.0.1) under The Apache Software License, Version 2.0
+  Quartz Enterprise Job Scheduler under Apache 2.0
   Saxon-HE under Mozilla Public License Version 1.0
   SLF4J API Module under MIT License
   Spring AOP under The Apache Software License, Version 2.0
@@ -67,6 +69,7 @@ This project includes:
   StAX API under The Apache Software License, Version 2.0
   subverse delivery API under GNU General Public License, version 2
   subverse filtering under GNU General Public License, version 2
+  subverse termination services under GNU General Public License, version 2
   svalbard under The Apache Software License, Version 2.0
   swe-common-data-framework under Mozilla Public License version 1.1
   vecmath under Sun Binary Code License Agreement
