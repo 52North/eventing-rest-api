@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.n52.eventing.rest.Constructable;
-import org.n52.eventing.rest.parameters.Parameter;
+import org.n52.eventing.rest.parameters.ParameterDefinition;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.n52.subverse.delivery.DeliveryDefinition;
 import org.n52.subverse.delivery.DeliveryEndpoint;
@@ -54,13 +54,13 @@ public class DeliveryMethodsDaoImpl implements DeliveryMethodsDao, Constructable
     @Autowired
     private DeliveryProviderRepository deliveryProviderRepository;
 
-    private final Map<String, DeliveryMethod> methods = new HashMap<>();
+    private final Map<String, DeliveryMethodDefinition> methods = new HashMap<>();
 
     public DeliveryMethodsDaoImpl() {
     }
 
     @Override
-    public List<DeliveryMethod> getDeliveryMethods() {
+    public List<DeliveryMethodDefinition> getDeliveryMethods() {
         return Collections.unmodifiableList(new ArrayList<>(methods.values()));
     }
 
@@ -70,7 +70,7 @@ public class DeliveryMethodsDaoImpl implements DeliveryMethodsDao, Constructable
     }
 
     @Override
-    public DeliveryMethod getDeliveryMethod(String id) throws UnknownDeliveryMethodException {
+    public DeliveryMethodDefinition getDeliveryMethod(String id) throws UnknownDeliveryMethodException {
         if (hasDeliveryMethod(id)) {
             return methods.get(id);
         }
@@ -81,7 +81,7 @@ public class DeliveryMethodsDaoImpl implements DeliveryMethodsDao, Constructable
     @Override
     public void construct() {
         this.deliveryProviderRepository.getProviders().stream().forEach(dp -> {
-            DeliveryMethod method = new DeliveryMethod(dp.getIdentifier(), dp.getAbstract(),
+            DeliveryMethodDefinition method = new DeliveryMethodDefinition(dp.getIdentifier(), dp.getAbstract(),
                     dp.getAbstract(), mapParameters(dp.getParameters()));
             methods.put(dp.getIdentifier(), method);
         });
@@ -104,10 +104,10 @@ public class DeliveryMethodsDaoImpl implements DeliveryMethodsDao, Constructable
         }
     }
 
-    private Map<String, Parameter> mapParameters(DeliveryParameter[] parameters) {
-        Map<String, Parameter> result = new HashMap<>(parameters.length);
+    private Map<String, ParameterDefinition> mapParameters(DeliveryParameter[] parameters) {
+        Map<String, ParameterDefinition> result = new HashMap<>(parameters.length);
         for (DeliveryParameter dp : parameters) {
-            Parameter p = new Parameter(dp.getType(), dp.getElementName());
+            ParameterDefinition p = new ParameterDefinition(dp.getType(), dp.getElementName());
             p.setDefaultValue(dp.getValue());
             result.put(dp.getElementName(), p);
         }

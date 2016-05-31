@@ -28,10 +28,10 @@
 
 package org.n52.eventing.rest.security;
 
-import org.n52.eventing.rest.deliverymethods.DeliveryMethod;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
 import org.n52.eventing.rest.publications.Publication;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
-import org.n52.eventing.rest.templates.Template;
+import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.users.User;
 
 /**
@@ -56,12 +56,12 @@ public class NonRestrictiveSecurityRightsImpl implements SecurityRights {
     }
 
     @Override
-    public boolean canSeeTemplate(User user, Template template) {
+    public boolean canSeeTemplate(User user, TemplateDefinition template) {
         return true;
     }
 
     @Override
-    public boolean canUseDeliveryMethod(User user, DeliveryMethod delivery) {
+    public boolean canUseDeliveryMethod(User user, DeliveryMethodDefinition delivery) {
         return true;
     }
 

@@ -39,11 +39,11 @@ import org.n52.subverse.delivery.DeliveryEndpoint;
  */
 public interface DeliveryMethodsDao {
 
-    List<DeliveryMethod> getDeliveryMethods();
+    List<DeliveryMethodDefinition> getDeliveryMethods();
 
     boolean hasDeliveryMethod(String id);
 
-    DeliveryMethod getDeliveryMethod(String id) throws UnknownDeliveryMethodException;
+    DeliveryMethodDefinition getDeliveryMethod(String id) throws UnknownDeliveryMethodException;
 
     DeliveryEndpoint createDeliveryEndpoint(DeliveryMethodInstance deliveryMethod, String pubId) throws InvalidSubscriptionException;
 

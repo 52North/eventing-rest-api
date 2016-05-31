@@ -40,13 +40,13 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.n52.eventing.rest.Constructable;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethod;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
 import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
-import org.n52.eventing.rest.templates.Template;
+import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplateInstance;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
@@ -159,13 +159,13 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
 
     }
 
-    private DeliveryMethodInstance createDeliveryInstance(DeliveryMethod deliveryMethod, String to) {
+    private DeliveryMethodInstance createDeliveryInstance(DeliveryMethodDefinition deliveryMethod, String to) {
         DeliveryMethodInstance instance = new DeliveryMethodInstance(deliveryMethod.getId(),
                 Collections.singletonMap("to", new ParameterInstance("to", to, "text")));
         return instance;
     }
 
-    private TemplateInstance createTemplateInstance(Template template, List<ParameterInstance> params) {
+    private TemplateInstance createTemplateInstance(TemplateDefinition template, List<ParameterInstance> params) {
         TemplateInstance instance = new TemplateInstance(template.getId(),
                 params.stream().collect(Collectors.toMap(ParameterInstance::getName, Function.identity())));
         return instance;

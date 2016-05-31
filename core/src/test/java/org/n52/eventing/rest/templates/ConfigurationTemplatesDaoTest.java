@@ -28,7 +28,7 @@
 
 package org.n52.eventing.rest.templates;
 
-import org.n52.eventing.rest.parameters.Parameter;
+import org.n52.eventing.rest.parameters.ParameterDefinition;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
@@ -46,14 +46,14 @@ public class ConfigurationTemplatesDaoTest {
     public void testTemplateLoading() throws IOException, URISyntaxException {
         ConfigurationTemplatesDao dao = new ConfigurationTemplatesDao();
 
-        Template t = dao.loadTemplate(Paths.get(getClass().getResource("/templates-test/overshootUndershoot.json").toURI()));
+        TemplateDefinition t = dao.loadTemplate(Paths.get(getClass().getResource("/templates-test/overshootUndershoot.json").toURI()));
 
         Assert.assertThat(t.getId(), CoreMatchers.is("overshootUndershoot"));
         Assert.assertThat(t.getLabel(), CoreMatchers.is("Generic overshoot/undershoot pattern"));
         Assert.assertThat(t.getParameters().size(), CoreMatchers.is(2));
         Assert.assertThat(t.getParameters().get("observedProperty").getType(), CoreMatchers.is("text"));
 
-        Parameter thresholdValue = t.getParameters().get("thresholdValue");
+        ParameterDefinition thresholdValue = t.getParameters().get("thresholdValue");
         Assert.assertThat(thresholdValue.getMin(), CoreMatchers.is(1.3));
         Assert.assertThat(thresholdValue.getMax(), CoreMatchers.is(2.2));
         Assert.assertThat(thresholdValue.getPattern(), CoreMatchers.is("regex"));

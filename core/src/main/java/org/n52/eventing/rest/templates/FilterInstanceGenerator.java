@@ -38,7 +38,7 @@ import org.n52.eventing.rest.parameters.ParameterInstance;
  */
 public class FilterInstanceGenerator {
 
-    public String generateFilterInstance(Template t, Collection<ParameterInstance> values) {
+    public String generateFilterInstance(TemplateDefinition t, Collection<ParameterInstance> values) {
         String content = t.getDefinition().getContent();
 
         if (content.contains("&lt;")) {

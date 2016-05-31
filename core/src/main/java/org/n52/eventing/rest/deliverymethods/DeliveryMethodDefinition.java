@@ -28,20 +28,20 @@
 package org.n52.eventing.rest.deliverymethods;
 
 import java.util.Map;
-import org.n52.eventing.rest.parameters.Parameter;
+import org.n52.eventing.rest.parameters.ParameterDefinition;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DeliveryMethod {
+public class DeliveryMethodDefinition {
 
     private String id;
     private String label;
     private String description;
-    private Map<String, Parameter> parameters;
+    private Map<String, ParameterDefinition> parameters;
 
-    public DeliveryMethod(String id, String label, String description, Map<String, Parameter> params) {
+    public DeliveryMethodDefinition(String id, String label, String description, Map<String, ParameterDefinition> params) {
         this.id = id;
         this.label = label;
         this.description = description;
@@ -72,11 +72,11 @@ public class DeliveryMethod {
         this.description = description;
     }
 
-    public Map<String, Parameter> getParameters() {
+    public Map<String, ParameterDefinition> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map<String, Parameter> parameters) {
+    public void setParameters(Map<String, ParameterDefinition> parameters) {
         this.parameters = parameters;
     }
 

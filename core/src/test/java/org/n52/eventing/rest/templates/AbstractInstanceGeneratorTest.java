@@ -35,7 +35,7 @@ import org.junit.Test;
 import org.n52.eventing.rest.parameters.ParameterInstance;
 import org.n52.eventing.rest.templates.Definition;
 import org.n52.eventing.rest.templates.FilterInstanceGenerator;
-import org.n52.eventing.rest.templates.Template;
+import org.n52.eventing.rest.templates.TemplateDefinition;
 
 /**
  *
@@ -54,8 +54,8 @@ public class AbstractInstanceGeneratorTest {
         ));
     }
 
-    private Template createTemplate() {
-        Template t = new Template();
+    private TemplateDefinition createTemplate() {
+        TemplateDefinition t = new TemplateDefinition();
         t.setDefinition(new Definition("<greaterThan><prop>${parama}</prop><val>${paramb}</val></greaterThan>", ""));
         return t;
     }

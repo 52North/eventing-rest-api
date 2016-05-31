@@ -26,48 +26,84 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.subscriptions;
+package org.n52.eventing.rest.parameters;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class SubscriptionUpdateDefinition {
+public class ParameterDefinition {
 
-    private String id;
-    private Boolean enabled;
-    private String endOfLife;
+    private String type;
+    private String label;
+    private Double min;
+    private Double max;
+    private Integer maxlength;
+    private String pattern;
+    private String defaultValue;
 
-    public SubscriptionUpdateDefinition() {
+    public ParameterDefinition() {
     }
 
-    public SubscriptionUpdateDefinition(boolean enabled, String endOfLife) {
-        this.enabled = enabled;
-        this.endOfLife = endOfLife;
+    public ParameterDefinition(String type, String label) {
+        this.type = type;
+        this.label = label;
     }
 
-    public Boolean getEnabled() {
-        return enabled;
+    public String getType() {
+        return type;
     }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getEndOfLife() {
-        return endOfLife;
+    public String getLabel() {
+        return label;
     }
 
-    public void setEndOfLife(String endOfLife) {
-        this.endOfLife = endOfLife;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
-    public String getId() {
-        return id;
+    public Double getMin() {
+        return min;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setMin(Double min) {
+        this.min = min;
+    }
+
+    public Double getMax() {
+        return max;
+    }
+
+    public void setMax(Double max) {
+        this.max = max;
+    }
+
+    public Integer getMaxlength() {
+        return maxlength;
+    }
+
+    public void setMaxlength(Integer maxlength) {
+        this.maxlength = maxlength;
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
     }
 
 }

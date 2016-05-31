@@ -6,6 +6,7 @@
 
     <http auto-config="true">
         <http-basic />
+        <csrf disabled="true"/>
         <intercept-url pattern="/v1" access="permitAll" />
     </http>
 

@@ -34,7 +34,10 @@ import org.n52.eventing.rest.templates.TemplateInstance;
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
+ *
+ * @deprecated replaced by @see SubscriptionInstance
  */
+@Deprecated
 public class SubscriptionDefinition {
 
     private TemplateInstance template;

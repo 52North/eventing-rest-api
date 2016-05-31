@@ -29,10 +29,10 @@ package org.n52.eventing.rest.security;
 
 import org.n52.eventing.rest.Configuration;
 import org.n52.eventing.rest.Constructable;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethod;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
 import org.n52.eventing.rest.publications.Publication;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
-import org.n52.eventing.rest.templates.Template;
+import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -69,12 +69,12 @@ public class SecurityRightsImpl implements SecurityRights, Constructable {
     }
 
     @Override
-    public boolean canSeeTemplate(User user, Template template) {
+    public boolean canSeeTemplate(User user, TemplateDefinition template) {
         return this.delegate.canSeeTemplate(user, template);
     }
 
     @Override
-    public boolean canUseDeliveryMethod(User user, DeliveryMethod delivery) {
+    public boolean canUseDeliveryMethod(User user, DeliveryMethodDefinition delivery) {
         return this.delegate.canUseDeliveryMethod(user, delivery);
     }
 

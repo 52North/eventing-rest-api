@@ -67,7 +67,7 @@ import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.rest.binding.security.NotAuthenticatedException;
 import org.n52.eventing.rest.binding.security.SecurityService;
 import org.n52.eventing.rest.security.SecurityRights;
-import org.n52.eventing.rest.templates.Template;
+import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.n52.eventing.rest.users.User;
@@ -123,10 +123,10 @@ public class TemplatesController {
     }
 
     @RequestMapping("/{item}")
-    public Template getTemplate(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException {
+    public TemplateDefinition getTemplate(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException {
         if (this.dao.hasTemplate(id)) {
             try {
-                Template temp = this.dao.getTemplate(id);
+                TemplateDefinition temp = this.dao.getTemplate(id);
 
                 User user = securityService.resolveCurrentUser();
 

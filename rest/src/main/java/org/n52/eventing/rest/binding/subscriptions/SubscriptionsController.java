@@ -29,8 +29,7 @@
 package org.n52.eventing.rest.binding.subscriptions;
 
 import org.n52.eventing.rest.binding.EmptyArrayModel;
-import org.n52.eventing.rest.subscriptions.SubscriptionUpdateDefinition;
-import org.n52.eventing.rest.subscriptions.SubscriptionDefinition;
+import org.n52.eventing.rest.subscriptions.SubscriptionUpdateInstance;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -146,7 +145,7 @@ public class SubscriptionsController {
 
 
     @RequestMapping(value = "", method = POST)
-    public ModelAndView subscribe(@RequestBody SubscriptionDefinition subDef) throws InvalidSubscriptionException, NotAuthenticatedException {
+    public ModelAndView subscribe(@RequestBody SubscriptionInstance subDef) throws InvalidSubscriptionException, NotAuthenticatedException {
         final User user = securityService.resolveCurrentUser();
 
         String subId = this.manager.subscribe(subDef, user);
@@ -155,7 +154,7 @@ public class SubscriptionsController {
     }
 
     @RequestMapping(value = "/{item}", method = PUT)
-    public ResponseEntity<?> updateSubscription(@RequestBody SubscriptionUpdateDefinition subDef,
+    public ResponseEntity<?> updateSubscription(@RequestBody SubscriptionUpdateInstance subDef,
             @PathVariable("item") String id) throws InvalidSubscriptionException, NotAuthenticatedException {
         subDef.setId(id);
         final User user = securityService.resolveCurrentUser();

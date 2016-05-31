@@ -6,6 +6,7 @@
 
     <http auto-config="true">
         <http-basic />
+        <csrf disabled="true"/>
         <intercept-url pattern="/v1" access="permitAll" />
         <intercept-url pattern="/v1/templates" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/v1/subscriptions" access="hasRole('ROLE_USER')" />

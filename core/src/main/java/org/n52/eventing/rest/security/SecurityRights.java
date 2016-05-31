@@ -27,10 +27,10 @@
  */
 package org.n52.eventing.rest.security;
 
-import org.n52.eventing.rest.deliverymethods.DeliveryMethod;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
 import org.n52.eventing.rest.publications.Publication;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
-import org.n52.eventing.rest.templates.Template;
+import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.users.User;
 
 /**
@@ -43,7 +43,7 @@ public interface SecurityRights {
 
     boolean canChangeSubscription(User user, SubscriptionInstance sub);
 
-    default boolean canSeeTemplate(User user, Template template) {
+    default boolean canSeeTemplate(User user, TemplateDefinition template) {
         return true;
     }
 
@@ -51,7 +51,7 @@ public interface SecurityRights {
         return true;
     }
 
-    default boolean canUseDeliveryMethod(User user, DeliveryMethod delivery) {
+    default boolean canUseDeliveryMethod(User user, DeliveryMethodDefinition delivery) {
         return true;
     }
 

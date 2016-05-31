@@ -93,13 +93,13 @@ import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.Constructable;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethod;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
 import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.templates.FilterInstanceGenerator;
 import org.n52.eventing.rest.security.SecurityRights;
-import org.n52.eventing.rest.templates.Template;
+import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.n52.eventing.rest.users.User;
@@ -164,7 +164,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
     }
 
     @Override
-    public String subscribe(SubscriptionDefinition subDef, User user) throws InvalidSubscriptionException {
+    public String subscribe(SubscriptionInstance subDef, User user) throws InvalidSubscriptionException {
         throwExceptionOnNullOrEmpty(subDef.getPublicationId(), "publicationId");
 
         String pubId = subDef.getPublicationId();
@@ -172,14 +172,14 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
             throw new InvalidSubscriptionException("Publication unknown: "+pubId);
         }
 
-        Template template;
+        TemplateDefinition template;
         try {
             template = this.templatesDao.getTemplate(subDef.getTemplate().getId());
         } catch (UnknownTemplateException ex) {
             throw new InvalidSubscriptionException("Template unknown: "+pubId);
         }
 
-        DeliveryMethod deliveryMethod;
+        DeliveryMethodDefinition deliveryMethod;
         try {
             deliveryMethod = deliveryMethodsDao.getDeliveryMethod(subDef.getDeliveryMethod().getId());
         } catch (UnknownDeliveryMethodException ex) {
@@ -190,7 +190,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         String desc = String.format("Subscription using template %s (created: %s)", template.getId(), new DateTime());
         String label = Optional.ofNullable(subDef.getLabel()).orElse(desc);
 
-        SubscriptionInstance subscription = createSubscription(subId, label, desc,
+        SubscriptionInstance subscription = enrichSubscriptionWithParameters(subId, label, desc,
                 pubId, user, subDef);
 
         //do the actual subscription part
@@ -204,7 +204,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         return subId;
     }
 
-    private void internalSubscribe(SubscriptionInstance subscription, Template template) throws InvalidSubscriptionException {
+    private void internalSubscribe(SubscriptionInstance subscription, TemplateDefinition template) throws InvalidSubscriptionException {
         /*
         * resolve delivery endpoint
         */
@@ -237,23 +237,22 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
         }
     }
 
-    private SubscriptionInstance createSubscription(String subId, String label, String desc,
-            String pubId, User user, SubscriptionDefinition subDef)
+    private SubscriptionInstance enrichSubscriptionWithParameters(String subId, String label, String desc,
+            String pubId, User user, SubscriptionInstance subDef)
             throws InvalidSubscriptionException {
-        SubscriptionInstance subscription = new SubscriptionInstance(subId, label,
-                desc);
-        subscription.setTemplate(subDef.getTemplate());
-        subscription.setDeliveryMethod(subDef.getDeliveryMethod());
-        subscription.setPublicationId(pubId);
-        subscription.setUser(user);
-        subscription.setEnabled(subDef.isEnabled());
-        subscription.setEndOfLife(subDef.getEndOfLife());
-        return subscription;
+
+        subDef.setId(subId);
+        subDef.setLabel(label);
+        subDef.setDescription(desc);
+        subDef.setPublicationId(pubId);
+        subDef.setUser(user);
+
+        return subDef;
     }
 
 
     @Override
-    public void updateSubscription(SubscriptionUpdateDefinition subDef, User user) throws InvalidSubscriptionException {
+    public void updateSubscription(SubscriptionUpdateInstance subDef, User user) throws InvalidSubscriptionException {
         try {
             if (!rights.canChangeSubscription(user, this.dao.getSubscription(subDef.getId()))) {
                 throw new InvalidSubscriptionException("The current user is not allowed to remove the subscription with id "+subDef.getId());

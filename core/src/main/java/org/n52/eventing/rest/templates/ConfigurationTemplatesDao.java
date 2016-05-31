@@ -81,7 +81,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ConfigurationTemplatesDao implements TemplatesDao, Constructable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationTemplatesDao.class);
-    private final Map<String, Template> templates = new ConcurrentHashMap<>();
+    private final Map<String, TemplateDefinition> templates = new ConcurrentHashMap<>();
 
     @Autowired
     private Configuration config;
@@ -95,7 +95,7 @@ public class ConfigurationTemplatesDao implements TemplatesDao, Constructable {
     }
 
     @Override
-    public Template getTemplate(String id) throws UnknownTemplateException {
+    public TemplateDefinition getTemplate(String id) throws UnknownTemplateException {
         if (hasTemplate(id)) {
             return templates.get(id);
         }
@@ -104,7 +104,7 @@ public class ConfigurationTemplatesDao implements TemplatesDao, Constructable {
     }
 
     @Override
-    public List<Template> getTemplates() {
+    public List<TemplateDefinition> getTemplates() {
         return Collections.unmodifiableList(new ArrayList<>(templates.values()));
     }
 
@@ -127,7 +127,7 @@ public class ConfigurationTemplatesDao implements TemplatesDao, Constructable {
                 return t.toFile().toString().endsWith(".json");
             }).forEach(p -> {
                 try {
-                    Template t = loadTemplate(p);
+                    TemplateDefinition t = loadTemplate(p);
                     if (templates.containsKey(t.getId())) {
                         LOG.warn("Template with id '{}' already registered!", t.getId());
                     }
@@ -146,9 +146,9 @@ public class ConfigurationTemplatesDao implements TemplatesDao, Constructable {
 
     }
 
-    protected Template loadTemplate(Path p) throws IOException {
+    protected TemplateDefinition loadTemplate(Path p) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        Template t = mapper.readValue(p.toFile(), Template.class);
+        TemplateDefinition t = mapper.readValue(p.toFile(), TemplateDefinition.class);
         return t;
     }
 

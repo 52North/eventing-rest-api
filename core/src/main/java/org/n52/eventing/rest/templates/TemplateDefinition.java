@@ -26,36 +26,40 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.parameters;
+package org.n52.eventing.rest.templates;
+
+import org.n52.eventing.rest.parameters.ParameterDefinition;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Parameter {
+public class TemplateDefinition {
 
-    private String type;
+    private String id;
     private String label;
-    private Double min;
-    private Double max;
-    private Integer maxlength;
-    private String pattern;
-    private String defaultValue;
+    private String description;
+    private Definition definition;
+    private Map<String, ParameterDefinition> parameters = new HashMap<>();
 
-    public Parameter() {
+    public TemplateDefinition() {
     }
 
-    public Parameter(String type, String label) {
-        this.type = type;
+    public TemplateDefinition(String id, String label, String description, Definition definition) {
+        this.id = id;
         this.label = label;
+        this.description = description;
+        this.definition = definition;
     }
 
-    public String getType() {
-        return type;
+    public String getId() {
+        return id;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getLabel() {
@@ -66,44 +70,28 @@ public class Parameter {
         this.label = label;
     }
 
-    public Double getMin() {
-        return min;
+    public String getDescription() {
+        return description;
     }
 
-    public void setMin(Double min) {
-        this.min = min;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public Double getMax() {
-        return max;
+    public Definition getDefinition() {
+        return definition;
     }
 
-    public void setMax(Double max) {
-        this.max = max;
+    public void setDefinition(Definition definition) {
+        this.definition = definition;
     }
 
-    public Integer getMaxlength() {
-        return maxlength;
+    public Map<String, ParameterDefinition> getParameters() {
+        return parameters;
     }
 
-    public void setMaxlength(Integer maxlength) {
-        this.maxlength = maxlength;
-    }
-
-    public String getPattern() {
-        return pattern;
-    }
-
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
-    }
-
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    public String getDefaultValue() {
-        return defaultValue;
+    void addParameter(String name, ParameterDefinition param) {
+        this.parameters.put(name, param);
     }
 
 }

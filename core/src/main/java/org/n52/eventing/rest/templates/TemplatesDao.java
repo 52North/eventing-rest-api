@@ -37,8 +37,8 @@ public interface TemplatesDao {
 
     boolean hasTemplate(String id);
 
-    Template getTemplate(String id) throws UnknownTemplateException;
+    TemplateDefinition getTemplate(String id) throws UnknownTemplateException;
 
-    List<Template> getTemplates();
+    List<TemplateDefinition> getTemplates();
 
 }

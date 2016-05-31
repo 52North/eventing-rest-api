@@ -26,34 +26,40 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.templates;
-
-import org.n52.eventing.rest.parameters.Parameter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package org.n52.eventing.rest.subscriptions;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Template {
+public class SubscriptionUpdateInstance {
 
     private String id;
-    private String label;
-    private String description;
-    private Definition definition;
-    private Map<String, Parameter> parameters = new HashMap<>();
+    private Boolean enabled;
+    private String endOfLife;
 
-    public Template() {
+    public SubscriptionUpdateInstance() {
     }
 
-    public Template(String id, String label, String description, Definition definition) {
-        this.id = id;
-        this.label = label;
-        this.description = description;
-        this.definition = definition;
+    public SubscriptionUpdateInstance(boolean enabled, String endOfLife) {
+        this.enabled = enabled;
+        this.endOfLife = endOfLife;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getEndOfLife() {
+        return endOfLife;
+    }
+
+    public void setEndOfLife(String endOfLife) {
+        this.endOfLife = endOfLife;
     }
 
     public String getId() {
@@ -62,38 +68,6 @@ public class Template {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Definition getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(Definition definition) {
-        this.definition = definition;
-    }
-
-    public Map<String, Parameter> getParameters() {
-        return parameters;
-    }
-
-    void addParameter(String name, Parameter param) {
-        this.parameters.put(name, param);
     }
 
 }

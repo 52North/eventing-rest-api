@@ -39,7 +39,7 @@ import org.n52.eventing.rest.binding.UrlSettings;
 import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.rest.binding.security.NotAuthenticatedException;
 import org.n52.eventing.rest.binding.security.SecurityService;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethod;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
 import org.n52.eventing.rest.security.SecurityRights;
@@ -95,11 +95,11 @@ public class DeliveryMethodsController {
     }
 
     @RequestMapping("/{item}")
-    public DeliveryMethod getDeliveryMethod(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException {
+    public DeliveryMethodDefinition getDeliveryMethod(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException {
         if (this.dao.hasDeliveryMethod(id)) {
             try {
                 User user = securityService.resolveCurrentUser();
-                DeliveryMethod method = this.dao.getDeliveryMethod(id);
+                DeliveryMethodDefinition method = this.dao.getDeliveryMethod(id);
                 if (rights.canUseDeliveryMethod(user, method)) {
                     return method;
                 }
