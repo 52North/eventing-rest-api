@@ -4,7 +4,7 @@ Find below example requests for using the API.
 
 ## Subscribe
 
-* `POST` to [http://localhost:8080/webapp/v1/subscriptions/](http://localhost:8080/webapp/v1/subscriptions/)
+* `POST` to [${baseUrl}/v1/subscriptions/](${baseUrl}/v1/subscriptions/)
 
 ```
 {
@@ -32,4 +32,4 @@ Find below example requests for using the API.
 
 ## Remove subscription
 
-* `DELETE` to [http://localhost:8080/webapp/v1/subscriptions/:id](http://localhost:8080/webapp/v1/subscriptions/:id)
+* `DELETE` to [${baseUrl}/v1/subscriptions/:id](${baseUrl}/v1/subscriptions/:id)
