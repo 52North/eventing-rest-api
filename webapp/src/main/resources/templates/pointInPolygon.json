@@ -1,0 +1,15 @@
+{
+    "id": "pointInPolygon",
+    "label": "Point in Polygon Test",
+    "description": "Point in Polygon Test",
+    "parameters" :  {
+        "coordinates" : {
+            "type" : "text",
+            "label" : "the coordinates"
+        }
+    },
+    "definition" : {
+        "content" : "&lt;fes:Filter xmlns:fes=&quot;http://www.opengis.net/fes/2.0&quot; xmlns:gml=&quot;http://www.opengis.net/gml/3.2&quot;&gt;&lt;fes:Intersects&gt;&lt;fes:ValueReference&gt;input/geometry&lt;/fes:ValueReference&gt;&lt;fes:Literal&gt;&lt;gml:Point gml:id=&quot;p21&quot; srsName=&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;&gt;&lt;gml:pos srsDimension=&quot;2&quot;&gt;${coordinates}&lt;/gml:pos&gt;&lt;/gml:Point&gt;&lt;/fes:Literal&gt;&lt;/fes:Intersects&gt;&lt;/fes:Filter&gt;",
+        "contentType" : "application/xml"
+    }
+}
