@@ -1,0 +1,445 @@
+# PubSub Eventing REST API spec in YAML
+swagger: '2.0'
+info:
+  title: PubSub Eventing REST Service
+  description: PubSub Eventing REST Service ftw
+  version: "1.0.0"
+# the domain of the service
+host: localhost:8080
+# array of all schemes that the API supports
+schemes:
+  - http
+# will be prefixed to all paths
+basePath: /pse-rest/v100
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /:
+    get:
+      summary: general API information/capabilities
+      description: |
+        Endpoint representing the service's capabilities. Can be used as an entry point to the service.
+      tags:
+        - capabilities
+      responses:
+        200:
+          description: registered subscriptions
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Capabilities'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /publications:
+    get:
+      summary: available publications
+      description: |
+        available publications of the service.
+      tags:
+        - publications
+      responses:
+        200:
+          description: The publications provided by the service
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Publications'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /publications/{identifier}:
+    get:
+      summary: resource for one specific publication
+      description: |
+        a single publication.
+      tags:
+        - publications
+      parameters:
+        - $ref: '#/parameters/resourceIdentifier'
+      responses:
+        200:
+          description: The publication with the {identifier}
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Publication'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /deliveryMethods:
+    get:
+      summary: available delivery methods
+      description: |
+        available delivery methods at the service.
+      tags:
+        - delivery methods
+      responses:
+        200:
+          description: The delivery methods provided by the service
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/DeliveryMethods'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /deliveryMethods/{identifier}:
+    get:
+      summary: resource for one specific delivery method
+      description: |
+        a single delivery method
+      tags:
+        - delivery methods
+      parameters:
+        - $ref: '#/parameters/resourceIdentifier'
+      responses:
+        200:
+          description: The delivery method with the {identifier}
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/DeliveryMethod'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /subscriptions:
+    get:
+      summary: registered subscriptions
+      description: |
+        registered subscriptions at the service.
+      tags:
+        - subscriptions
+      responses:
+        200:
+          description: registered subscriptions
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Subscriptions'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: register a new subscription
+      description: |
+        register a new subscription.
+      tags:
+        - subscriptions
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateSubscription'
+      responses:
+        200:
+          description: the registered subscription
+          schema:
+            $ref: '#/definitions/Subscription'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /subscriptions/{identifier}:
+    get:
+      summary: resource for one specific subscription
+      description: |
+        a single subscription
+      tags:
+        - subscriptions
+      parameters:
+        - $ref: '#/parameters/resourceIdentifier'
+      responses:
+        200:
+          description: The subscription with the {identifier}
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Subscription'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: delete this specific subscription
+      description: |
+        delete a single subscription
+      tags:
+        - subscriptions
+      parameters:
+        - $ref: '#/parameters/resourceIdentifier'
+      responses:
+        204:
+          description: The subscription with the {identifier}
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Capabilities:
+    type: object
+    required: [title, abstract]
+    properties:
+      title:
+        type: string
+        description: service title
+      abstract:
+        type: string
+        description: Textual description of the service
+  Publications:
+    type: object
+    required: [identifier, label]
+    properties:
+      identifier:
+        type: string
+        description: the service-wide unique id of the publication
+      label:
+        type: string
+        description: short label for client purposes
+  Publication:
+    type: object
+    required: [identifier, abstract, label, contentType, deliveryMethods]
+    properties:
+      identifier:
+        type: string
+        description: the service-wide unique id of the publication
+      abstract:
+        type: string
+        description: Textual description of the publications
+      label:
+        type: string
+        description: short label for client purposes
+      contentType:
+        type: string
+        description: the content MIME type this publications is provided in
+      filterLanguages:
+        type: array
+        description: the supported filter languages of this publication
+        items:
+          type: string
+      deliveryMethods:
+        type: array
+        description: the supported delivery methods of this publication
+        items:
+          type: string
+      boundingBox:
+        type: object
+        required: [minx, miny, maxx, maxy, crs]
+        properties:
+          minx:
+            type: number
+            format: double
+            description: minx of the bounding box extent
+          miny:
+            type: number
+            format: double
+            description: miny of the bounding box extent
+          maxx:
+            type: number
+            format: double
+            description: maxx of the bounding box extent
+          maxy:
+            type: number
+            format: double
+            description: maxy of the bounding box extent
+          crs:
+            type: string
+            description: the coordinate reference system of the bounding box
+      metadata:
+        type: object
+        description: generic metadata for this publication
+  DeliveryMethods:
+    type: object
+    required: [identifier, label]
+    properties:
+      identifier:
+        type: string
+        description: the service-wide unique id of the DeliveryMethod
+      label:
+        type: string
+        description: short label for client purposes
+  DeliveryMethod:
+    type: object
+    required: [identifier, abstract, label, parameters]
+    properties:
+      identifier:
+        type: string
+        description: the service-wide unique id of the DeliveryMethod
+      abstract:
+        type: string
+        description: description of the delivery method
+      label:
+        type: string
+        description: short label for client purposes
+      parameters:
+        type: array
+        description: the available parameters for configuring the delivery method
+        items:
+          type: object
+          required: [key, type]
+          properties:
+            key:
+              type: string
+              description: the key of this parameter
+            type:
+              type: string
+              description: defines the type of the (HTML5) input paramter (e.g. string, date, number, email)
+            abstract:
+              type: string
+              description: description of the parameter
+            min:
+              type: number
+              description: optional defintion for a range
+            max:
+              type: number
+              description: optional defintion for a range
+  Subscriptions:
+    type: object
+    required: [identifier, label]
+    properties:
+      identifier:
+        type: string
+        description: the service-wide unique id of the subscription
+      label:
+        type: string
+        description: short label for client purposes
+  Subscription:
+    type: object
+    required: [identifier, publication, terminationTime, deliveryMethod, contentType]
+    properties:
+      identifier:
+        type: string
+        description: the service-wide unique id of the Subscription
+      label:
+        type: string
+        description: short label for client purposes
+      publication:
+        type: string
+        description: the publication this subscription is registered at
+      terminationTime:
+        type: string
+        format: date-time
+        description: the termination time (end of life) of the subscription encoded as ISO8601
+      eventPattern:
+        type: object
+        required: [language, definition]
+        description: an optional definition of an event pattern to detect relations between single messages
+        properties:
+          language:
+            type: string
+            description: the language identifier
+          definition:
+            type: object
+            description: the language specific definition of the event pattern (e.g. as EPL)
+      filter:
+        type: object
+        required: [language, definition]
+        properties:
+          language:
+            type: string
+            description: the language identifier
+          definition:
+            type: object
+            description: the language specific definition of the filter
+      deliveryMethod:
+        type: object
+        required: [identifier, configuration]
+        properties:
+          identifier:
+            type: string
+            description: the identifier of the delivery method
+          configuration:
+            type: object
+            description: the delivery method specific configuration
+      contentType:
+        type: string
+        description: the content MIME type this subscriptions whishes to receive messages
+      created:
+        type: string
+        format: date-time
+        description: the creation time of the subscription encoded as ISO8601
+      modified:
+        type: string
+        format: date-time
+        description: the modification time of the subscription encoded as ISO8601
+  CreateSubscription:
+    type: object
+    required: [publication, terminationTime, deliveryMethod, contentType]
+    properties:
+      label:
+        type: string
+        description: short label for client purposes
+      publication:
+        type: string
+        description: the publication this subscription is registered at
+      terminationTime:
+        type: string
+        format: date-time
+        description: the termination time (end of life) of the subscription provided as ISO8601
+      eventPattern:
+        $ref: '#/definitions/EventPatternDefinition'
+      filter:
+        $ref: '#/definitions/Filter'
+      deliveryMethod:
+        $ref: '#/definitions/DeliveryMethodConfiguration'
+      contentType:
+        type: string
+        description: the content MIME type this subscriptions whishes to receive messages
+  EventPatternDefinition:
+    type: object
+    required: [language, definition]
+    description: an optional definition of an event pattern to detect relations between single messages
+    properties:
+      language:
+        type: string
+        description: the language identifier
+      definition:
+        type: object
+        description: the language specific definition of the event pattern (e.g. as EPL)
+  Filter:
+    type: object
+    required: [language, definition]
+    properties:
+      language:
+        type: string
+        description: the language identifier
+      definition:
+        type: object
+        description: the language specific definition of the filter
+  DeliveryMethodConfiguration:
+    type: object
+    required: [identifier, configuration]
+    properties:
+      identifier:
+        type: string
+        description: the identifier of the delivery method
+      configuration:
+        type: object
+        description: the delivery method specific configuration
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
+parameters:
+  resourceIdentifier:
+    name: identifier
+    in: path
+    description: a specific resource id
+    required: true
+    type: string
+
