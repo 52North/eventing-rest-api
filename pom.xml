@@ -19,6 +19,7 @@
         <module>core</module>
         <module>rest</module>
         <module>webapp</module>
+        <module>wv-components</module>
     </modules>
 
     <organization>
@@ -83,6 +84,11 @@
                 <artifactId>webapp</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>wv-components</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.n52.subverse</groupId>
@@ -130,6 +136,17 @@
                 <groupId>org.n52.sensorweb</groupId>
                 <artifactId>52n-xml-gml-v321</artifactId>
                 <version>${commom.xml.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>5.2.4.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>9.4.1211</version>
             </dependency>
             
             <dependency>
@@ -415,7 +432,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+<!--            <plugin>
                 <groupId>org.jasig.maven</groupId>
                 <artifactId>maven-notice-plugin</artifactId>
                 <configuration>
@@ -436,7 +453,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>

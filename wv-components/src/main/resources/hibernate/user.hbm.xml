@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.n52.eventing.wv.model.User" table="user_" mutable="true">
+        <meta attribute="class-description">
+            This class contains the user details.
+        </meta>
+        <id name="id" type="int" column="userid">
+            <generator class="sequence"/>
+        </id>
+        <property name="name" column="uuid_" type="string" unique="true"/>
+        <property name="password" column="password_" type="string"/>
+        <property name="firstName" column="firstname" type="string"/>
+        <property name="lastName" column="lastname" type="string"/>
+        <property name="email" column="emailaddress" type="string" unique="true"/>
+        <property name="status" column="status" type="int"/>
+        <set name="groups" table="users_usergroup">
+            <key column="userid"/>
+            <many-to-many column="usergroupid" class="org.n52.eventing.wv.model.Group"/>
+        </set>
+    </class>
+</hibernate-mapping>
