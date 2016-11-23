@@ -6,7 +6,7 @@
     <session-factory>
         <property name="hbm2ddl.auto">update</property>
         <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
-        <property name="connection.url">jdbc:postgresql://localhost:5432/wv-eventing</property>
+        <property name="connection.url">jdbc:postgresql://localhost:5432/wv-eventing?currentSchema=sensorweb2</property>
         <property name="connection.username">postgres</property>
         <property name="connection.password">postgres</property>
         <property name="connection.driver_class">org.postgresql.Driver</property>

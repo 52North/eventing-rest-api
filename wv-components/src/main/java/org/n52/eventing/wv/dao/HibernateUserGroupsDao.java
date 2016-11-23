@@ -31,6 +31,9 @@ package org.n52.eventing.wv.dao;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -59,6 +62,34 @@ public class HibernateUserGroupsDao implements UserGroupsDao {
     }
 
     @Override
+    public Optional<Group> retrieveGroupByName(String name) throws DatabaseException {
+        try (Session session = connection.createSession()) {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Group> query = builder.createQuery(Group.class);
+            Root<Group> root = query.from(Group.class);
+            query.where(builder.equal(root.get("name"), name));
+            List<Group> result = session.createQuery(query).list();
+            return Optional.ofNullable(result.isEmpty() ? null : result.get(0));
+        }
+    }
+
+    @Override
+    public Optional<User> retrieveUserByName(String name) throws DatabaseException {
+        try (Session session = connection.createSession()) {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<User> query = builder.createQuery(User.class);
+            Root<User> root = query.from(User.class);
+            query.where(builder.equal(root.get("name"), name));
+            List<User> result = session.createQuery(query).list();
+            User user = initializeProxies(result.isEmpty() ? null : result.get(0));
+            return Optional.ofNullable(user);
+        }
+    }
+
+    
+    
+
+    @Override
     public Optional<Group> retrieveGroupById(String id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -74,12 +105,12 @@ public class HibernateUserGroupsDao implements UserGroupsDao {
     }
 
     @Override
-    public void addUser(User u) throws ImmutableException, DatabaseException {
+    public void storeUser(User u) throws ImmutableException, DatabaseException {
         internalPersist(u);
     }
 
     @Override
-    public void addGroup(Group g) throws ImmutableException, DatabaseException {
+    public void storeGroup(Group g) throws ImmutableException, DatabaseException {
         internalPersist(g);
     }
 

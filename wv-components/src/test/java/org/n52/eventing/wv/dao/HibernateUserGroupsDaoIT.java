@@ -45,21 +45,31 @@ import org.n52.eventing.wv.model.User;
  */
 public class HibernateUserGroupsDaoIT {
 
-    private HibernateUserGroupsDao userDao;
+    private HibernateUserGroupsDao userGroupDao;
 
     @Before
     public void setup() throws Exception {
         HibernateDatabaseConnection hdc = new HibernateDatabaseConnection();
         hdc.afterPropertiesSet();
 
-        this.userDao = new HibernateUserGroupsDao();
-        this.userDao.setConnection(hdc);
+        this.userGroupDao = new HibernateUserGroupsDao();
+        this.userGroupDao.setConnection(hdc);
     }
 
     @Test
     public void roundtrip() throws ImmutableException, DatabaseException  {
-        Group g = new Group("publisher", "Publishing users", true);
-        this.userDao.addGroup(g);
+        Optional<Group> gopt = this.userGroupDao.retrieveGroupByName("publisher");
+        Group g;
+        if (!gopt.isPresent()) {
+            g = new Group("publisher", "Publishing users", true);
+            this.userGroupDao.storeGroup(g);
+        }
+        else {
+            g = gopt.get();
+        }
+        
+        gopt = this.userGroupDao.retrieveGroupByName("publisher");
+        Assert.assertThat(gopt.isPresent(), CoreMatchers.is(true));
 
         for (int i = 0; i < 3; i++) {
             User e1 = new User();
@@ -69,11 +79,15 @@ public class HibernateUserGroupsDaoIT {
             e1.setLastName("chen");
             e1.setGroups(Collections.singleton(g));
 
-            this.userDao.addUser(e1);
+            this.userGroupDao.storeUser(e1);
 
-            Optional<User> r1 = this.userDao.retrieveUserById(e1.getId());
+            Optional<User> r1 = this.userGroupDao.retrieveUserById(e1.getId());
             Assert.assertThat(r1.get().getName(), CoreMatchers.equalTo(e1.getName()));
             Assert.assertThat(r1.get().getGroups(), CoreMatchers.hasItem(g));
+            
+            Optional<User> r2 = this.userGroupDao.retrieveUserByName(e1.getName());
+            Assert.assertThat(r2.get().getName(), CoreMatchers.equalTo(e1.getName()));
+            Assert.assertThat(r2.get().getGroups(), CoreMatchers.hasItem(g));
         }
     }
 

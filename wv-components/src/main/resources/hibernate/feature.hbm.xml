@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.n52.eventing.wv.model.FeatureOfInterest" table="feature_of_interest" mutable="true">
+        <meta attribute="class-description">
+            This class contains the group details.
+        </meta>
+        <id name="id" type="int" column="pkid">
+            <generator class="sequence"/>
+        </id>
+        <property name="identifier" column="feature_of_interest_id" type="string" unique="true"/>
+        <property name="name" column="feature_of_interest_name" type="string"/>
+        <property name="featureClass" column="feature_class" type="string"/>
+        <property name="referenceId" column="reference_wv_id" type="int" unique="true"/>
+        <property name="description" column="description" type="string"/>
+    </class>
+</hibernate-mapping>

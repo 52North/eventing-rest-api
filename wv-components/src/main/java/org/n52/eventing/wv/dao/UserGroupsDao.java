@@ -42,13 +42,17 @@ public interface UserGroupsDao {
     Optional<User> retrieveUserById(int id) throws DatabaseException;
 
     Optional<Group> retrieveGroupById(String id) throws DatabaseException;
+    
+    Optional<User> retrieveUserByName(String name) throws DatabaseException;
+    
+    Optional<Group> retrieveGroupByName(String name) throws DatabaseException;
 
     List<User> retrieveAllUsers() throws DatabaseException;
 
     List<Group> retrieveAllGroups() throws DatabaseException;
 
-    void addUser(User u) throws ImmutableException, DatabaseException;
+    void storeUser(User u) throws ImmutableException, DatabaseException;
 
-    void addGroup(Group g) throws ImmutableException, DatabaseException;
+    void storeGroup(Group g) throws ImmutableException, DatabaseException;
 
 }

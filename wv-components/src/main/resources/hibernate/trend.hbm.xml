@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.n52.eventing.wv.model.Trend" table="usergroup" mutable="true">
+        <meta attribute="class-description">
+            This class contains the group details.
+        </meta>
+        <id name="id" type="int" column="usergroupid">
+            <generator class="sequence"/>
+        </id>
+        <property name="name" column="name" type="string" unique="true"/>
+        <property name="description" column="description" type="string"/>
+        <property name="addedByLdapImport" column="addedbyldapimport" type="boolean"/>
+    </class>
+</hibernate-mapping>
