@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.n52.eventing.wv.model.Series" table="series" mutable="true">
+        <meta attribute="class-description">
+            This class contains the series details.
+        </meta>
+        <id name="id" type="int" column="pkid">
+            <generator class="sequence"/>
+        </id>
+        <many-to-one name="category" class="org.n52.eventing.wv.model.Category" foreign-key="category_pkid"
+        cascade="all">
+            <column name="category_pkid">
+                <comment>Relation/foreign key to the category</comment>
+            </column>
+        </many-to-one>
+        <many-to-one name="phenomenon" class="org.n52.eventing.wv.model.Phenomenon" foreign-key="phenomenon_pkid"
+        cascade="all">
+            <column name="phenomenon_pkid">
+                <comment>Relation/foreign key to the phenomenon</comment>
+            </column>
+        </many-to-one>
+        <many-to-one name="procedure" class="org.n52.eventing.wv.model.Procedure" foreign-key="procedure_pkid"
+        cascade="all">
+            <column name="procedure_pkid">
+                <comment>Relation/foreign key to the procedure</comment>
+            </column>
+        </many-to-one>
+        <many-to-one name="feature" class="org.n52.eventing.wv.model.FeatureOfInterest" foreign-key="feature_of_interest_pkid"
+        cascade="all">
+            <column name="feature_of_interest_pkid">
+                <comment>Relation/foreign key to the procedure</comment>
+            </column>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

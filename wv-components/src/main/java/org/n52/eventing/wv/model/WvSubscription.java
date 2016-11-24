@@ -34,4 +34,31 @@ package org.n52.eventing.wv.model;
  */
 public class WvSubscription {
 
+    private int id;
+    private Rule rule;
+
+    public WvSubscription() {
+    }
+
+    
+    public WvSubscription(Rule rule) {
+        this.rule = rule;
+    }
+
+    public Rule getRule() {
+        return rule;
+    }
+
+    public void setRule(Rule rule) {
+        this.rule = rule;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
 }

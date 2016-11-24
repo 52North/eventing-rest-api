@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.n52.eventing.wv.model.Trend" table="trend" mutable="true">
+        <meta attribute="class-description">
+            This class contains the trend details.
+        </meta>
+        <id name="code" type="int" column="code">
+            <generator class="sequence"/>
+        </id>
+        <property name="description" column="description" type="string" />
+    </class>
+</hibernate-mapping>

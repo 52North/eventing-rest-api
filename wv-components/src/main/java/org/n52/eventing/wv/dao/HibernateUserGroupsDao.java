@@ -46,13 +46,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class HibernateUserGroupsDao implements UserGroupsDao {
-
-    private HibernateDatabaseConnection connection;
+public class HibernateUserGroupsDao extends BaseHibernateDao implements UserGroupsDao {
 
     @Override
     public Optional<WvUser> retrieveUserById(int id) {
-        try (Session session = connection.createSession()) {
+        try (Session session = getConnection().createSession()) {
             Transaction t = session.beginTransaction();
             WvUser retrieved = session.get(WvUser.class, id);
             retrieved = initializeProxies(retrieved);
@@ -63,7 +61,7 @@ public class HibernateUserGroupsDao implements UserGroupsDao {
 
     @Override
     public Optional<Group> retrieveGroupByName(String name) throws DatabaseException {
-        try (Session session = connection.createSession()) {
+        try (Session session = getConnection().createSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<Group> query = builder.createQuery(Group.class);
             Root<Group> root = query.from(Group.class);
@@ -75,7 +73,7 @@ public class HibernateUserGroupsDao implements UserGroupsDao {
 
     @Override
     public Optional<WvUser> retrieveUserByName(String name) throws DatabaseException {
-        try (Session session = connection.createSession()) {
+        try (Session session = getConnection().createSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<WvUser> query = builder.createQuery(WvUser.class);
             Root<WvUser> root = query.from(WvUser.class);
@@ -112,27 +110,6 @@ public class HibernateUserGroupsDao implements UserGroupsDao {
     @Override
     public void storeGroup(Group g) throws ImmutableException, DatabaseException {
         internalPersist(g);
-    }
-
-    @Autowired
-    public void setConnection(HibernateDatabaseConnection hdc) {
-        this.connection = hdc;
-    }
-
-
-    private void internalPersist(Object o) throws DatabaseException {
-        try (Session session = connection.createSession()) {
-            Transaction t = session.beginTransaction();
-
-            session.persist(o);
-
-            try {
-                t.commit();
-            }
-            catch (PersistenceException e) {
-                throw new DatabaseException("Could not store object", e);
-            }
-        }
     }
 
     private WvUser initializeProxies(WvUser u) {

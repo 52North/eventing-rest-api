@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.n52.eventing.wv.model.WvSubscription" table="subscription" mutable="true">
+        <meta attribute="class-description">
+            This class contains the subscription details.
+        </meta>
+        <id name="id" type="int" column="pkid">
+            <generator class="sequence"/>
+        </id>
+        <many-to-one name="rule" class="org.n52.eventing.wv.model.Rule" foreign-key="rule_pkid">
+            <column name="rule_pkid">
+                <comment>Relation/foreign key to the rule</comment>
+            </column>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

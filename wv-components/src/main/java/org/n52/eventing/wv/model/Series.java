@@ -33,5 +33,63 @@ package org.n52.eventing.wv.model;
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public class Series {
+    
+    private int id;
+    private Category category;
+    private Phenomenon phenomenon;
+    private Procedure procedure;
+    private FeatureOfInterest feature;
+
+    public Series() {
+    }
+
+    public Series(Category category, Phenomenon phenomenon, Procedure procedure, FeatureOfInterest feature) {
+        this.category = category;
+        this.phenomenon = phenomenon;
+        this.procedure = procedure;
+        this.feature = feature;
+    }
+
+    
+    
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Phenomenon getPhenomenon() {
+        return phenomenon;
+    }
+
+    public void setPhenomenon(Phenomenon phenomenon) {
+        this.phenomenon = phenomenon;
+    }
+
+    public Procedure getProcedure() {
+        return procedure;
+    }
+
+    public void setProcedure(Procedure procedure) {
+        this.procedure = procedure;
+    }
+
+    public FeatureOfInterest getFeature() {
+        return feature;
+    }
+
+    public void setFeature(FeatureOfInterest feature) {
+        this.feature = feature;
+    }
 
 }
