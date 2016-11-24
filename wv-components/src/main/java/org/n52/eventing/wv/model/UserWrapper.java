@@ -28,10 +28,31 @@
 
 package org.n52.eventing.wv.model;
 
+import org.n52.eventing.rest.users.User;
+import org.n52.eventing.wv.model.WvUser;
+
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Trend {
+public class UserWrapper implements User {
+
+    private final WvUser result;
+    private final boolean admin;
+
+    public UserWrapper(WvUser result, boolean admin) {
+        this.result = result;
+        this.admin = admin;
+    }
+
+    @Override
+    public String getId() {
+        return result.getName();
+    }
+
+    @Override
+    public boolean isAdmin() {
+        return admin;
+    }
 
 }

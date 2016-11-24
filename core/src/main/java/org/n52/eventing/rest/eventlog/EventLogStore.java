@@ -28,6 +28,7 @@
 package org.n52.eventing.rest.eventlog;
 
 import java.util.Collection;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 
 /**
@@ -46,6 +47,10 @@ public interface EventLogStore {
     void addEvent(SubscriptionInstance sub, EventHolder eh, int maximumCapacity);
 
     Collection<EventHolder> getAllEvents();
+
+    default Collection<EventHolder> getAllEvents(Pagination pagination) {
+        return getAllEvents();
+    };
 
     Collection<EventHolder> getEventsForSubscription(SubscriptionInstance subscription);
 

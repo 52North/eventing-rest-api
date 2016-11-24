@@ -28,26 +28,26 @@
 package org.n52.eventing.rest.security;
 
 import org.n52.eventing.rest.Configuration;
-import org.n52.eventing.rest.Constructable;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
 import org.n52.eventing.rest.publications.Publication;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.users.User;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class SecurityRightsImpl implements SecurityRights, Constructable {
+public class SecurityRightsImpl implements SecurityRights, InitializingBean {
 
     @Autowired
     private Configuration config;
     private SecurityRights delegate = new DefaultSecurityRightsImpl();
 
     @Override
-    public void construct() {
+    public void afterPropertiesSet() throws Exception {
         if (config.getParameterAsBoolean("securityDisabled").orElse(false)) {
             this.delegate = new NonRestrictiveSecurityRightsImpl();
         }

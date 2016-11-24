@@ -31,7 +31,7 @@ package org.n52.eventing.wv.dao;
 import java.util.List;
 import java.util.Optional;
 import org.n52.eventing.wv.model.Group;
-import org.n52.eventing.wv.model.User;
+import org.n52.eventing.wv.model.WvUser;
 
 /**
  *
@@ -39,19 +39,19 @@ import org.n52.eventing.wv.model.User;
  */
 public interface UserGroupsDao {
 
-    Optional<User> retrieveUserById(int id) throws DatabaseException;
+    Optional<WvUser> retrieveUserById(int id) throws DatabaseException;
 
     Optional<Group> retrieveGroupById(String id) throws DatabaseException;
-    
-    Optional<User> retrieveUserByName(String name) throws DatabaseException;
-    
+
+    Optional<WvUser> retrieveUserByName(String name) throws DatabaseException;
+
     Optional<Group> retrieveGroupByName(String name) throws DatabaseException;
 
-    List<User> retrieveAllUsers() throws DatabaseException;
+    List<WvUser> retrieveAllUsers() throws DatabaseException;
 
     List<Group> retrieveAllGroups() throws DatabaseException;
 
-    void storeUser(User u) throws ImmutableException, DatabaseException;
+    void storeUser(WvUser u) throws ImmutableException, DatabaseException;
 
     void storeGroup(Group g) throws ImmutableException, DatabaseException;
 

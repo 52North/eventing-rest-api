@@ -25,26 +25,29 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.deliverymethods;
-
+package org.n52.eventing.rest.subscriptions;
 
 import java.util.List;
-import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
-import org.n52.subverse.delivery.DeliveryEndpoint;
-
+import org.joda.time.DateTime;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface DeliveryMethodsDao {
+public interface SubscriptionsService {
 
-    List<DeliveryMethodDefinition> getDeliveryMethods();
+    boolean hasSubscription(String id);
 
-    boolean hasDeliveryMethod(String id);
+    List<SubscriptionInstance> getSubscriptions();
 
-    DeliveryMethodDefinition getDeliveryMethod(String id) throws UnknownDeliveryMethodException;
+    SubscriptionInstance getSubscription(String id) throws UnknownSubscriptionException;
 
-    DeliveryEndpoint createDeliveryEndpoint(DeliveryMethodInstance deliveryMethod, String pubId) throws InvalidSubscriptionException;
+    void addSubscription(String subId, SubscriptionInstance subscription);
+
+    SubscriptionInstance updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException;
+
+    SubscriptionInstance updateStatus(String id, boolean enabled) throws UnknownSubscriptionException;
+
+    void remove(String id) throws UnknownSubscriptionException;
 
 }

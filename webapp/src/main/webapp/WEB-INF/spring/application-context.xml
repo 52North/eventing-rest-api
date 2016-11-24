@@ -14,23 +14,20 @@
     <mvc:annotation-driven />
     <ctx:annotation-config />
 
-<!--    <import resource="security.xml" />-->
-    <import resource="security-permitAll.xml" />
-
-    <bean class="org.n52.eventing.rest.LifecycleBeanPostProcessor">
-        <description>This calls Constructable#construct and Destroyable#destroy for all beans.</description>
-    </bean>
+    <import resource="security.xml" />
+    <!--<import resource="security-permitAll.xml" />-->
+    <import resource="wv.xml" />
 
     <!-- dummy DAOs -->
-    <bean class="org.n52.eventing.rest.publications.DummyPublicationsDao" name="publicationsDao" />
-    <bean class="org.n52.eventing.rest.users.DummyUsersDao" name="usersDao" />
-    <bean class="org.n52.eventing.rest.deliverymethods.DeliveryMethodsDaoImpl" name="deliveryMethodsDao" />
+    <!--<bean class="org.n52.eventing.rest.publications.DummyPublicationsDao" name="publicationsDao" />-->
+    <!--<bean class="org.n52.eventing.rest.users.DummyUsersDao" name="usersDao" />-->
+    <bean class="org.n52.eventing.rest.deliverymethods.DeliveryMethodsServiceImpl" name="deliveryMethodsDao" />
     <bean class="org.n52.eventing.rest.templates.ConfigurationTemplatesDao" name="templatesDao" />
     <bean class="org.n52.eventing.rest.subscriptions.SubscriptionManagerImpl" name="subscriptionManager" />
-    <bean class="org.n52.eventing.rest.subscriptions.DummySubscriptionsDao" />
+    <!--<bean class="org.n52.eventing.rest.subscriptions.DummySubscriptionsDao" />-->
 
     <!-- utility beans -->
-    <bean class="org.n52.eventing.rest.binding.security.SecurityServiceImpl" />
+    <!--<bean class="org.n52.eventing.rest.binding.security.SecurityServiceImpl" />-->
     <bean class="org.n52.eventing.rest.security.SecurityRightsImpl" />
 
     <!-- core beans -->
@@ -40,7 +37,7 @@
 
     <!-- delivery -->
     <bean class="org.n52.subverse.delivery.DeliveryProviderRepository" />
-    <bean class="org.n52.eventing.rest.deliverymethods.email.EmailDeliveryProvider" />
+    <!--<bean class="org.n52.eventing.rest.deliverymethods.email.EmailDeliveryProvider" />-->
 
     <!-- engine -->
     <bean class="org.n52.subverse.engine.EposFilterEngine" />

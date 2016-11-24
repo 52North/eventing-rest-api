@@ -35,7 +35,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class User {
+public class WvUser {
 
     private int id;
     private String name;
@@ -46,10 +46,10 @@ public class User {
     private int status;
     private Set<Group> groups;
 
-    public User() {
+    public WvUser() {
     }
 
-    public User(String name, String password, String firstName, String lastName, String email, int status, Set<Group> groups) {
+    public WvUser(String name, String password, String firstName, String lastName, String email, int status, Set<Group> groups) {
         this.name = name;
         this.password = password;
         this.firstName = firstName;
@@ -143,7 +143,7 @@ public class User {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final User other = (User) obj;
+        final WvUser other = (WvUser) obj;
         if (this.id != other.id) {
             return false;
         }

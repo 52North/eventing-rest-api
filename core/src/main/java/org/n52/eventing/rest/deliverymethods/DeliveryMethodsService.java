@@ -25,13 +25,26 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
+package org.n52.eventing.rest.deliverymethods;
 
-package org.n52.eventing.wv.model;
+
+import java.util.List;
+import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
+import org.n52.subverse.delivery.DeliveryEndpoint;
+
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Trend {
+public interface DeliveryMethodsService {
+
+    List<DeliveryMethodDefinition> getDeliveryMethods();
+
+    boolean hasDeliveryMethod(String id);
+
+    DeliveryMethodDefinition getDeliveryMethod(String id) throws UnknownDeliveryMethodException;
+
+    DeliveryEndpoint createDeliveryEndpoint(DeliveryMethodInstance deliveryMethod, String pubId) throws InvalidSubscriptionException;
 
 }

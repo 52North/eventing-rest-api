@@ -26,20 +26,32 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.binding.security;
+package org.n52.eventing.wv.services;
+
+import java.util.Optional;
+import org.n52.subverse.delivery.DeliveryEndpoint;
+import org.n52.subverse.delivery.Streamable;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class NotAuthenticatedException extends Exception {
+public class NoOpDeliveryEndpoint implements DeliveryEndpoint {
 
-    public NotAuthenticatedException(String message) {
-        super(message);
+    public NoOpDeliveryEndpoint() {
     }
 
-    public NotAuthenticatedException(String message, Throwable cause) {
-        super(message, cause);
+    @Override
+    public void deliver(Optional<Streamable> o, boolean asRaw) {
+    }
+
+    @Override
+    public String getEffectiveLocation() {
+        return "/dev/null";
+    }
+
+    @Override
+    public void destroy() {
     }
 
 }

@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Group;
-import org.n52.eventing.wv.model.User;
+import org.n52.eventing.wv.model.WvUser;
 
 /**
  *
@@ -67,12 +67,12 @@ public class HibernateUserGroupsDaoIT {
         else {
             g = gopt.get();
         }
-        
+
         gopt = this.userGroupDao.retrieveGroupByName("publisher");
         Assert.assertThat(gopt.isPresent(), CoreMatchers.is(true));
 
         for (int i = 0; i < 3; i++) {
-            User e1 = new User();
+            WvUser e1 = new WvUser();
             e1.setName(UUID.randomUUID().toString().substring(0, 15));
             e1.setPassword("asdf");
             e1.setFirstName("peter"+i);
@@ -81,11 +81,11 @@ public class HibernateUserGroupsDaoIT {
 
             this.userGroupDao.storeUser(e1);
 
-            Optional<User> r1 = this.userGroupDao.retrieveUserById(e1.getId());
+            Optional<WvUser> r1 = this.userGroupDao.retrieveUserById(e1.getId());
             Assert.assertThat(r1.get().getName(), CoreMatchers.equalTo(e1.getName()));
             Assert.assertThat(r1.get().getGroups(), CoreMatchers.hasItem(g));
-            
-            Optional<User> r2 = this.userGroupDao.retrieveUserByName(e1.getName());
+
+            Optional<WvUser> r2 = this.userGroupDao.retrieveUserByName(e1.getName());
             Assert.assertThat(r2.get().getName(), CoreMatchers.equalTo(e1.getName()));
             Assert.assertThat(r2.get().getGroups(), CoreMatchers.hasItem(g));
         }

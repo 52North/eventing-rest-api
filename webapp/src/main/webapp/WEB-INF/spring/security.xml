@@ -8,21 +8,28 @@
         <http-basic />
         <csrf disabled="true"/>
         <intercept-url pattern="/v1" access="permitAll" />
-        <intercept-url pattern="/v1/templates" access="hasRole('ROLE_USER')" />
-        <intercept-url pattern="/v1/subscriptions" access="hasRole('ROLE_USER')" />
-        <intercept-url pattern="/v1/publications" access="hasRole('ROLE_USER')" />
-        <intercept-url pattern="/v1/deliveryMethods" access="hasRole('ROLE_USER')" />
-        <intercept-url pattern="/v1/events" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/v1/templates" access="hasAnyAuthority('user','admin')" />
+        <intercept-url pattern="/v1/subscriptions" access="hasAnyAuthority('user','admin')" />
+        <intercept-url pattern="/v1/publications" access="hasAnyAuthority('user','admin')" />
+        <intercept-url pattern="/v1/deliveryMethods" access="hasAnyAuthority('user','admin')" />
+        <intercept-url pattern="/v1/events" access="hasAnyAuthority('user','admin')" />
     </http>
 
-    <authentication-manager>
-        <authentication-provider>
-            <user-service>
-                <user name="dummy-user" password="asdf" authorities="ROLE_USER" />
-                <user name="dummy-user2" password="asdf" authorities="ROLE_USER" />
-                <user name="not-in-dao" password="asdf" authorities="ROLE_USER" />
-            </user-service>
-        </authentication-provider>
+    <b:bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+    <b:bean id="authenticationProvider" class="org.n52.eventing.wv.security.UserService"/>
+
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider ref="authenticationProvider" />
     </authentication-manager>
+
+    <b:bean id="httpBasicAuthenticationFilter" class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
+        <b:constructor-arg ref="authenticationManager" />
+        <b:constructor-arg>
+            <b:bean class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
+                <b:property name="realmName" value="52North Eventing PubSub API" />
+            </b:bean>
+        </b:constructor-arg>
+    </b:bean>
+
 
 </b:beans>

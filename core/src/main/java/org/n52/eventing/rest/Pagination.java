@@ -26,12 +26,29 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.model;
+package org.n52.eventing.rest;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Trend {
+public class Pagination {
+
+    private final int offset;
+    private final int size;
+
+    public Pagination(int offset, int size) {
+        this.offset = offset;
+        this.size = size;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
 
 }

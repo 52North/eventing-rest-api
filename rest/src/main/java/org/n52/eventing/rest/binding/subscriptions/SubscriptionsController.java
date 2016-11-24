@@ -39,13 +39,12 @@ import java.util.List;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.UrlSettings;
-import org.n52.eventing.rest.binding.security.NotAuthenticatedException;
-import org.n52.eventing.rest.binding.security.SecurityService;
+import org.n52.eventing.security.NotAuthenticatedException;
+import org.n52.eventing.security.SecurityService;
 import org.n52.eventing.rest.security.SecurityRights;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.n52.eventing.rest.subscriptions.SubscriptionManager;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
-import org.n52.eventing.rest.subscriptions.SubscriptionsDao;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
 import org.n52.eventing.rest.users.User;
 import org.slf4j.Logger;
@@ -63,6 +62,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.n52.eventing.rest.subscriptions.SubscriptionsService;
 
 /**
  *
@@ -76,7 +76,7 @@ public class SubscriptionsController {
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionsController.class);
 
     @Autowired
-    private SubscriptionsDao dao;
+    private SubscriptionsService dao;
 
     @Autowired
     private SubscriptionManager manager;

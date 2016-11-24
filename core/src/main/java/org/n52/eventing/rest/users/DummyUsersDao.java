@@ -35,13 +35,13 @@ import java.util.Map;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DummyUsersDao implements UsersDao {
+public class DummyUsersDao implements UsersService {
 
     private final Map<String, User> users = new HashMap<>();
 
     public DummyUsersDao() {
-        users.put("dummy-user", new User("dummy-user", "Peter", "Paul", "peter@paul.de"));
-        users.put("dummy-user2", new User("dummy-user2", "Peter", "Paul", "peter@paul.de"));
+        users.put("dummy-user", new UserImpl("dummy-user", "Peter", "Paul", "peter@paul.de"));
+        users.put("dummy-user2", new UserImpl("dummy-user2", "Peter", "Paul", "peter@paul.de"));
     }
 
     @Override
@@ -57,5 +57,6 @@ public class DummyUsersDao implements UsersDao {
     public boolean hasUser(String id) {
         return users.keySet().contains(id);
     }
+
 
 }

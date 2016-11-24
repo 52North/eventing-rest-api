@@ -26,65 +26,50 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.binding.security;
+package org.n52.eventing.wv.services;
 
-import org.n52.eventing.rest.Configuration;
-import org.n52.eventing.rest.Constructable;
+import java.util.Optional;
 import org.n52.eventing.rest.users.UnknownUserException;
 import org.n52.eventing.rest.users.User;
-import org.n52.eventing.rest.users.UsersDao;
+import org.n52.eventing.rest.users.UsersService;
+import org.n52.eventing.wv.dao.DatabaseException;
+import org.n52.eventing.wv.dao.UserGroupsDao;
+import org.n52.eventing.wv.model.Group;
+import org.n52.eventing.wv.model.UserWrapper;
+import org.n52.eventing.wv.model.WvUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class SecurityServiceImpl implements SecurityService, Constructable {
+public class UsersServiceImpl implements UsersService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SecurityServiceImpl.class);
-
-    @Autowired
-    private UsersDao usersDao;
+    private static final Logger LOG = LoggerFactory.getLogger(UsersServiceImpl.class);
 
     @Autowired
-    private Configuration config;
-
-    private boolean securityDisabled;
+    private UserGroupsDao delegate;
 
     @Override
-    public void construct() {
-        this.securityDisabled = config.getParameterAsBoolean("securityDisabled").orElse(false);
+    public User getUser(String id) throws UnknownUserException {
+        try {
+            Optional<WvUser> result = delegate.retrieveUserByName(id);
+            if (result.isPresent()) {
+                return new UserWrapper(result.get(), false);
+            }
+        } catch (DatabaseException ex) {
+            LOG.warn(ex.getMessage());
+            throw new UnknownUserException(ex.getMessage(), ex);
+        }
+
+        throw new UnknownUserException("Could not find user..");
     }
 
     @Override
-    public User resolveCurrentUser() throws NotAuthenticatedException {
-        if (this.securityDisabled) {
-            return null;
-        }
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            Object principal = auth.getPrincipal();
-            String username;
-
-            if (principal instanceof UserDetails) {
-                username = ((UserDetails)principal).getUsername();
-            } else {
-                username = principal.toString();
-            }
-
-            try {
-                return usersDao.getUser(username);
-            } catch (UnknownUserException ex) {
-                LOG.info("User '{}' not found", username, ex);
-            }
-        }
-        throw new NotAuthenticatedException("No valid user object found");
+    public boolean hasUser(String id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

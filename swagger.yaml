@@ -1,4 +1,4 @@
-# PubSub Eventing REST API spec in YAML
+# PubSub REST API spec in YAML
 swagger: '2.0'
 info:
   title: PubSub Eventing REST Service
@@ -10,7 +10,7 @@ host: localhost:8080
 schemes:
   - http
 # will be prefixed to all paths
-basePath: /pse-rest/v100
+basePath: /psers/v100
 consumes:
   - application/json
 produces:
@@ -442,4 +442,3 @@ parameters:
     description: a specific resource id
     required: true
     type: string
-

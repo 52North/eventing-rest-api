@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.n52.eventing.rest.Constructable;
 import org.n52.eventing.rest.parameters.ParameterDefinition;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.n52.subverse.delivery.DeliveryDefinition;
@@ -43,20 +42,21 @@ import org.n52.subverse.delivery.DeliveryParameter;
 import org.n52.subverse.delivery.DeliveryProvider;
 import org.n52.subverse.delivery.DeliveryProviderRepository;
 import org.n52.subverse.delivery.UnsupportedDeliveryDefinitionException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DeliveryMethodsDaoImpl implements DeliveryMethodsDao, Constructable {
+public class DeliveryMethodsServiceImpl implements DeliveryMethodsService, InitializingBean {
 
     @Autowired
     private DeliveryProviderRepository deliveryProviderRepository;
 
     private final Map<String, DeliveryMethodDefinition> methods = new HashMap<>();
 
-    public DeliveryMethodsDaoImpl() {
+    public DeliveryMethodsServiceImpl() {
     }
 
     @Override
@@ -79,7 +79,7 @@ public class DeliveryMethodsDaoImpl implements DeliveryMethodsDao, Constructable
     }
 
     @Override
-    public void construct() {
+    public void afterPropertiesSet() throws Exception {
         this.deliveryProviderRepository.getProviders().stream().forEach(dp -> {
             DeliveryMethodDefinition method = new DeliveryMethodDefinition(dp.getIdentifier(), dp.getAbstract(),
                     dp.getAbstract(), mapParameters(dp.getParameters()));

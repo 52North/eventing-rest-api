@@ -25,29 +25,53 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.subscriptions;
 
+package org.n52.eventing.wv.services;
+
+import java.util.Collections;
 import java.util.List;
 import org.joda.time.DateTime;
+import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
+import org.n52.eventing.rest.subscriptions.SubscriptionsService;
+import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface SubscriptionsDao {
+public class SubscriptionsServiceImpl implements SubscriptionsService {
 
-    boolean hasSubscription(String id);
+    @Override
+    public boolean hasSubscription(String id) {
+        return false;
+    }
 
-    List<SubscriptionInstance> getSubscriptions();
+    @Override
+    public List<SubscriptionInstance> getSubscriptions() {
+        return Collections.emptyList();
+    }
 
-    SubscriptionInstance getSubscription(String id) throws UnknownSubscriptionException;
+    @Override
+    public SubscriptionInstance getSubscription(String id) throws UnknownSubscriptionException {
+        return null;
+    }
 
-    void addSubscription(String subId, SubscriptionInstance subscription);
+    @Override
+    public void addSubscription(String subId, SubscriptionInstance subscription) {
+    }
 
-    SubscriptionInstance updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException;
+    @Override
+    public SubscriptionInstance updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException {
+        return null;
+    }
 
-    SubscriptionInstance updateStatus(String id, boolean enabled) throws UnknownSubscriptionException;
+    @Override
+    public SubscriptionInstance updateStatus(String id, boolean enabled) throws UnknownSubscriptionException {
+        return null;
+    }
 
-    void remove(String id) throws UnknownSubscriptionException;
+    @Override
+    public void remove(String id) throws UnknownSubscriptionException {
+    }
 
 }

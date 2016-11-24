@@ -39,7 +39,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Group;
-import org.n52.eventing.wv.model.User;
+import org.n52.eventing.wv.model.WvUser;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -51,10 +51,10 @@ public class HibernateUserGroupsDao implements UserGroupsDao {
     private HibernateDatabaseConnection connection;
 
     @Override
-    public Optional<User> retrieveUserById(int id) {
+    public Optional<WvUser> retrieveUserById(int id) {
         try (Session session = connection.createSession()) {
             Transaction t = session.beginTransaction();
-            User retrieved = session.get(User.class, id);
+            WvUser retrieved = session.get(WvUser.class, id);
             retrieved = initializeProxies(retrieved);
             t.commit();
             return Optional.ofNullable(retrieved);
@@ -74,20 +74,20 @@ public class HibernateUserGroupsDao implements UserGroupsDao {
     }
 
     @Override
-    public Optional<User> retrieveUserByName(String name) throws DatabaseException {
+    public Optional<WvUser> retrieveUserByName(String name) throws DatabaseException {
         try (Session session = connection.createSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<User> query = builder.createQuery(User.class);
-            Root<User> root = query.from(User.class);
+            CriteriaQuery<WvUser> query = builder.createQuery(WvUser.class);
+            Root<WvUser> root = query.from(WvUser.class);
             query.where(builder.equal(root.get("name"), name));
-            List<User> result = session.createQuery(query).list();
-            User user = initializeProxies(result.isEmpty() ? null : result.get(0));
+            List<WvUser> result = session.createQuery(query).list();
+            WvUser user = initializeProxies(result.isEmpty() ? null : result.get(0));
             return Optional.ofNullable(user);
         }
     }
 
-    
-    
+
+
 
     @Override
     public Optional<Group> retrieveGroupById(String id) {
@@ -95,7 +95,7 @@ public class HibernateUserGroupsDao implements UserGroupsDao {
     }
 
     @Override
-    public List<User> retrieveAllUsers() {
+    public List<WvUser> retrieveAllUsers() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -105,7 +105,7 @@ public class HibernateUserGroupsDao implements UserGroupsDao {
     }
 
     @Override
-    public void storeUser(User u) throws ImmutableException, DatabaseException {
+    public void storeUser(WvUser u) throws ImmutableException, DatabaseException {
         internalPersist(u);
     }
 
@@ -135,7 +135,7 @@ public class HibernateUserGroupsDao implements UserGroupsDao {
         }
     }
 
-    private User initializeProxies(User u) {
+    private WvUser initializeProxies(WvUser u) {
         if (u != null) {
             if (u.getGroups()!= null) {
                 Hibernate.initialize(u.getGroups());

@@ -37,41 +37,41 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.joda.time.DateTime;
-import org.n52.eventing.rest.Constructable;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
-import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplateInstance;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.n52.eventing.rest.users.UnknownUserException;
-import org.n52.eventing.rest.users.UsersDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.n52.eventing.rest.users.UsersService;
+import org.n52.eventing.rest.publications.PublicationsService;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodsService;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
+public class DummySubscriptionsDao implements SubscriptionsService, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(DummySubscriptionsDao.class);
 
     private final Map<String, SubscriptionInstance> subscriptions = new HashMap<>();
 
     @Autowired
-    private PublicationsDao publicationsDao;
+    private PublicationsService publicationsDao;
 
     @Autowired
-    private UsersDao usersDao;
+    private UsersService usersDao;
 
     @Autowired
-    private DeliveryMethodsDao deliveryMethodsDao;
+    private DeliveryMethodsService deliveryMethodsDao;
 
     @Autowired
     private TemplatesDao templatesDao;
@@ -137,7 +137,7 @@ public class DummySubscriptionsDao implements SubscriptionsDao, Constructable {
     }
 
     @Override
-    public void construct() {
+    public void afterPropertiesSet() throws Exception {
         LOG.info("initializing subscriptions...");
 
         try {

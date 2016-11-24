@@ -37,10 +37,9 @@ import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.UrlSettings;
 import org.n52.eventing.rest.binding.EmptyArrayModel;
-import org.n52.eventing.rest.binding.security.NotAuthenticatedException;
-import org.n52.eventing.rest.binding.security.SecurityService;
+import org.n52.eventing.security.NotAuthenticatedException;
+import org.n52.eventing.security.SecurityService;
 import org.n52.eventing.rest.publications.Publication;
-import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
 import org.n52.eventing.rest.security.SecurityRights;
 import org.n52.eventing.rest.users.User;
@@ -52,6 +51,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.n52.eventing.rest.publications.PublicationsService;
 
 /**
  *
@@ -63,7 +63,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class PublicationsController {
 
     @Autowired
-    private PublicationsDao dao;
+    private PublicationsService dao;
 
     @Autowired
     private SecurityService securityService;

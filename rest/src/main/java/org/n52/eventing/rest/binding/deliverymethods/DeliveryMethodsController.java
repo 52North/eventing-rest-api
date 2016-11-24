@@ -37,10 +37,9 @@ import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.binding.UrlSettings;
 import org.n52.eventing.rest.binding.EmptyArrayModel;
-import org.n52.eventing.rest.binding.security.NotAuthenticatedException;
-import org.n52.eventing.rest.binding.security.SecurityService;
+import org.n52.eventing.security.NotAuthenticatedException;
+import org.n52.eventing.security.SecurityService;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
 import org.n52.eventing.rest.security.SecurityRights;
 import org.n52.eventing.rest.users.User;
@@ -49,6 +48,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodsService;
 
 /**
  *
@@ -60,7 +60,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class DeliveryMethodsController {
 
     @Autowired
-    private DeliveryMethodsDao dao;
+    private DeliveryMethodsService dao;
 
     @Autowired
     private SecurityService securityService;

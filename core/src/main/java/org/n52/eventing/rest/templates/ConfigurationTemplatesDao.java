@@ -69,16 +69,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.n52.eventing.rest.Configuration;
-import org.n52.eventing.rest.Constructable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class ConfigurationTemplatesDao implements TemplatesDao, Constructable {
+public class ConfigurationTemplatesDao implements TemplatesDao, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationTemplatesDao.class);
     private final Map<String, TemplateDefinition> templates = new ConcurrentHashMap<>();
@@ -109,7 +109,7 @@ public class ConfigurationTemplatesDao implements TemplatesDao, Constructable {
     }
 
     @Override
-    public void construct() {
+    public void afterPropertiesSet() throws Exception {
         LOG.info("Templates DAO, using configuration: {}", config);
         try {
             loadTemplates(config);

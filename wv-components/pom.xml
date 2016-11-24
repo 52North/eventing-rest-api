@@ -11,6 +11,10 @@
     <name>Eventing REST API - wv module</name>
     <url>http://52north.org/communities/sensorweb/</url>
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
         <!-- ### EXTERNAL DEPENDENCIES ### -->
         <dependency>
             <groupId>org.slf4j</groupId>

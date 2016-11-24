@@ -26,12 +26,16 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.model;
+package org.n52.eventing.security;
+
+import org.n52.eventing.rest.users.User;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Trend {
+public interface SecurityService {
+
+    User resolveCurrentUser() throws NotAuthenticatedException;
 
 }

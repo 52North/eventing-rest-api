@@ -25,20 +25,47 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.publications;
 
-import java.util.List;
+package org.n52.eventing.wv.services;
+
+import java.util.Collections;
+import java.util.Map;
+import org.n52.subverse.delivery.DeliveryDefinition;
+import org.n52.subverse.delivery.DeliveryEndpoint;
+import org.n52.subverse.delivery.DeliveryProvider;
+import org.n52.subverse.delivery.UnsupportedDeliveryDefinitionException;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface PublicationsDao {
+public class EmailDeliveryProviderImpl implements DeliveryProvider {
 
-    boolean hasPublication(String id);
+    private static final String IDENTIFIER = "wv-email";
 
-    List<Publication> getPublications();
+    @Override
+    public boolean supportsDeliveryIdentifier(String id) {
+        return IDENTIFIER.equals(id);
+    }
 
-    Publication getPublication(String id) throws UnknownPublicationsException;
+    @Override
+    public String getIdentifier() {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public String getAbstract() {
+        return "Email Delivery (Wupperverband intern)";
+    }
+
+    @Override
+    public DeliveryEndpoint createDeliveryEndpoint(DeliveryDefinition def) throws UnsupportedDeliveryDefinitionException {
+        return new NoOpDeliveryEndpoint();
+    }
+
+    @Override
+    public Map<? extends String, ? extends String> getNamespacePrefixMap() {
+        return Collections.emptyMap();
+    }
 
 }

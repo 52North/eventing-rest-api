@@ -3,7 +3,7 @@
  "-//Hibernate/Hibernate Mapping DTD//EN"
  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="org.n52.eventing.wv.model.User" table="user_" mutable="false">
+    <class name="org.n52.eventing.wv.model.WvUser" table="user_" mutable="false">
         <meta attribute="class-description">
             This class contains the user details.
         </meta>

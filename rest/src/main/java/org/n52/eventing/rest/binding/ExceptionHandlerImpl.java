@@ -29,7 +29,7 @@
 package org.n52.eventing.rest.binding;
 
 import javax.servlet.http.HttpServletRequest;
-import org.n52.eventing.rest.binding.security.NotAuthenticatedException;
+import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

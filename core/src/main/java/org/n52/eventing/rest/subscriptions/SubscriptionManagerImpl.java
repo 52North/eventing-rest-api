@@ -39,12 +39,9 @@ import java.util.stream.Collectors;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
-import org.n52.eventing.rest.Constructable;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethodsDao;
 import org.n52.eventing.rest.eventlog.EventLogEndpoint;
 import org.n52.eventing.rest.eventlog.EventLogStore;
-import org.n52.eventing.rest.publications.PublicationsDao;
 import org.n52.eventing.rest.templates.FilterInstanceGenerator;
 import org.n52.eventing.rest.security.SecurityRights;
 import org.n52.eventing.rest.templates.TemplateDefinition;
@@ -61,24 +58,27 @@ import org.n52.subverse.termination.TerminationScheduler;
 import org.n52.subverse.termination.UnknownTerminatableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.n52.eventing.rest.publications.PublicationsService;
+import org.n52.eventing.rest.deliverymethods.DeliveryMethodsService;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class SubscriptionManagerImpl implements SubscriptionManager, Constructable {
+public class SubscriptionManagerImpl implements SubscriptionManager, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionManagerImpl.class);
 
     @Autowired
-    private SubscriptionsDao dao;
+    private SubscriptionsService dao;
 
     @Autowired
-    private PublicationsDao publicationsDao;
+    private PublicationsService publicationsDao;
 
     @Autowired
-    private DeliveryMethodsDao deliveryMethodsDao;
+    private DeliveryMethodsService deliveryMethodsDao;
 
     @Autowired
     private TemplatesDao templatesDao;
@@ -100,7 +100,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Constructab
     private final Map<SubscriptionInstance, SubscriptionTerminatable> subscriptionToTerminatableMap = new HashMap<>();
 
     @Override
-    public void construct() {
+    public void afterPropertiesSet() throws Exception {
         LOG.info("Retrieveing persisted subscriptions...");
         AtomicInteger count = new AtomicInteger();
         this.dao.getSubscriptions().stream().forEach(s -> {

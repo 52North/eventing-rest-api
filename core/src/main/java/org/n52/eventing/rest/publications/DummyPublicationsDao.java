@@ -28,6 +28,7 @@
 
 package org.n52.eventing.rest.publications;
 
+import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,18 +37,18 @@ import java.util.Map;
 import java.util.Optional;
 import org.n52.epos.event.MapEposEvent;
 import org.n52.eventing.rest.Configuration;
-import org.n52.eventing.rest.Constructable;
-import org.n52.eventing.rest.Destroyable;
 import org.n52.subverse.engine.FilterEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DummyPublicationsDao implements PublicationsDao, Constructable, Destroyable {
+public class DummyPublicationsDao implements PublicationsService, InitializingBean, DisposableBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(DummyPublicationsDao.class);
 
@@ -86,7 +87,7 @@ public class DummyPublicationsDao implements PublicationsDao, Constructable, Des
     }
 
     @Override
-    public void construct() {
+    public void afterPropertiesSet() throws Exception {
         Optional<Boolean> dummy = config.getParameterAsBoolean("publishDummyMessages");
         if (dummy.isPresent() && dummy.get()) {
             new Thread(() -> {
@@ -105,12 +106,13 @@ public class DummyPublicationsDao implements PublicationsDao, Constructable, Des
                     MapEposEvent e = new MapEposEvent(now, now);
                     e.put("observedProperty", "Wasserstand");
                     e.put("sensorID", "Wasserstand_Opladen");
+                    e.put(MapEposEvent.GEOMETRY_KEY, new Polygon(null, null, null));
                     double val = count % 10 == 0 ? 0.3 : 0.7;
                     e.put(MapEposEvent.DOUBLE_VALUE_KEY, val);
                     e.put(MapEposEvent.ORIGNIAL_OBJECT_KEY, "{\"Wasserstand\": "+ val +"}");
                     engine.filterMessage(e, "dummy-pub");
                 }
-            }).start();
+            });
         }
     }
 

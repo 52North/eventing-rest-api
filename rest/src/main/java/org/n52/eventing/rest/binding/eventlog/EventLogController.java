@@ -40,13 +40,12 @@ import org.joda.time.DateTime;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.binding.UrlSettings;
-import org.n52.eventing.rest.binding.security.NotAuthenticatedException;
-import org.n52.eventing.rest.binding.security.SecurityService;
+import org.n52.eventing.security.NotAuthenticatedException;
+import org.n52.eventing.security.SecurityService;
 import org.n52.eventing.rest.eventlog.EventHolder;
 import org.n52.eventing.rest.eventlog.EventLogStore;
 import org.n52.eventing.rest.security.SecurityRights;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
-import org.n52.eventing.rest.subscriptions.SubscriptionsDao;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
 import org.n52.eventing.rest.users.User;
 import org.n52.subverse.delivery.Streamable;
@@ -58,6 +57,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.n52.eventing.rest.subscriptions.SubscriptionsService;
 
 /**
  *
@@ -69,7 +69,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class EventLogController {
 
     @Autowired
-    private SubscriptionsDao subDao;
+    private SubscriptionsService subDao;
 
     @Autowired
     private SecurityService securityService;

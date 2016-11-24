@@ -25,14 +25,34 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest;
+
+package org.n52.eventing.wv.services;
+
+import java.util.Collections;
+import java.util.List;
+import org.n52.eventing.rest.publications.Publication;
+import org.n52.eventing.rest.publications.PublicationsService;
+import org.n52.eventing.rest.publications.UnknownPublicationsException;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface Constructable {
+public class PublicationsServiceImpl implements PublicationsService {
 
-    void construct();
+    @Override
+    public boolean hasPublication(String id) {
+        return false;
+    }
+
+    @Override
+    public List<Publication> getPublications() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Publication getPublication(String id) throws UnknownPublicationsException {
+        return null;
+    }
 
 }

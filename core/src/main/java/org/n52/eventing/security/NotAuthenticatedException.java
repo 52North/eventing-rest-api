@@ -26,16 +26,20 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.binding.security;
-
-import org.n52.eventing.rest.users.User;
+package org.n52.eventing.security;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface SecurityService {
+public class NotAuthenticatedException extends Exception {
 
-    User resolveCurrentUser() throws NotAuthenticatedException;
+    public NotAuthenticatedException(String message) {
+        super(message);
+    }
+
+    public NotAuthenticatedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }
