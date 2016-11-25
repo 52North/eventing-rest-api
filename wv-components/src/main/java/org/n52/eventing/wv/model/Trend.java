@@ -60,6 +60,6 @@ public class Trend {
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    
+
+
 }

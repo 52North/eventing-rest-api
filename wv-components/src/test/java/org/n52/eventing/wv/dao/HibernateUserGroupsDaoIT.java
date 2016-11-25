@@ -28,13 +28,19 @@
 
 package org.n52.eventing.wv.dao;
 
+import java.util.ArrayList;
+import org.n52.eventing.wv.dao.hibernate.HibernateGroupDao;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.hamcrest.CoreMatchers;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvUser;
@@ -45,31 +51,36 @@ import org.n52.eventing.wv.model.WvUser;
  */
 public class HibernateUserGroupsDaoIT {
 
-    private HibernateUserGroupsDao userGroupDao;
+    private HibernateDatabaseConnection hdc;
+    private Session session;
 
     @Before
     public void setup() throws Exception {
-        HibernateDatabaseConnection hdc = new HibernateDatabaseConnection();
-        hdc.afterPropertiesSet();
-
-        this.userGroupDao = new HibernateUserGroupsDao();
-        this.userGroupDao.setConnection(hdc);
+        this.hdc = new HibernateDatabaseConnection();
+        this.hdc.afterPropertiesSet();
+        this.session = this.hdc.createSession();
     }
 
     @Test
     public void roundtrip() throws ImmutableException, DatabaseException  {
-        Optional<Group> gopt = this.userGroupDao.retrieveGroupByName("publisher");
+        HibernateGroupDao groupDao = new HibernateGroupDao(session);
+        HibernateUserDao userDao = new HibernateUserDao(session);
+        Transaction trans = session.beginTransaction();
+
+        Optional<Group> gopt = groupDao.retrieveGroupByName("publisher");
         Group g;
         if (!gopt.isPresent()) {
             g = new Group("publisher", "Publishing users", true);
-            this.userGroupDao.storeGroup(g);
+            groupDao.store(g);
         }
         else {
             g = gopt.get();
         }
 
-        gopt = this.userGroupDao.retrieveGroupByName("publisher");
+        gopt = groupDao.retrieveGroupByName("publisher");
         Assert.assertThat(gopt.isPresent(), CoreMatchers.is(true));
+
+        List<WvUser> added = new ArrayList<>();
 
         for (int i = 0; i < 3; i++) {
             WvUser e1 = new WvUser();
@@ -79,17 +90,22 @@ public class HibernateUserGroupsDaoIT {
             e1.setLastName("chen");
             e1.setGroups(Collections.singleton(g));
 
-            this.userGroupDao.storeUser(e1);
+            userDao.store(e1);
+            added.add(e1);
+        }
 
-            Optional<WvUser> r1 = this.userGroupDao.retrieveUserById(e1.getId());
+        trans.commit();
+
+        for (int i = 0; i < 3; i++) {
+            WvUser e1 = added.get(i);
+            Optional<WvUser> r1 = userDao.retrieveById(e1.getId());
             Assert.assertThat(r1.get().getName(), CoreMatchers.equalTo(e1.getName()));
             Assert.assertThat(r1.get().getGroups(), CoreMatchers.hasItem(g));
 
-            Optional<WvUser> r2 = this.userGroupDao.retrieveUserByName(e1.getName());
+            Optional<WvUser> r2 = userDao.retrieveUserByName(e1.getName());
             Assert.assertThat(r2.get().getName(), CoreMatchers.equalTo(e1.getName()));
             Assert.assertThat(r2.get().getGroups(), CoreMatchers.hasItem(g));
         }
     }
-
 
 }

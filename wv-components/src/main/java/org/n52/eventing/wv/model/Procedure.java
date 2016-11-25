@@ -16,7 +16,7 @@ public class Procedure {
     public Procedure(String procedureId) {
         this.procedureId = procedureId;
     }
-    
+
 
     public int getId() {
         return id;
@@ -33,5 +33,5 @@ public class Procedure {
     public void setProcedureId(String procedureId) {
         this.procedureId = procedureId;
     }
-    
+
 }

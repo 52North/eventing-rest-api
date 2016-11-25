@@ -39,7 +39,6 @@ import org.n52.eventing.rest.users.User;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.security.SecurityService;
 import org.n52.eventing.wv.dao.DatabaseException;
-import org.n52.eventing.wv.dao.UserGroupsDao;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvUser;
 
@@ -55,6 +54,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.n52.eventing.wv.dao.GroupDao;
+import org.n52.eventing.wv.dao.UserDao;
 
 /**
  * @since 4.0.0
@@ -66,7 +67,10 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
-    private UserGroupsDao dao;
+    private GroupDao groupDao;
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -87,7 +91,7 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
             }
 
             try {
-                Optional<WvUser> result = dao.retrieveUserByName(username);
+                Optional<WvUser> result = userDao.retrieveUserByName(username);
                 if (result.isPresent()) {
                     return new UserWrapper(result.get(), containsAdminGroup(result.get().getGroups()));
                 }
@@ -114,7 +118,7 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
 
         Optional<WvUser> user;
         try {
-            user = dao.retrieveUserByName(username);
+            user = userDao.retrieveUserByName(username);
         } catch (DatabaseException ex) {
             LOG.warn("Could not retrieve user: {}", ex.getMessage());
             throw new AuthenticationServiceException(ex.getMessage(), ex);
@@ -164,7 +168,12 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
         return groups.stream().map((Group t) -> new GroupPrinciple(t)).collect(Collectors.toList());
     }
 
-    public void setDao(UserGroupsDao dao) {
-        this.dao = dao;
+    public void setGroupDao(GroupDao groupDao) {
+        this.groupDao = groupDao;
     }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
 }

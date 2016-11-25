@@ -32,12 +32,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 import org.hamcrest.CoreMatchers;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.n52.eventing.wv.dao.DatabaseException;
-import org.n52.eventing.wv.dao.HibernateUserGroupsDao;
 import org.n52.eventing.wv.dao.ImmutableException;
+import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvUser;
@@ -51,36 +53,40 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  */
 public class UserServiceIT {
 
-    private HibernateUserGroupsDao userGroupDao;
+    private HibernateUserDao userDao;
     private UserService userService;
     private BCryptPasswordEncoder encoder;
+    private Session session;
 
     @Before
     public void setup() throws Exception {
         HibernateDatabaseConnection hdc = new HibernateDatabaseConnection();
         hdc.afterPropertiesSet();
+        this.session = hdc.createSession();
 
-        this.userGroupDao = new HibernateUserGroupsDao();
-        this.userGroupDao.setConnection(hdc);
+        this.userDao = new HibernateUserDao(session);
 
         this.encoder = new BCryptPasswordEncoder();
 
         this.userService = new UserService();
         this.userService.setPasswordEncoder(this.encoder);
-        this.userService.setDao(userGroupDao);
+        this.userService.setUserDao(userDao);
     }
 
     @Test
     public void testPrincipals() throws DatabaseException, ImmutableException {
+        Transaction trans = session.beginTransaction();
         WvUser u = new WvUser();
         String password = "asdf";
         u.setName(UUID.randomUUID().toString().substring(0, 8));
         u.setPassword(encoder.encode(password));
         u.setGroups(Collections.singleton(new Group("admin", "admin users", true)));
 
-        if (!userGroupDao.retrieveGroupByName(u.getName()).isPresent()) {
-            userGroupDao.storeUser(u);
+        if (!userDao.retrieveUserByName(u.getName()).isPresent()) {
+            userDao.store(u);
         }
+
+        trans.commit();
 
         UsernamePasswordAuthenticationToken result = this.userService.authenticate(
                 new UsernamePasswordAuthenticationToken(u.getName(), password));

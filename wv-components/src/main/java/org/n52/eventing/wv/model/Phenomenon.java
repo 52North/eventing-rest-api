@@ -16,8 +16,8 @@ public class Phenomenon {
     public Phenomenon(String phenomenonId) {
         this.phenomenonId = phenomenonId;
     }
-    
-    
+
+
     public int getId() {
         return id;
     }
@@ -33,5 +33,5 @@ public class Phenomenon {
     public void setPhenomenonId(String phenomenonId) {
         this.phenomenonId = phenomenonId;
     }
-    
+
 }

@@ -26,39 +26,38 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.model;
+package org.n52.eventing.wv.dao.hibernate;
+
+import java.util.List;
+import java.util.Optional;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import org.hibernate.Session;
+import org.n52.eventing.wv.dao.DatabaseException;
+import org.n52.eventing.wv.model.WvUser;
+import org.n52.eventing.wv.dao.UserDao;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class WvSubscription {
+public class HibernateUserDao extends BaseHibernateDao<WvUser> implements UserDao {
 
-    private int id;
-    private Rule rule;
-
-    public WvSubscription() {
+    public HibernateUserDao(Session session) {
+        super(session);
     }
 
-
-    public WvSubscription(Rule rule) {
-        this.rule = rule;
+    @Override
+    public Optional<WvUser> retrieveUserByName(String name) throws DatabaseException {
+        CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        CriteriaQuery<WvUser> query = builder.createQuery(WvUser.class);
+        Root<WvUser> root = query.from(WvUser.class);
+        query.where(builder.equal(root.get("name"), name));
+        List<WvUser> result = getSession().createQuery(query).list();
+        WvUser user = initializeProxies(result.isEmpty() ? null : result.get(0));
+        return Optional.ofNullable(user);
     }
 
-    public Rule getRule() {
-        return rule;
-    }
-
-    public void setRule(Rule rule) {
-        this.rule = rule;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
 }

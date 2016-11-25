@@ -17,7 +17,7 @@ public class Category {
         this.categoryId = categoryId;
     }
 
-    
+
     public int getId() {
         return id;
     }
@@ -33,7 +33,7 @@ public class Category {
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
     }
-    
-    
+
+
 
 }

@@ -26,39 +26,25 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.model;
+package org.n52.eventing.wv.dao;
+
+import java.util.List;
+import java.util.Optional;
+import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.wv.model.Group;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class WvSubscription {
+public interface GroupDao {
 
-    private int id;
-    private Rule rule;
+    Optional<Group> retrieveById(int id) throws DatabaseException;
 
-    public WvSubscription() {
-    }
+    Optional<Group> retrieveGroupByName(String name) throws DatabaseException;
 
+    List<Group> retrieve(Pagination pagination) throws DatabaseException;
 
-    public WvSubscription(Rule rule) {
-        this.rule = rule;
-    }
-
-    public Rule getRule() {
-        return rule;
-    }
-
-    public void setRule(Rule rule) {
-        this.rule = rule;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+    void store(Group g) throws ImmutableException, DatabaseException;
 
 }

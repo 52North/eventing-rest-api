@@ -26,33 +26,36 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.dao;
+package org.n52.eventing.wv.dao.hibernate;
 
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import org.hibernate.Session;
+import org.n52.eventing.wv.dao.DatabaseException;
+import org.n52.eventing.wv.dao.GroupDao;
 import org.n52.eventing.wv.model.Group;
-import org.n52.eventing.wv.model.WvUser;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface UserGroupsDao {
+public class HibernateGroupDao extends BaseHibernateDao<Group> implements GroupDao {
 
-    Optional<WvUser> retrieveUserById(int id) throws DatabaseException;
+    public HibernateGroupDao(Session s) {
+        super(s);
+    }
 
-    Optional<Group> retrieveGroupById(String id) throws DatabaseException;
-
-    Optional<WvUser> retrieveUserByName(String name) throws DatabaseException;
-
-    Optional<Group> retrieveGroupByName(String name) throws DatabaseException;
-
-    List<WvUser> retrieveAllUsers() throws DatabaseException;
-
-    List<Group> retrieveAllGroups() throws DatabaseException;
-
-    void storeUser(WvUser u) throws ImmutableException, DatabaseException;
-
-    void storeGroup(Group g) throws ImmutableException, DatabaseException;
+    @Override
+    public Optional<Group> retrieveGroupByName(String name) throws DatabaseException {
+        CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        CriteriaQuery<Group> query = builder.createQuery(Group.class);
+        Root<Group> root = query.from(Group.class);
+        query.where(builder.equal(root.get("name"), name));
+        List<Group> result = getSession().createQuery(query).list();
+        return Optional.ofNullable(result.isEmpty() ? null : result.get(0));
+    }
 
 }

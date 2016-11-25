@@ -33,13 +33,12 @@ import org.n52.eventing.rest.users.UnknownUserException;
 import org.n52.eventing.rest.users.User;
 import org.n52.eventing.rest.users.UsersService;
 import org.n52.eventing.wv.dao.DatabaseException;
-import org.n52.eventing.wv.dao.UserGroupsDao;
-import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.UserWrapper;
 import org.n52.eventing.wv.model.WvUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.n52.eventing.wv.dao.UserDao;
 
 /**
  *
@@ -50,7 +49,7 @@ public class UsersServiceImpl implements UsersService {
     private static final Logger LOG = LoggerFactory.getLogger(UsersServiceImpl.class);
 
     @Autowired
-    private UserGroupsDao delegate;
+    private UserDao delegate;
 
     @Override
     public User getUser(String id) throws UnknownUserException {
@@ -69,7 +68,14 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public boolean hasUser(String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            return this.delegate.retrieveUserByName(id).isPresent();
+        } catch (DatabaseException ex) {
+            LOG.warn(ex.getMessage());
+            LOG.debug(ex.getMessage(), ex);
+        }
+
+        return false;
     }
 
 }

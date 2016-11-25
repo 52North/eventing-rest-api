@@ -33,7 +33,7 @@ package org.n52.eventing.wv.model;
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public class Rule {
-    
+
     private int id;
     private double threshold;
     private Trend trendCode;
@@ -69,7 +69,7 @@ public class Rule {
     public boolean isActive() {
         return activeFlag == 1;
     }
-    
+
     public void setActive(boolean active) {
         this.activeFlag = active ? 1 : 0;
     }
@@ -97,6 +97,6 @@ public class Rule {
     public void setSeries(Series series) {
         this.series = series;
     }
-    
-    
+
+
 }

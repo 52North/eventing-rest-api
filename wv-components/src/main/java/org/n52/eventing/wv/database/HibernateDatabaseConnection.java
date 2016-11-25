@@ -55,7 +55,7 @@ public class HibernateDatabaseConnection implements InitializingBean, Disposable
         this.factory.close();
     }
 
-    public Session createSession() {
+    public synchronized Session createSession() {
         return this.factory.openSession();
     }
 

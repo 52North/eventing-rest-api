@@ -28,24 +28,31 @@
 
 package org.n52.eventing.wv.dao;
 
-import java.util.Collections;
+import org.n52.eventing.wv.dao.hibernate.HibernateRuleDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateSeriesDao;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 import org.hamcrest.CoreMatchers;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.n52.eventing.wv.dao.hibernate.HibernateCategoryDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateFeatureOfInterestDao;
+import org.n52.eventing.wv.dao.hibernate.HibernatePhenomenonDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateProcedureDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateSubscriptionDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Category;
 import org.n52.eventing.wv.model.FeatureOfInterest;
-import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.Phenomenon;
 import org.n52.eventing.wv.model.Procedure;
 import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.Series;
 import org.n52.eventing.wv.model.Trend;
 import org.n52.eventing.wv.model.WvSubscription;
-import org.n52.eventing.wv.model.WvUser;
 
 /**
  *
@@ -53,37 +60,75 @@ import org.n52.eventing.wv.model.WvUser;
  */
 public class HibernateSubscriptionRulesDaoIT {
 
-    private HibernateSubscriptionRulesDao dao;
-    private HibernateSeriesDao seriesDao;
+    private Session session;
 
     @Before
     public void setup() throws Exception {
         HibernateDatabaseConnection hdc = new HibernateDatabaseConnection();
         hdc.afterPropertiesSet();
-
-        this.dao = new HibernateSubscriptionRulesDao();
-        this.dao.setConnection(hdc);
-        
-        this.seriesDao = new HibernateSeriesDao();
-        this.seriesDao.setConnection(hdc);
+        this.session = hdc.createSession();
     }
 
     @Test
     public void roundtrip() throws ImmutableException, DatabaseException  {
+        HibernateSubscriptionDao subDao = new HibernateSubscriptionDao(session);
+        HibernateSeriesDao seriesDao = new HibernateSeriesDao(session);
+        HibernateRuleDao ruleDao = new HibernateRuleDao(session);
+
+        Transaction trans = session.beginTransaction();
         Series s1 = new Series();
-        s1.setCategory(new Category("test-category"));
-        s1.setPhenomenon(new Phenomenon("test-phenomenon"));
-        s1.setProcedure(new Procedure("test-procedure"));
-        s1.setFeature(new FeatureOfInterest("test-feature", "Test Feature", "point", 0, "its not a bug"));
-        this.seriesDao.storeSeries(s1);
+        s1.setCategory(createCategory("test-category"));
+        s1.setPhenomenon(createPhenomenon("test-phenomenon"));
+        s1.setProcedure(createProcedure("test-procedure"));
         
+        FeatureOfInterest f = new FeatureOfInterest("test-feature-"+UUID.randomUUID().toString().substring(0, 6),
+                "Test Feature", "point", new Random().nextInt(100000), "its not a bug");
+        new HibernateFeatureOfInterestDao(session).store(f);
+        
+        s1.setFeature(f);
+        seriesDao.store(s1);
+
         Rule r1 = new Rule(22.0, new Trend(0, "test-trend"), 1, s1);
-        this.dao.storeRule(r1);
+        ruleDao.store(r1);
         WvSubscription sub1 = new WvSubscription(r1);
-        this.dao.storeSubscription(sub1);
+        subDao.store(sub1);
+
+        trans.commit();
+
+        Optional<Rule> r1r = ruleDao.retrieveById(r1.getId());
+        Assert.assertThat(r1r.isPresent(), CoreMatchers.is(true));
+        Assert.assertThat(r1r.get().getThreshold(), CoreMatchers.is(22.0));
         
-        Optional<Rule> r1r = this.dao.retrieveRule(r1.getId());
-        Optional<WvSubscription> sub1r = this.dao.retrieveSubscription(sub1.getId());
+        Optional<WvSubscription> sub1r = subDao.retrieveById(sub1.getId());
+        Assert.assertThat(sub1r.isPresent(), CoreMatchers.is(true));
+        Assert.assertThat(sub1r.get().getRule().getId(), CoreMatchers.is(r1r.get().getId()));
+    }
+
+    private Category createCategory(String name) {
+        HibernateCategoryDao dao = new HibernateCategoryDao(session);
+        if (dao.exists(name)) {
+            return dao.retrieveByName(name).get();
+        }
+
+        return new Category(name);
+    }
+
+    private Phenomenon createPhenomenon(String name) {
+        HibernatePhenomenonDao dao = new HibernatePhenomenonDao(session);
+        if (dao.exists(name)) {
+            return dao.retrieveByName(name).get();
+        }
+
+        return new Phenomenon(name);
+    }
+
+    private Procedure createProcedure(String name) {
+        HibernateProcedureDao dao = new HibernateProcedureDao(session);
+        if (dao.exists(name)) {
+            return dao.retrieveByName(name).get();
+        }
+
+        return new Procedure(name);
     }
 
 }

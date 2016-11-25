@@ -33,7 +33,7 @@ package org.n52.eventing.wv.model;
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public class Series {
-    
+
     private int id;
     private Category category;
     private Phenomenon phenomenon;
@@ -50,8 +50,8 @@ public class Series {
         this.feature = feature;
     }
 
-    
-    
+
+
     public int getId() {
         return id;
     }
