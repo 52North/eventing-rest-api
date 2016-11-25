@@ -27,32 +27,18 @@
  */
 package org.n52.eventing.rest.subscriptions;
 
-import org.n52.eventing.rest.parameters.ParameterInstance;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
-import org.n52.eventing.rest.eventlog.EventLogEndpoint;
-import org.n52.eventing.rest.eventlog.EventLogStore;
-import org.n52.eventing.rest.templates.FilterInstanceGenerator;
 import org.n52.eventing.rest.security.SecurityRights;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.n52.eventing.rest.users.User;
-import org.n52.subverse.delivery.DeliveryEndpoint;
 import org.n52.subverse.engine.FilterEngine;
-import org.n52.subverse.engine.SubscriptionRegistrationException;
-import org.n52.subverse.subscription.SubscribeOptions;
-import org.n52.subverse.subscription.Subscription;
 import org.n52.subverse.termination.Terminatable;
 import org.n52.subverse.termination.TerminationScheduler;
 import org.n52.subverse.termination.UnknownTerminatableException;
@@ -61,7 +47,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.n52.eventing.rest.publications.PublicationsService;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethodsService;
 
 /**
  *
@@ -78,13 +63,13 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
     private PublicationsService publicationsDao;
 
     @Autowired
-    private DeliveryMethodsService deliveryMethodsDao;
-
-    @Autowired
     private TemplatesDao templatesDao;
 
     @Autowired
     private FilterEngine engine;
+
+    @Autowired
+    private FilterLogic filterLogic;
 
     @Autowired
     private SecurityRights rights;
@@ -92,12 +77,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
     @Autowired
     private TerminationScheduler terminator;
 
-    @Autowired
-    private EventLogStore eventLogStore;
-
-    private final FilterInstanceGenerator filterInstanceGenerator = new FilterInstanceGenerator();
-    private final Map<String, Subscription> subscriptionToRuleMap = new HashMap<>();
-    private final Map<SubscriptionInstance, SubscriptionTerminatable> subscriptionToTerminatableMap = new HashMap<>();
+    private final Map<SubscriptionInstance, SubscriptionManagerImpl.SubscriptionTerminatable> subscriptionToTerminatableMap = new HashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -107,7 +87,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
             LOG.info("Registering subscription {}", s.getId());
             try {
                 if (s.getTemplate() != null) {
-                    internalSubscribe(s, templatesDao.getTemplate(s.getTemplate().getId()));
+                    filterLogic.internalSubscribe(s, templatesDao.getTemplate(s.getTemplate().getId()));
                     count.getAndIncrement();
                 }
             } catch (UnknownTemplateException ex) {
@@ -149,7 +129,13 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         subDef.setModified(now);
 
         //do the actual subscription part
-        internalSubscribe(subDef, template);
+        filterLogic.internalSubscribe(subDef, template);
+
+        if (subDef.getEndOfLife() != null) {
+            SubscriptionManagerImpl.SubscriptionTerminatable term = new SubscriptionManagerImpl.SubscriptionTerminatable(subDef);
+            terminator.scheduleTermination(term);
+            subscriptionToTerminatableMap.put(subDef, term);
+        }
 
         /*
         * finally add to the DAO
@@ -157,54 +143,6 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         this.dao.addSubscription(subId, subDef);
 
         return subId;
-    }
-
-    private void internalSubscribe(SubscriptionInstance subscription, TemplateDefinition template) throws InvalidSubscriptionException {
-        /*
-        * resolve delivery endpoint
-        */
-        List<DeliveryEndpoint> endpoints = subscription.getDeliveryMethods().stream().map((DeliveryMethodInstance dm) -> {
-            try {
-                return this.deliveryMethodsDao.createDeliveryEndpoint(dm,
-                        subscription.getPublicationId());
-            } catch (InvalidSubscriptionException ex) {
-                throw new RuntimeException(ex);
-            }
-        }).collect(Collectors.toList());
-        endpoints.add(new EventLogEndpoint(20, subscription, eventLogStore, String.format("Rule match for Template '%s' with Parameters: %s",
-                template.getId(), subscription.getTemplate().getParameters())));
-        BrokeringDeliveryEndpoint brokeringEndpoint = new BrokeringDeliveryEndpoint(endpoints);
-
-        /*
-        * register at engine
-        */
-        Map<String, ParameterInstance> params = subscription.getTemplate().getParameters();
-        params.forEach((String t, ParameterInstance u) -> {
-            u.setName(t);
-        });
-        String filterInstance = this.filterInstanceGenerator.generateFilterInstance(
-                template, params.values());
-        try {
-            Subscription subverseSub = wrapToSubverseSubscription(subscription,
-                    filterInstance, subscription.getPublicationId());
-            this.engine.register(subverseSub, brokeringEndpoint);
-
-            /*
-            * remember subverseSub for later removal
-            */
-            synchronized (this) {
-                this.subscriptionToRuleMap.put(subscription.getId(), subverseSub);
-            }
-        } catch (SubscriptionRegistrationException ex) {
-            LOG.warn("Could not register subscription at engine");
-            throw new InvalidSubscriptionException(ex.getMessage(), ex);
-        }
-
-        if (subscription.getEndOfLife() != null) {
-            SubscriptionTerminatable term = new SubscriptionTerminatable(subscription);
-            terminator.scheduleTermination(term);
-            subscriptionToTerminatableMap.put(subscription, term);
-        }
     }
 
 
@@ -295,16 +233,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
     }
 
     private void remove(String id) {
-        Subscription sub;
-        synchronized (this) {
-            sub = this.subscriptionToRuleMap.get(id);
-        }
-
-        try {
-            this.engine.removeSubscription(sub.getId());
-        } catch (org.n52.subverse.subscription.UnknownSubscriptionException ex) {
-            LOG.warn("Could not remove subscription", ex);
-        }
+        this.filterLogic.remove(id);
     }
 
     private void throwExceptionOnNullOrEmpty(String value, String key) throws InvalidSubscriptionException {
@@ -313,26 +242,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         }
     }
 
-    private Subscription wrapToSubverseSubscription(SubscriptionInstance subscription,
-            String filterInstance, String pubId) throws InvalidSubscriptionException {
-        try {
-            XmlObject filterXml = XmlObject.Factory.parse(filterInstance);
-            Subscription result = new Subscription(
-                    subscription.getId(), new SubscribeOptions(pubId,
-                            null,
-                            filterXml,
-                            null,
-                            null,
-                            Collections.emptyMap(),
-                            null), null);
-            return result;
-        } catch (XmlException ex) {
-            throw new InvalidSubscriptionException("Currently only valid XML filter definitions allowed", ex);
-        }
-    }
 
-
-    private class SubscriptionTerminatable implements Terminatable {
+    public class SubscriptionTerminatable implements Terminatable {
 
         private final SubscriptionInstance subscription;
 

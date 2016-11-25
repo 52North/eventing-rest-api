@@ -22,7 +22,7 @@
     <!--<bean class="org.n52.eventing.rest.publications.DummyPublicationsDao" name="publicationsDao" />-->
     <!--<bean class="org.n52.eventing.rest.users.DummyUsersDao" name="usersDao" />-->
     <bean class="org.n52.eventing.rest.deliverymethods.DeliveryMethodsServiceImpl" name="deliveryMethodsDao" />
-    <bean class="org.n52.eventing.rest.templates.ConfigurationTemplatesDao" name="templatesDao" />
+    <!--<bean class="org.n52.eventing.rest.templates.ConfigurationTemplatesDao" name="templatesDao" />-->
     <bean class="org.n52.eventing.rest.subscriptions.SubscriptionManagerImpl" name="subscriptionManager" />
     <!--<bean class="org.n52.eventing.rest.subscriptions.DummySubscriptionsDao" />-->
 
@@ -40,6 +40,7 @@
     <!--<bean class="org.n52.eventing.rest.deliverymethods.email.EmailDeliveryProvider" />-->
 
     <!-- engine -->
+    <!--<bean class="org.n52.eventing.rest.subscriptions.SubverseFilterLogic" />-->
     <bean class="org.n52.subverse.engine.EposFilterEngine" />
 
     <mvc:resources mapping="/doc/**" location="/api-docs/"/>

@@ -26,39 +26,31 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.templates;
+package org.n52.eventing.wv.services;
+
+import org.n52.eventing.rest.subscriptions.FilterLogic;
+import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
+import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
+import org.n52.eventing.rest.templates.TemplateDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Definition {
+public class FilterLogicImpl implements FilterLogic {
 
-    private Object content;
-    private String contentType;
+    private static final Logger LOG = LoggerFactory.getLogger(FilterLogicImpl.class);
 
-    public Definition() {
+    @Override
+    public void internalSubscribe(SubscriptionInstance s, TemplateDefinition template) throws InvalidSubscriptionException {
+        LOG.info("Should subscribe..!");
     }
 
-    public Definition(Object content, String contentType) {
-        this.content = content;
-        this.contentType = contentType;
-    }
-
-    public Object getContent() {
-        return content;
-    }
-
-    public void setContent(Object content) {
-        this.content = content;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
+    @Override
+    public void remove(String id) {
+        LOG.info("Should remove {}..!", id);
     }
 
 }

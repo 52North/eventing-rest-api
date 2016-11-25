@@ -18,5 +18,7 @@
     <bean class="org.n52.eventing.wv.services.UsersServiceImpl" name="usersDao" />
     <bean class="org.n52.eventing.wv.services.SubscriptionsServiceImpl" />
     <bean class="org.n52.eventing.wv.services.EmailDeliveryProviderImpl" />
+    <bean class="org.n52.eventing.wv.services.TemplatesService" />
+    <bean class="org.n52.eventing.wv.services.FilterLogicImpl" />
 
 </beans>

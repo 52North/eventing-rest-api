@@ -39,7 +39,15 @@ import org.n52.eventing.rest.parameters.ParameterInstance;
 public class FilterInstanceGenerator {
 
     public String generateFilterInstance(TemplateDefinition t, Collection<ParameterInstance> values) {
-        String content = t.getDefinition().getContent();
+        Object o = t.getDefinition().getContent();
+
+        String content;
+        if (o instanceof String) {
+            content = (String) o;
+        }
+        else {
+            throw new IllegalArgumentException("content must be string for default impl of FilterLogic");
+        }
 
         if (content.contains("&lt;")) {
             content = StringEscapeUtils.unescapeXml(content);

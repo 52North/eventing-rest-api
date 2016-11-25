@@ -26,39 +26,18 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.templates;
+package org.n52.eventing.rest.subscriptions;
+
+import org.n52.eventing.rest.templates.TemplateDefinition;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Definition {
+public interface FilterLogic {
 
-    private Object content;
-    private String contentType;
+    public void internalSubscribe(SubscriptionInstance s, TemplateDefinition template) throws InvalidSubscriptionException;
 
-    public Definition() {
-    }
-
-    public Definition(Object content, String contentType) {
-        this.content = content;
-        this.contentType = contentType;
-    }
-
-    public Object getContent() {
-        return content;
-    }
-
-    public void setContent(Object content) {
-        this.content = content;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
+    public void remove(String id);
 
 }
