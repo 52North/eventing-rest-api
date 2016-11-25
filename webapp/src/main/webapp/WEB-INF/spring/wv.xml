@@ -12,7 +12,6 @@
         http://www.springframework.org/schema/context/spring-context.xsd">
 
     <bean class="org.n52.eventing.wv.database.HibernateDatabaseConnection" />
-    <bean class="org.n52.eventing.wv.dao.HibernateUserGroupsDao" />
 
     <!-- eventing services impls -->
     <bean class="org.n52.eventing.wv.services.PublicationsServiceImpl" name="publicationsDao" />

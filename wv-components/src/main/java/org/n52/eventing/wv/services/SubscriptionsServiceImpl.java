@@ -30,10 +30,23 @@ package org.n52.eventing.wv.services;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import org.hibernate.Session;
+import static org.hibernate.criterion.Order.desc;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 import org.n52.eventing.rest.subscriptions.SubscriptionsService;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
+import org.n52.eventing.wv.dao.DatabaseException;
+import org.n52.eventing.wv.dao.SubscriptionDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateSubscriptionDao;
+import org.n52.eventing.wv.database.HibernateDatabaseConnection;
+import org.n52.eventing.wv.model.WvSubscription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -41,19 +54,70 @@ import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
  */
 public class SubscriptionsServiceImpl implements SubscriptionsService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionsServiceImpl.class);
+
+    @Autowired
+    HibernateDatabaseConnection hibernateConnection;
+
     @Override
     public boolean hasSubscription(String id) {
+        Session session = hibernateConnection.createSession();
+        SubscriptionDao dao = new HibernateSubscriptionDao(session);
+        try {
+            Optional<WvSubscription> sub = dao.retrieveById(Integer.parseInt(id));
+            return sub.isPresent();
+        }
+        catch (DatabaseException | NumberFormatException e) {
+            LOG.warn(e.getMessage());
+            LOG.debug(e.getMessage(), e);
+        }
+        finally {
+            session.close();
+        }
         return false;
     }
 
     @Override
     public List<SubscriptionInstance> getSubscriptions() {
+        Session session = hibernateConnection.createSession();
+        SubscriptionDao dao = new HibernateSubscriptionDao(session);
+        try {
+            List<WvSubscription> subs = dao.retrieve(null);
+            return subs.stream().map((WvSubscription t) -> {
+                return wrapSubscription(t);
+            }).collect(Collectors.toList());
+        }
+        catch (DatabaseException | NumberFormatException e) {
+            LOG.warn(e.getMessage());
+            LOG.debug(e.getMessage(), e);
+        }
+        finally {
+            session.close();
+        }
+
         return Collections.emptyList();
     }
 
     @Override
     public SubscriptionInstance getSubscription(String id) throws UnknownSubscriptionException {
-        return null;
+        Session session = hibernateConnection.createSession();
+        SubscriptionDao dao = new HibernateSubscriptionDao(session);
+        try {
+            Optional<WvSubscription> sub = dao.retrieveById(Integer.parseInt(id));
+            if (!sub.isPresent()) {
+                throw new UnknownSubscriptionException("Could not find subscription with id: "+id);
+            }
+            return wrapSubscription(sub.get());
+        }
+        catch (DatabaseException | NumberFormatException e) {
+            LOG.warn(e.getMessage());
+            LOG.debug(e.getMessage(), e);
+        }
+        finally {
+            session.close();
+        }
+
+        throw new UnknownSubscriptionException("Could not find subscription with id: "+id);
     }
 
     @Override
@@ -72,6 +136,14 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
 
     @Override
     public void remove(String id) throws UnknownSubscriptionException {
+    }
+
+    private SubscriptionInstance wrapSubscription(WvSubscription sub) {
+        String desc = String.format("Subscrition for rule '%s'", sub.getRule().getId());
+        SubscriptionInstance result = new SubscriptionInstance(Integer.toString(sub.getId()),
+                desc,
+                desc);
+        return result;
     }
 
 }

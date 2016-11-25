@@ -28,6 +28,7 @@
 
 package org.n52.eventing.wv.dao;
 
+import java.util.List;
 import org.n52.eventing.wv.dao.hibernate.HibernateRuleDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateSeriesDao;
 import java.util.Optional;
@@ -80,11 +81,11 @@ public class HibernateSubscriptionRulesDaoIT {
         s1.setCategory(createCategory("test-category"));
         s1.setPhenomenon(createPhenomenon("test-phenomenon"));
         s1.setProcedure(createProcedure("test-procedure"));
-        
+
         FeatureOfInterest f = new FeatureOfInterest("test-feature-"+UUID.randomUUID().toString().substring(0, 6),
                 "Test Feature", "point", new Random().nextInt(100000), "its not a bug");
         new HibernateFeatureOfInterestDao(session).store(f);
-        
+
         s1.setFeature(f);
         seriesDao.store(s1);
 
@@ -92,16 +93,18 @@ public class HibernateSubscriptionRulesDaoIT {
         ruleDao.store(r1);
         WvSubscription sub1 = new WvSubscription(r1);
         subDao.store(sub1);
-
         trans.commit();
 
         Optional<Rule> r1r = ruleDao.retrieveById(r1.getId());
         Assert.assertThat(r1r.isPresent(), CoreMatchers.is(true));
         Assert.assertThat(r1r.get().getThreshold(), CoreMatchers.is(22.0));
-        
+
         Optional<WvSubscription> sub1r = subDao.retrieveById(sub1.getId());
         Assert.assertThat(sub1r.isPresent(), CoreMatchers.is(true));
         Assert.assertThat(sub1r.get().getRule().getId(), CoreMatchers.is(r1r.get().getId()));
+
+        List<WvSubscription> subs = subDao.retrieve(null);
+        Assert.assertThat(subs.size() > 0, CoreMatchers.is(true));
     }
 
     private Category createCategory(String name) {

@@ -29,6 +29,7 @@
 package org.n52.eventing.wv.services;
 
 import java.util.Optional;
+import org.hibernate.Session;
 import org.n52.eventing.rest.users.UnknownUserException;
 import org.n52.eventing.rest.users.User;
 import org.n52.eventing.rest.users.UsersService;
@@ -39,6 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.n52.eventing.wv.dao.UserDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
+import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 
 /**
  *
@@ -49,10 +52,12 @@ public class UsersServiceImpl implements UsersService {
     private static final Logger LOG = LoggerFactory.getLogger(UsersServiceImpl.class);
 
     @Autowired
-    private UserDao delegate;
+    private HibernateDatabaseConnection hdc;
 
     @Override
     public User getUser(String id) throws UnknownUserException {
+        Session session = hdc.createSession();
+        UserDao delegate = new HibernateUserDao(session);
         try {
             Optional<WvUser> result = delegate.retrieveUserByName(id);
             if (result.isPresent()) {
@@ -62,17 +67,25 @@ public class UsersServiceImpl implements UsersService {
             LOG.warn(ex.getMessage());
             throw new UnknownUserException(ex.getMessage(), ex);
         }
+        finally {
+            session.close();
+        }
 
         throw new UnknownUserException("Could not find user..");
     }
 
     @Override
     public boolean hasUser(String id) {
+        Session session = hdc.createSession();
+        UserDao delegate = new HibernateUserDao(session);
         try {
-            return this.delegate.retrieveUserByName(id).isPresent();
+            return delegate.retrieveUserByName(id).isPresent();
         } catch (DatabaseException ex) {
             LOG.warn(ex.getMessage());
             LOG.debug(ex.getMessage(), ex);
+        }
+        finally {
+            session.close();
         }
 
         return false;

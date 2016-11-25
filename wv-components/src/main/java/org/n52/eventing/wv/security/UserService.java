@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.hibernate.Session;
 import org.n52.eventing.rest.users.User;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.security.SecurityService;
@@ -56,6 +57,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.n52.eventing.wv.dao.GroupDao;
 import org.n52.eventing.wv.dao.UserDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
+import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 
 /**
  * @since 4.0.0
@@ -67,10 +70,7 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
-    private GroupDao groupDao;
-
-    @Autowired
-    private UserDao userDao;
+    private HibernateDatabaseConnection hdc;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -90,6 +90,9 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
                 username = principal.toString();
             }
 
+            Session session = hdc.createSession();
+            UserDao userDao = new HibernateUserDao(session);
+
             try {
                 Optional<WvUser> result = userDao.retrieveUserByName(username);
                 if (result.isPresent()) {
@@ -97,6 +100,9 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
                 }
             } catch (DatabaseException ex) {
                 LOG.info("User '{}' not retrievable", username, ex);
+            }
+            finally {
+                session.close();
             }
         }
         throw new NotAuthenticatedException("No valid user object found");
@@ -116,12 +122,18 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
             throw new BadCredentialsException("Invalid Credentials");
         }
 
+        Session session = hdc.createSession();
+        UserDao userDao = new HibernateUserDao(session);
+
         Optional<WvUser> user;
         try {
             user = userDao.retrieveUserByName(username);
         } catch (DatabaseException ex) {
             LOG.warn("Could not retrieve user: {}", ex.getMessage());
             throw new AuthenticationServiceException(ex.getMessage(), ex);
+        }
+        finally {
+            session.close();
         }
 
 
@@ -168,12 +180,5 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
         return groups.stream().map((Group t) -> new GroupPrinciple(t)).collect(Collectors.toList());
     }
 
-    public void setGroupDao(GroupDao groupDao) {
-        this.groupDao = groupDao;
-    }
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
 
 }

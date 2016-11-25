@@ -7,9 +7,7 @@
         <meta attribute="class-description">
             This class contains the trend details.
         </meta>
-        <id name="code" type="int" column="code">
-            <generator class="sequence"/>
-        </id>
+        <id name="code" type="int" column="code" />
         <property name="description" column="description" type="string" />
     </class>
 </hibernate-mapping>

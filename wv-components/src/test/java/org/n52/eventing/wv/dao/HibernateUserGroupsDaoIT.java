@@ -44,6 +44,7 @@ import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvUser;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  *
@@ -53,12 +54,14 @@ public class HibernateUserGroupsDaoIT {
 
     private HibernateDatabaseConnection hdc;
     private Session session;
+    private BCryptPasswordEncoder encoder;
 
     @Before
     public void setup() throws Exception {
         this.hdc = new HibernateDatabaseConnection();
         this.hdc.afterPropertiesSet();
         this.session = this.hdc.createSession();
+        this.encoder = new BCryptPasswordEncoder();
     }
 
     @Test
@@ -85,7 +88,7 @@ public class HibernateUserGroupsDaoIT {
         for (int i = 0; i < 3; i++) {
             WvUser e1 = new WvUser();
             e1.setName(UUID.randomUUID().toString().substring(0, 15));
-            e1.setPassword("asdf");
+            e1.setPassword(encoder.encode("asdf"));
             e1.setFirstName("peter"+i);
             e1.setLastName("chen");
             e1.setGroups(Collections.singleton(g));

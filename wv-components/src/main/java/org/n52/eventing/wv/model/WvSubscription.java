@@ -40,7 +40,6 @@ public class WvSubscription {
     public WvSubscription() {
     }
 
-
     public WvSubscription(Rule rule) {
         this.rule = rule;
     }

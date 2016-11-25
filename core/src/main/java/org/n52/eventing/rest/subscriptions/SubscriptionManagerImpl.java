@@ -106,8 +106,10 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         this.dao.getSubscriptions().stream().forEach(s -> {
             LOG.info("Registering subscription {}", s.getId());
             try {
-                internalSubscribe(s, templatesDao.getTemplate(s.getTemplate().getId()));
-                count.getAndIncrement();
+                if (s.getTemplate() != null) {
+                    internalSubscribe(s, templatesDao.getTemplate(s.getTemplate().getId()));
+                    count.getAndIncrement();
+                }
             } catch (UnknownTemplateException ex) {
                 LOG.warn("Could not find template for subscription", ex);
             } catch (InvalidSubscriptionException ex) {

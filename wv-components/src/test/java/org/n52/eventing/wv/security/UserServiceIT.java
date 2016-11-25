@@ -70,7 +70,6 @@ public class UserServiceIT {
 
         this.userService = new UserService();
         this.userService.setPasswordEncoder(this.encoder);
-        this.userService.setUserDao(userDao);
     }
 
     @Test

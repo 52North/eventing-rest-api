@@ -33,6 +33,7 @@ import java.util.Optional;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.model.WvUser;
@@ -57,6 +58,14 @@ public class HibernateUserDao extends BaseHibernateDao<WvUser> implements UserDa
         List<WvUser> result = getSession().createQuery(query).list();
         WvUser user = initializeProxies(result.isEmpty() ? null : result.get(0));
         return Optional.ofNullable(user);
+    }
+
+    private WvUser initializeProxies(WvUser o) {
+        if (o == null || o.getGroups() == null) {
+            return o;
+        }
+        Hibernate.initialize(o.getGroups());
+        return o;
     }
 
 
