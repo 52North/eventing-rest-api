@@ -26,21 +26,53 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.dao;
+package org.n52.eventing.wv.dao.hibernate;
 
-import java.util.List;
 import java.util.Optional;
-import org.n52.eventing.rest.Pagination;
-import org.n52.eventing.wv.model.Group;
+import org.hibernate.Session;
+import org.n52.eventing.wv.dao.DatabaseException;
+import org.n52.eventing.wv.dao.TrendDao;
+import org.n52.eventing.wv.model.Trend;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface GroupDao extends BaseDao<Group> {
+public class HibernateTrendDao extends BaseHibernateDao<Trend> implements TrendDao {
 
-    Optional<Group> retrieveGroupByName(String name) throws DatabaseException;
+    public HibernateTrendDao(Session s) {
+        super(s);
+    }
 
-    List<Group> retrieve(Pagination pagination) throws DatabaseException;
+
+    @Override
+    public Optional<Trend> retrieveById(DomainTrend code) throws DatabaseException {
+        switch (code) {
+            case LessLess:
+                return retrieveById(11);
+            case LessEqual:
+                return retrieveById(12);
+            case LessGreater:
+                return retrieveById(13);
+            case EqualLess:
+                return retrieveById(21);
+            case EqualEqual:
+                return retrieveById(22);
+            case EqualGreater:
+                return retrieveById(23);
+            case GreaterLess:
+                return retrieveById(31);
+            case GreaterEqual:
+                return retrieveById(32);
+            case GreaterGreater:
+                return retrieveById(33);
+            case Failure:
+                return retrieveById(99);
+            default:
+                break;
+        }
+
+        return Optional.empty();
+    }
 
 }

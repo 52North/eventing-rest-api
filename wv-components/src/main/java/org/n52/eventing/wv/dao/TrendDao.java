@@ -31,16 +31,32 @@ package org.n52.eventing.wv.dao;
 import java.util.List;
 import java.util.Optional;
 import org.n52.eventing.rest.Pagination;
-import org.n52.eventing.wv.model.Group;
+import org.n52.eventing.wv.model.Trend;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface GroupDao extends BaseDao<Group> {
+public interface TrendDao {
 
-    Optional<Group> retrieveGroupByName(String name) throws DatabaseException;
+    public enum DomainTrend {
+        LessLess,
+        LessEqual,
+        LessGreater,
+        EqualLess,
+        EqualEqual,
+        EqualGreater,
+        GreaterLess,
+        GreaterEqual,
+        GreaterGreater,
+        Failure
+    }
 
-    List<Group> retrieve(Pagination pagination) throws DatabaseException;
+    Optional<Trend> retrieveById(DomainTrend code) throws DatabaseException;
+
+    Optional<Trend> retrieveById(int id) throws DatabaseException;
+
+    List<Trend> retrieve(Pagination pagination) throws DatabaseException;
+
 
 }
