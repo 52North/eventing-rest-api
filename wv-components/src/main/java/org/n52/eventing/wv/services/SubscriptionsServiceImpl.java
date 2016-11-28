@@ -67,7 +67,7 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
             Optional<WvSubscription> sub = dao.retrieveById(Integer.parseInt(id));
             return sub.isPresent();
         }
-        catch (DatabaseException | NumberFormatException e) {
+        catch (NumberFormatException e) {
             LOG.warn(e.getMessage());
             LOG.debug(e.getMessage(), e);
         }
@@ -109,7 +109,7 @@ public class SubscriptionsServiceImpl implements SubscriptionsService {
             }
             return wrapSubscription(sub.get());
         }
-        catch (DatabaseException | NumberFormatException e) {
+        catch (NumberFormatException e) {
             LOG.warn(e.getMessage());
             LOG.debug(e.getMessage(), e);
         }

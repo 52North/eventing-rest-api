@@ -70,6 +70,7 @@ public class UserServiceIT {
 
         this.userService = new UserService();
         this.userService.setPasswordEncoder(this.encoder);
+        this.userService.setDatabaseConnection(hdc);
     }
 
     @Test
@@ -81,7 +82,7 @@ public class UserServiceIT {
         u.setPassword(encoder.encode(password));
         u.setGroups(Collections.singleton(new Group("admin", "admin users", true)));
 
-        if (!userDao.retrieveUserByName(u.getName()).isPresent()) {
+        if (!userDao.retrieveByName(u.getName()).isPresent()) {
             userDao.store(u);
         }
 

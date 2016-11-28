@@ -59,13 +59,10 @@ public class UsersServiceImpl implements UsersService {
         Session session = hdc.createSession();
         UserDao delegate = new HibernateUserDao(session);
         try {
-            Optional<WvUser> result = delegate.retrieveUserByName(id);
+            Optional<WvUser> result = delegate.retrieveByName(id);
             if (result.isPresent()) {
                 return new UserWrapper(result.get(), false);
             }
-        } catch (DatabaseException ex) {
-            LOG.warn(ex.getMessage());
-            throw new UnknownUserException(ex.getMessage(), ex);
         }
         finally {
             session.close();
@@ -79,16 +76,11 @@ public class UsersServiceImpl implements UsersService {
         Session session = hdc.createSession();
         UserDao delegate = new HibernateUserDao(session);
         try {
-            return delegate.retrieveUserByName(id).isPresent();
-        } catch (DatabaseException ex) {
-            LOG.warn(ex.getMessage());
-            LOG.debug(ex.getMessage(), ex);
+            return delegate.retrieveByName(id).isPresent();
         }
         finally {
             session.close();
         }
-
-        return false;
     }
 
 }

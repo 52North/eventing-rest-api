@@ -48,17 +48,12 @@ public class HibernateSubscriptionDao extends BaseHibernateDao<WvSubscription> i
     }
 
     @Override
-    public List<WvSubscription> retrieveSubscriptions(WvUser user) throws DatabaseException {
+    public List<WvSubscription> retrieveByUser(WvUser user) throws DatabaseException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<WvSubscription> retrieveSubscriptions(Group group) throws DatabaseException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void removeSubscription(WvSubscription sub) throws DatabaseException {
+    public List<WvSubscription> retrieveByGroup(Group group) throws DatabaseException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -28,14 +28,9 @@
 
 package org.n52.eventing.wv.dao.hibernate;
 
-import java.util.List;
 import java.util.Optional;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
-import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.model.WvUser;
 import org.n52.eventing.wv.dao.UserDao;
 
@@ -50,13 +45,9 @@ public class HibernateUserDao extends BaseHibernateDao<WvUser> implements UserDa
     }
 
     @Override
-    public Optional<WvUser> retrieveUserByName(String name) throws DatabaseException {
-        CriteriaBuilder builder = getSession().getCriteriaBuilder();
-        CriteriaQuery<WvUser> query = builder.createQuery(WvUser.class);
-        Root<WvUser> root = query.from(WvUser.class);
-        query.where(builder.equal(root.get("name"), name));
-        List<WvUser> result = getSession().createQuery(query).list();
-        WvUser user = initializeProxies(result.isEmpty() ? null : result.get(0));
+    public Optional<WvUser> retrieveByName(String name) {
+        Optional<WvUser> result = super.retrieveByName(name);
+        WvUser user = initializeProxies(result.isPresent() ? result.get() : null);
         return Optional.ofNullable(user);
     }
 

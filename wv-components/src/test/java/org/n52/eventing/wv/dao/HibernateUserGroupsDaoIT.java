@@ -70,7 +70,7 @@ public class HibernateUserGroupsDaoIT {
         HibernateUserDao userDao = new HibernateUserDao(session);
         Transaction trans = session.beginTransaction();
 
-        Optional<Group> gopt = groupDao.retrieveGroupByName("publisher");
+        Optional<Group> gopt = groupDao.retrieveByName("publisher");
         Group g;
         if (!gopt.isPresent()) {
             g = new Group("publisher", "Publishing users", true);
@@ -80,7 +80,7 @@ public class HibernateUserGroupsDaoIT {
             g = gopt.get();
         }
 
-        gopt = groupDao.retrieveGroupByName("publisher");
+        gopt = groupDao.retrieveByName("publisher");
         Assert.assertThat(gopt.isPresent(), CoreMatchers.is(true));
 
         List<WvUser> added = new ArrayList<>();
@@ -105,7 +105,7 @@ public class HibernateUserGroupsDaoIT {
             Assert.assertThat(r1.get().getName(), CoreMatchers.equalTo(e1.getName()));
             Assert.assertThat(r1.get().getGroups(), CoreMatchers.hasItem(g));
 
-            Optional<WvUser> r2 = userDao.retrieveUserByName(e1.getName());
+            Optional<WvUser> r2 = userDao.retrieveByName(e1.getName());
             Assert.assertThat(r2.get().getName(), CoreMatchers.equalTo(e1.getName()));
             Assert.assertThat(r2.get().getGroups(), CoreMatchers.hasItem(g));
         }

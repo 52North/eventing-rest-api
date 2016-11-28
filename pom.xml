@@ -398,25 +398,25 @@
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <configuration>
                     <fail>false</fail>
-                        <rules>
-                            <dependencyConvergence />
-                            <reactorModuleConvergence />
-                            <requireNoRepositories>
-                                <!-- todo: adjust once in release branch! -->
-                                <banRepositories>false</banRepositories>
-                                <banPluginRepositories>false</banPluginRepositories>
-                                <allowSnapshotRepositories>true</allowSnapshotRepositories>
-                            </requireNoRepositories>
-                            <requireJavaVersion>
-                                <version>[1.7,)</version>
-                            </requireJavaVersion>
-                            <requirePluginVersions>
-                                <banLatest>true</banLatest>
-                                <banRelease>true</banRelease>
-                                <banSnapshots>true</banSnapshots>
-                                <phases>clean,deploy</phases>
-                            </requirePluginVersions>
-                        </rules>
+                    <rules>
+                        <dependencyConvergence />
+                        <reactorModuleConvergence />
+                        <requireNoRepositories>
+                            <!-- todo: adjust once in release branch! -->
+                            <banRepositories>false</banRepositories>
+                            <banPluginRepositories>false</banPluginRepositories>
+                            <allowSnapshotRepositories>true</allowSnapshotRepositories>
+                        </requireNoRepositories>
+                        <requireJavaVersion>
+                            <version>[1.7,)</version>
+                        </requireJavaVersion>
+                        <requirePluginVersions>
+                            <banLatest>true</banLatest>
+                            <banRelease>true</banRelease>
+                            <banSnapshots>true</banSnapshots>
+                            <phases>clean,deploy</phases>
+                        </requirePluginVersions>
+                    </rules>
                 </configuration>
             </plugin>
             <plugin>
@@ -432,7 +432,7 @@
                     </execution>
                 </executions>
             </plugin>
-<!--            <plugin>
+            <!--            <plugin>
                 <groupId>org.jasig.maven</groupId>
                 <artifactId>maven-notice-plugin</artifactId>
                 <configuration>
@@ -569,6 +569,11 @@
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-maven-plugin</artifactId>
                     <version>9.3.7.v20160115</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.19.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>

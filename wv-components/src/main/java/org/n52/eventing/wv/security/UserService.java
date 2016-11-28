@@ -39,7 +39,6 @@ import org.hibernate.Session;
 import org.n52.eventing.rest.users.User;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.security.SecurityService;
-import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvUser;
 
@@ -47,7 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -55,7 +53,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.n52.eventing.wv.dao.GroupDao;
 import org.n52.eventing.wv.dao.UserDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
@@ -75,6 +72,9 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    public void setDatabaseConnection(HibernateDatabaseConnection hdc) {
+        this.hdc = hdc;
+    }
 
     @Override
     public User resolveCurrentUser() throws NotAuthenticatedException {
@@ -94,12 +94,10 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
             UserDao userDao = new HibernateUserDao(session);
 
             try {
-                Optional<WvUser> result = userDao.retrieveUserByName(username);
+                Optional<WvUser> result = userDao.retrieveByName(username);
                 if (result.isPresent()) {
                     return new UserWrapper(result.get(), containsAdminGroup(result.get().getGroups()));
                 }
-            } catch (DatabaseException ex) {
-                LOG.info("User '{}' not retrievable", username, ex);
             }
             finally {
                 session.close();
@@ -127,10 +125,7 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
 
         Optional<WvUser> user;
         try {
-            user = userDao.retrieveUserByName(username);
-        } catch (DatabaseException ex) {
-            LOG.warn("Could not retrieve user: {}", ex.getMessage());
-            throw new AuthenticationServiceException(ex.getMessage(), ex);
+            user = userDao.retrieveByName(username);
         }
         finally {
             session.close();

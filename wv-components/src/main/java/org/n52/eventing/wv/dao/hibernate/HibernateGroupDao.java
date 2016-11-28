@@ -28,13 +28,7 @@
 
 package org.n52.eventing.wv.dao.hibernate;
 
-import java.util.List;
-import java.util.Optional;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import org.hibernate.Session;
-import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.GroupDao;
 import org.n52.eventing.wv.model.Group;
 
@@ -46,16 +40,6 @@ public class HibernateGroupDao extends BaseHibernateDao<Group> implements GroupD
 
     public HibernateGroupDao(Session s) {
         super(s);
-    }
-
-    @Override
-    public Optional<Group> retrieveGroupByName(String name) throws DatabaseException {
-        CriteriaBuilder builder = getSession().getCriteriaBuilder();
-        CriteriaQuery<Group> query = builder.createQuery(Group.class);
-        Root<Group> root = query.from(Group.class);
-        query.where(builder.equal(root.get("name"), name));
-        List<Group> result = getSession().createQuery(query).list();
-        return Optional.ofNullable(result.isEmpty() ? null : result.get(0));
     }
 
 }

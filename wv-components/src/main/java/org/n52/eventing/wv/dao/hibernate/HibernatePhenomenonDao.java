@@ -31,7 +31,6 @@ package org.n52.eventing.wv.dao.hibernate;
 import java.util.Optional;
 import org.hibernate.Session;
 import org.n52.eventing.wv.dao.BaseDao;
-import org.n52.eventing.wv.model.Category;
 import org.n52.eventing.wv.model.Phenomenon;
 
 /**

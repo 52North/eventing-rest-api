@@ -47,12 +47,6 @@ public class HibernateRuleDao extends BaseHibernateDao<Rule> implements RuleDao 
     }
 
 
-
-    @Override
-    public void removeRule(Rule r) throws DatabaseException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     @Override
     public void store(Rule o) throws DatabaseException {
         o.setTrendCode(resolveTrend(o.getTrendCode()));
@@ -61,15 +55,13 @@ public class HibernateRuleDao extends BaseHibernateDao<Rule> implements RuleDao 
 
     private Trend resolveTrend(Trend trendCode) {
         Session s = getSession();
-        Trend retrieved = s.get(Trend.class, trendCode.getCode());
-        if (retrieved != null) {
-            return retrieved;
+        Optional<Trend> retrieved = new HibernateTrendDao(s).retrieveById(trendCode.getCode());
+        if (retrieved != null && retrieved.isPresent()) {
+            return retrieved.get();
         }
 
         return trendCode;
     }
-
-
 
 
 }

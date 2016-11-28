@@ -33,12 +33,10 @@ import java.util.Optional;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.wv.dao.DatabaseException;
-import org.n52.eventing.wv.model.WvUser;
 import org.springframework.core.GenericTypeResolver;
 
 /**
@@ -61,7 +59,7 @@ public class BaseHibernateDao<T> {
         return Optional.ofNullable(retrieved);
     }
 
-    public List<T> retrieve(Pagination pagination) throws DatabaseException {
+    public List<T> retrieve(Pagination pagination) {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(this.genericType);
         Root<T> root = criteriaQuery.from(this.genericType);

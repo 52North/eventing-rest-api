@@ -28,23 +28,12 @@
 
 package org.n52.eventing.wv.dao;
 
-import java.util.List;
-import java.util.Optional;
-import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.wv.model.WvUser;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface UserDao {
-
-    Optional<WvUser> retrieveById(int id) throws DatabaseException;
-
-    Optional<WvUser> retrieveUserByName(String name) throws DatabaseException;
-
-    List<WvUser> retrieve(Pagination pagination) throws DatabaseException;
-
-    void store(WvUser u) throws ImmutableException, DatabaseException;
+public interface UserDao extends BaseDao<WvUser> {
 
 }
