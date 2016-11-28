@@ -102,4 +102,8 @@ public class BaseHibernateDao<T> {
         return session;
     }
 
+    protected Class<T> getGenericType() {
+        return genericType;
+    }
+
 }

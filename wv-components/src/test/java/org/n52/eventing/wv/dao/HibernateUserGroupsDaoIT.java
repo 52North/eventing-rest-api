@@ -25,6 +25,33 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
+/*
+* Copyright (C) 2016-2016 52°North Initiative for Geospatial Open Source
+* Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2 as publishedby the Free
+* Software Foundation.
+*
+* If the program is linked with libraries which are licensed under one of the
+* following licenses, the combination of the program with the linked library is
+* not considered a "derivative work" of the program:
+*
+*     - Apache License, version 2.0
+*     - Apache Software License, version 1.0
+*     - GNU Lesser General Public License, version 3
+*     - Mozilla Public License, versions 1.0, 1.1 and 2.0
+*     - Common Development and Distribution License (CDDL), version 1.0
+*
+* Therefore the distribution of the program linked with libraries licensed under
+* the aforementioned licenses, is permitted by the copyright holders if the
+* distribution is compliant with both the GNU General Public License version 2
+* and the aforementioned licenses.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY
+* WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+* PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*/
 
 package org.n52.eventing.wv.dao;
 
@@ -109,6 +136,37 @@ public class HibernateUserGroupsDaoIT {
             Assert.assertThat(r2.get().getName(), CoreMatchers.equalTo(e1.getName()));
             Assert.assertThat(r2.get().getGroups(), CoreMatchers.hasItem(g));
         }
+    }
+
+    @Test
+    public void retrieveByGroupTest() throws DatabaseException {
+        HibernateGroupDao groupDao = new HibernateGroupDao(session);
+        HibernateUserDao userDao = new HibernateUserDao(session);
+        Transaction trans = session.beginTransaction();
+
+        String uuid = UUID.randomUUID().toString().substring(0, 12);
+        Optional<Group> gopt = groupDao.retrieveByName(uuid);
+        Group g = new Group(uuid, "uuid users", true);
+        groupDao.store(g);
+
+        for (int i = 0; i < 5; i++) {
+            WvUser e1 = new WvUser();
+            e1.setName(UUID.randomUUID().toString().substring(0, 15));
+            e1.setPassword(encoder.encode("asdf"));
+            e1.setFirstName("peter-check");
+            e1.setLastName("chen");
+            e1.setGroups(Collections.singleton(g));
+            userDao.store(e1);
+        }
+
+        trans.commit();
+
+        List<WvUser> r1 = userDao.retrieveByGroup(g);
+        Assert.assertThat(r1.size(), CoreMatchers.is(5));
+        r1.stream().forEach((u) -> {
+            Assert.assertThat(u.getGroups(), CoreMatchers.hasItem(g));
+        });
+
     }
 
 }

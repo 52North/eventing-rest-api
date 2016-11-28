@@ -156,6 +156,10 @@ public class WvUser {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "WvUser{" + "id=" + id + ", name=" + name + ", groups=" + groups + '}';
+    }
 
 
 

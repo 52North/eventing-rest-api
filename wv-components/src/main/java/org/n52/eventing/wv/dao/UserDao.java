@@ -28,6 +28,8 @@
 
 package org.n52.eventing.wv.dao;
 
+import java.util.List;
+import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvUser;
 
 /**
@@ -35,5 +37,7 @@ import org.n52.eventing.wv.model.WvUser;
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public interface UserDao extends BaseDao<WvUser> {
+
+    List<WvUser> retrieveByGroup(Group g);
 
 }

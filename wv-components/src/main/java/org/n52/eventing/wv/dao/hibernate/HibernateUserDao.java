@@ -28,11 +28,16 @@
 
 package org.n52.eventing.wv.dao.hibernate;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.n52.eventing.wv.model.WvUser;
 import org.n52.eventing.wv.dao.UserDao;
+import org.n52.eventing.wv.model.Group;
 
 /**
  *
@@ -49,6 +54,16 @@ public class HibernateUserDao extends BaseHibernateDao<WvUser> implements UserDa
         Optional<WvUser> result = super.retrieveByName(name);
         WvUser user = initializeProxies(result.isPresent() ? result.get() : null);
         return Optional.ofNullable(user);
+    }
+
+    @Override
+    public List<WvUser> retrieveByGroup(Group g) {
+        String param = "groupId";
+        String entity = WvUser.class.getSimpleName();
+        String hql = String.format("SELECT u FROM %s u join u.groups r WHERE r.id=:%s", entity, param);
+        Query q = getSession().createQuery(hql);
+        q.setParameter(param, g.getId());
+        return q.list();
     }
 
     private WvUser initializeProxies(WvUser o) {
