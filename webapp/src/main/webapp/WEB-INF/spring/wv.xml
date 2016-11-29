@@ -21,4 +21,8 @@
     <bean class="org.n52.eventing.wv.services.TemplatesService" />
     <bean class="org.n52.eventing.wv.services.FilterLogicImpl" />
 
+    <!-- access rights and groups config -->
+    <bean class="org.n52.eventing.wv.security.GroupPolicies" />
+    <bean class="org.n52.eventing.wv.security.AccessRightsImpl" />
+
 </beans>

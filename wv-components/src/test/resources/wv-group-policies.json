@@ -1,0 +1,10 @@
+{
+    "adminGroupNames": [
+        "admins-test",
+        "administrators-test"
+    ],
+    "editorGroupNames": [
+        "publishers-test",
+        "editors-test"
+    ]
+}
