@@ -42,18 +42,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.n52.eventing.wv.dao.hibernate.HibernateCategoryDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateFeatureOfInterestDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateGroupDao;
 import org.n52.eventing.wv.dao.hibernate.HibernatePhenomenonDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateProcedureDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateSubscriptionDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Category;
 import org.n52.eventing.wv.model.FeatureOfInterest;
+import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.Phenomenon;
 import org.n52.eventing.wv.model.Procedure;
 import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.Series;
 import org.n52.eventing.wv.model.Trend;
 import org.n52.eventing.wv.model.WvSubscription;
+import org.n52.eventing.wv.model.WvUser;
 
 /**
  *
@@ -76,6 +80,90 @@ public class HibernateSubscriptionRulesDaoIT {
         HibernateSeriesDao seriesDao = new HibernateSeriesDao(session);
         HibernateRuleDao ruleDao = new HibernateRuleDao(session);
 
+        WvSubscription sub1 = createNewSubscription(seriesDao, ruleDao);
+        Transaction trans = session.beginTransaction();
+        subDao.store(sub1);
+        trans.commit();
+
+        Optional<Rule> r1r = ruleDao.retrieveById(sub1.getRule().getId());
+        Assert.assertThat(r1r.isPresent(), CoreMatchers.is(true));
+        Assert.assertThat(r1r.get().getThreshold(), CoreMatchers.is(22.0));
+
+        Optional<WvSubscription> sub1r = subDao.retrieveById(sub1.getId());
+        Assert.assertThat(sub1r.isPresent(), CoreMatchers.is(true));
+        Assert.assertThat(sub1r.get().getRule().getId(), CoreMatchers.is(r1r.get().getId()));
+
+        List<WvSubscription> subs = subDao.retrieve(null);
+        Assert.assertThat(subs.size() > 0, CoreMatchers.is(true));
+    }
+
+    @Test
+    public void testUserSubscriptions() throws DatabaseException {
+        HibernateSubscriptionDao subDao = new HibernateSubscriptionDao(session);
+        HibernateSeriesDao seriesDao = new HibernateSeriesDao(session);
+        HibernateRuleDao ruleDao = new HibernateRuleDao(session);
+
+        Transaction trans = session.beginTransaction();
+        WvUser u1 = new WvUser();
+        u1.setName("one more tester");
+        u1.setPassword("wurz");
+
+        WvUser u2 = new WvUser();
+        u2.setName("another more tester");
+        u2.setPassword("wurzl");
+        HibernateUserDao userDao = new HibernateUserDao(session);
+        userDao.store(u1);
+        userDao.store(u2);
+        trans.commit();
+
+        WvSubscription sub1 = createNewSubscription(seriesDao, ruleDao);
+        sub1.setUser(u1);
+
+        WvSubscription sub2 = createNewSubscription(seriesDao, ruleDao);
+        sub2.setUser(u2);
+
+        trans = session.beginTransaction();
+        subDao.store(sub1);
+        subDao.store(sub2);
+        trans.commit();
+
+        List<WvSubscription> sub1r = subDao.retrieveByUser(u1);
+        Assert.assertThat(sub1r.size(), CoreMatchers.is(1));
+        Assert.assertThat(sub1r.get(0).getUser(), CoreMatchers.is(u1));
+    }
+
+    @Test
+    public void testGroupSubscriptions() throws DatabaseException {
+        HibernateSubscriptionDao subDao = new HibernateSubscriptionDao(session);
+        HibernateSeriesDao seriesDao = new HibernateSeriesDao(session);
+        HibernateRuleDao ruleDao = new HibernateRuleDao(session);
+
+        Transaction trans = session.beginTransaction();
+        Group g1 = new Group(UUID.randomUUID().toString(), "n/a", true);
+        Group g2 = new Group(UUID.randomUUID().toString(), "n/a", true);
+
+        HibernateGroupDao groupDao = new HibernateGroupDao(session);
+        groupDao.store(g1);
+        groupDao.store(g2);
+        trans.commit();
+
+        WvSubscription sub1 = createNewSubscription(seriesDao, ruleDao);
+        sub1.setGroup(g1);
+
+        WvSubscription sub2 = createNewSubscription(seriesDao, ruleDao);
+        sub2.setGroup(g2);
+
+        trans = session.beginTransaction();
+        subDao.store(sub1);
+        subDao.store(sub2);
+        trans.commit();
+
+        List<WvSubscription> sub1r = subDao.retrieveByGroup(g1);
+        Assert.assertThat(sub1r.size(), CoreMatchers.is(1));
+        Assert.assertThat(sub1r.get(0).getGroup(), CoreMatchers.is(g1));
+    }
+
+    private WvSubscription createNewSubscription(HibernateSeriesDao seriesDao, HibernateRuleDao ruleDao) throws DatabaseException {
         Transaction trans = session.beginTransaction();
         Series s1 = new Series();
         s1.setCategory(createCategory("test-category"));
@@ -91,20 +179,10 @@ public class HibernateSubscriptionRulesDaoIT {
 
         Rule r1 = new Rule(22.0, new Trend(0, "test-trend"), 1, s1);
         ruleDao.store(r1);
-        WvSubscription sub1 = new WvSubscription(r1);
-        subDao.store(sub1);
         trans.commit();
 
-        Optional<Rule> r1r = ruleDao.retrieveById(r1.getId());
-        Assert.assertThat(r1r.isPresent(), CoreMatchers.is(true));
-        Assert.assertThat(r1r.get().getThreshold(), CoreMatchers.is(22.0));
-
-        Optional<WvSubscription> sub1r = subDao.retrieveById(sub1.getId());
-        Assert.assertThat(sub1r.isPresent(), CoreMatchers.is(true));
-        Assert.assertThat(sub1r.get().getRule().getId(), CoreMatchers.is(r1r.get().getId()));
-
-        List<WvSubscription> subs = subDao.retrieve(null);
-        Assert.assertThat(subs.size() > 0, CoreMatchers.is(true));
+        WvSubscription sub1 = new WvSubscription(r1);
+        return sub1;
     }
 
     private Category createCategory(String name) {

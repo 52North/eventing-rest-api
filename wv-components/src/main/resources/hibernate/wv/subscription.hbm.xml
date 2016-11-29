@@ -15,5 +15,15 @@
                 <comment>Relation/foreign key to the rule</comment>
             </column>
         </many-to-one>
+        <many-to-one name="user" class="org.n52.eventing.wv.model.WvUser" foreign-key="userid">
+            <column name="userid">
+                <comment>Relation/foreign key to the user</comment>
+            </column>
+        </many-to-one>
+        <many-to-one name="group" class="org.n52.eventing.wv.model.Group" foreign-key="usergroupid">
+            <column name="usergroupid">
+                <comment>Relation/foreign key to the group</comment>
+            </column>
+        </many-to-one>
     </class>
 </hibernate-mapping>

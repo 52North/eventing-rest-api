@@ -36,6 +36,8 @@ public class WvSubscription {
 
     private int id;
     private Rule rule;
+    private WvUser user;
+    private Group group;
 
     public WvSubscription() {
     }
@@ -58,6 +60,22 @@ public class WvSubscription {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public WvUser getUser() {
+        return user;
+    }
+
+    public void setUser(WvUser user) {
+        this.user = user;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
 }

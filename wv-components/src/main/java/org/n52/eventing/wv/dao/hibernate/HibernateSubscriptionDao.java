@@ -30,6 +30,7 @@ package org.n52.eventing.wv.dao.hibernate;
 
 import java.util.List;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvSubscription;
@@ -49,12 +50,22 @@ public class HibernateSubscriptionDao extends BaseHibernateDao<WvSubscription> i
 
     @Override
     public List<WvSubscription> retrieveByUser(WvUser user) throws DatabaseException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String param = "userId";
+        String entity = WvSubscription.class.getSimpleName();
+        String hql = String.format("SELECT s FROM %s s join s.user u WHERE u.id=:%s", entity, param);
+        Query q = getSession().createQuery(hql);
+        q.setParameter(param, user.getId());
+        return q.list();
     }
 
     @Override
     public List<WvSubscription> retrieveByGroup(Group group) throws DatabaseException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String param = "groupId";
+        String entity = WvSubscription.class.getSimpleName();
+        String hql = String.format("SELECT s FROM %s s join s.group g WHERE g.id=:%s", entity, param);
+        Query q = getSession().createQuery(hql);
+        q.setParameter(param, group.getId());
+        return q.list();
     }
 
 
