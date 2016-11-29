@@ -37,22 +37,26 @@ import org.n52.eventing.wv.model.WvUser;
  */
 public class UserWrapper implements User {
 
-    private final WvUser result;
+    private final WvUser wvUser;
     private final boolean admin;
 
     public UserWrapper(WvUser result, boolean admin) {
-        this.result = result;
+        this.wvUser = result;
         this.admin = admin;
     }
 
     @Override
     public String getId() {
-        return result.getName();
+        return wvUser.getName();
     }
 
     @Override
     public boolean isAdmin() {
         return admin;
+    }
+
+    public WvUser getWvUser() {
+        return wvUser;
     }
 
 }

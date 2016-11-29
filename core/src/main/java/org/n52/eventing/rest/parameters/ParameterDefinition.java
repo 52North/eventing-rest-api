@@ -41,13 +41,19 @@ public class ParameterDefinition {
     private Integer maxlength;
     private String pattern;
     private String defaultValue;
+    private boolean optional = false;
 
     public ParameterDefinition() {
     }
 
     public ParameterDefinition(String type, String label) {
+        this(type, label, false);
+    }
+
+    public ParameterDefinition(String type, String label, boolean optional) {
         this.type = type;
         this.label = label;
+        this.optional = optional;
     }
 
     public String getType() {
@@ -106,4 +112,11 @@ public class ParameterDefinition {
         return defaultValue;
     }
 
+    public boolean isOptional() {
+        return optional;
+    }
+
+    public void setOptional(boolean optional) {
+        this.optional = optional;
+    }
 }

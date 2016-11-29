@@ -36,11 +36,14 @@ import org.hibernate.Session;
 import org.n52.eventing.rest.publications.Publication;
 import org.n52.eventing.rest.publications.PublicationsService;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
+import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.SeriesDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateSeriesDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Series;
+import org.n52.eventing.wv.model.WvUser;
+import org.n52.eventing.wv.security.AccessRights;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,20 +52,38 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class PublicationsServiceImpl implements PublicationsService {
+public class PublicationsServiceImpl extends BaseService implements PublicationsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(PublicationsServiceImpl.class);
 
     @Autowired
     private HibernateDatabaseConnection hdc;
 
+    @Autowired
+    private AccessRights accessRights;
+
     @Override
     public boolean hasPublication(String id) {
+        int idInt = super.parseId(id);
+
+        WvUser user;
+        try {
+            user = super.resolveUser();
+        } catch (NotAuthenticatedException ex) {
+            LOG.warn(ex.getMessage());
+            return false;
+        }
+
+        if (!accessRights.canSeeSeries(user, idInt)) {
+            LOG.debug("User {} is not allowed to see the series {}", user.getId(), idInt);
+            return false;
+        }
+
         Session session = hdc.createSession();
         SeriesDao dao = new HibernateSeriesDao(session);
 
         try {
-            Optional<Series> pub = dao.retrieveById(Integer.parseInt(id));
+            Optional<Series> pub = dao.retrieveById(idInt);
             return pub.isPresent();
         }
         catch (NumberFormatException e) {
@@ -80,12 +101,15 @@ public class PublicationsServiceImpl implements PublicationsService {
         SeriesDao dao = new HibernateSeriesDao(session);
 
         try {
+            WvUser user = super.resolveUser();
             List<Series> pubs = dao.retrieve(null);
-            return pubs.stream().map((Series s) -> {
+            return pubs.stream()
+                    .filter(s -> accessRights.canSeeSeries(user, s.getId()))
+                    .map((Series s) -> {
                 return wrapSeries(s);
             }).collect(Collectors.toList());
         }
-        catch (NumberFormatException | DatabaseException e) {
+        catch (NotAuthenticatedException | NumberFormatException | DatabaseException e) {
             LOG.warn(e.getMessage());
         }
         finally {
@@ -97,7 +121,26 @@ public class PublicationsServiceImpl implements PublicationsService {
 
     @Override
     public Publication getPublication(String id) throws UnknownPublicationsException {
-        return null;
+        int idInt = super.parseId(id);
+
+        Session session = hdc.createSession();
+        SeriesDao dao = new HibernateSeriesDao(session);
+
+        try {
+            WvUser user = super.resolveUser();
+            Optional<Series> series = dao.retrieveById(idInt);
+            if (series.isPresent() && accessRights.canSeeSeries(user, series.get().getId())) {
+                return wrapSeries(series.get());
+            }
+        }
+        catch (NotAuthenticatedException | NumberFormatException e) {
+            LOG.warn(e.getMessage());
+        }
+        finally {
+            session.close();
+        }
+
+        throw new UnknownPublicationsException("The publication is unknown: "+id);
     }
 
     private Publication wrapSeries(Series s) {

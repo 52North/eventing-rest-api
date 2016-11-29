@@ -51,10 +51,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class UserServiceIT {
+public class UserSecurityServiceIT {
 
     private HibernateUserDao userDao;
-    private UserService userService;
+    private UserSecurityService userSecurityService;
     private BCryptPasswordEncoder encoder;
     private Session session;
 
@@ -68,9 +68,9 @@ public class UserServiceIT {
 
         this.encoder = new BCryptPasswordEncoder();
 
-        this.userService = new UserService();
-        this.userService.setPasswordEncoder(this.encoder);
-        this.userService.setDatabaseConnection(hdc);
+        this.userSecurityService = new UserSecurityService();
+        this.userSecurityService.setPasswordEncoder(this.encoder);
+        this.userSecurityService.setDatabaseConnection(hdc);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class UserServiceIT {
 
         trans.commit();
 
-        UsernamePasswordAuthenticationToken result = this.userService.authenticate(
+        UsernamePasswordAuthenticationToken result = this.userSecurityService.authenticate(
                 new UsernamePasswordAuthenticationToken(u.getName(), password));
 
         Assert.assertThat(result, CoreMatchers.notNullValue());

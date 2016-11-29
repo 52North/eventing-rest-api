@@ -36,7 +36,14 @@ import org.n52.eventing.rest.templates.TemplateDefinition;
  */
 public interface FilterLogic {
 
-    public void internalSubscribe(SubscriptionInstance s, TemplateDefinition template) throws InvalidSubscriptionException;
+    /**
+     *
+     * @param s
+     * @param template
+     * @return the unique id for the subscription
+     * @throws InvalidSubscriptionException
+     */
+    public String internalSubscribe(SubscriptionInstance s, TemplateDefinition template) throws InvalidSubscriptionException;
 
     public void remove(String id);
 

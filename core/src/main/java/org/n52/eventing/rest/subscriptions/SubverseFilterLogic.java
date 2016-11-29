@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
@@ -73,7 +74,7 @@ public class SubverseFilterLogic implements FilterLogic {
     private final Map<String, Subscription> subscriptionToRuleMap = new HashMap<>();
 
     @Override
-    public void internalSubscribe(SubscriptionInstance subscription, TemplateDefinition template) throws InvalidSubscriptionException {
+    public String internalSubscribe(SubscriptionInstance subscription, TemplateDefinition template) throws InvalidSubscriptionException {
         /*
         * resolve delivery endpoint
         */
@@ -114,6 +115,7 @@ public class SubverseFilterLogic implements FilterLogic {
             throw new InvalidSubscriptionException(ex.getMessage(), ex);
         }
 
+        return UUID.randomUUID().toString();
     }
 
     private Subscription wrapToSubverseSubscription(SubscriptionInstance subscription,

@@ -61,10 +61,10 @@ import org.n52.eventing.wv.database.HibernateDatabaseConnection;
  * @since 4.0.0
  *
  */
-public class UserService implements AuthenticationProvider, Serializable, SecurityService {
+public class UserSecurityService implements AuthenticationProvider, Serializable, SecurityService {
     private static final long serialVersionUID = -3207103212342510378L;
 
-    private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserSecurityService.class);
 
     @Autowired
     private HibernateDatabaseConnection hdc;
@@ -78,6 +78,15 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
 
     @Override
     public User resolveCurrentUser() throws NotAuthenticatedException {
+        Optional<WvUser> result = resolveCurrentWvUser();
+        if (result.isPresent()) {
+            return new UserWrapper(result.get(), containsAdminGroup(result.get().getGroups()));
+        }
+
+        throw new NotAuthenticatedException("No valid user object found");
+    }
+
+    public Optional<WvUser> resolveCurrentWvUser() throws NotAuthenticatedException {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
@@ -95,9 +104,7 @@ public class UserService implements AuthenticationProvider, Serializable, Securi
 
             try {
                 Optional<WvUser> result = userDao.retrieveByName(username);
-                if (result.isPresent()) {
-                    return new UserWrapper(result.get(), containsAdminGroup(result.get().getGroups()));
-                }
+                return result;
             }
             finally {
                 session.close();

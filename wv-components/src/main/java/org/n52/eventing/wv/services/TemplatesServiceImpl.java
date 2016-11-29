@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
+import org.n52.eventing.rest.parameters.ParameterDefinition;
 import org.n52.eventing.rest.templates.Definition;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
@@ -52,9 +53,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class TemplatesService implements TemplatesDao {
+public class TemplatesServiceImpl implements TemplatesDao {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TemplatesService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TemplatesServiceImpl.class);
 
     @Autowired
     private HibernateDatabaseConnection hdc;
@@ -121,21 +122,7 @@ public class TemplatesService implements TemplatesDao {
     }
 
     private TemplateDefinition wrapRule(Rule r) {
-        String label = String.format("Rule '%s' for Series '%s'", r.getId(), r.getSeries().getId());
-        String desc = String.format("Rule '%s' for Series '%s': '%s' of feature '%s' using procedure '%s'",
-                r.getId(),
-                r.getSeries().getId(),
-                r.getSeries().getPhenomenon().getPhenomenonId(),
-                r.getSeries().getFeature().getIdentifier(),
-                r.getSeries().getProcedure().getProcedureId());
-        TemplateDefinition result = new TemplateDefinition(Integer.toString(r.getId()), label, desc, null);
-        Map<String, Object> props = new HashMap<>();
-        props.put("feature", r.getSeries().getFeature().getIdentifier());
-        props.put("category", r.getSeries().getCategory().getCategoryId());
-        props.put("phenomenon", r.getSeries().getPhenomenon().getPhenomenonId());
-        props.put("procedure", r.getSeries().getProcedure().getProcedureId());
-        result.setDefinition(new Definition(props, null));
-        return result;
+        return new WvSubscriptionTemplateFactory().createTemplate(r);
     }
 
     private TemplateDefinition wrapRuleBrief(Rule r) {

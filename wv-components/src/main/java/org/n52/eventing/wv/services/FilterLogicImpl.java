@@ -28,29 +28,114 @@
 
 package org.n52.eventing.wv.services;
 
+import java.util.Map;
+import java.util.Optional;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.n52.eventing.rest.parameters.ParameterInstance;
 import org.n52.eventing.rest.subscriptions.FilterLogic;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 import org.n52.eventing.rest.templates.TemplateDefinition;
+import org.n52.eventing.security.NotAuthenticatedException;
+import org.n52.eventing.wv.dao.DatabaseException;
+import org.n52.eventing.wv.dao.hibernate.HibernateGroupDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateRuleDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateSubscriptionDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
+import org.n52.eventing.wv.database.HibernateDatabaseConnection;
+import org.n52.eventing.wv.model.Group;
+import org.n52.eventing.wv.model.Rule;
+import org.n52.eventing.wv.model.WvSubscription;
+import org.n52.eventing.wv.model.WvUser;
+import org.n52.eventing.wv.security.AccessRights;
+import org.n52.eventing.wv.security.UserSecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class FilterLogicImpl implements FilterLogic {
+public class FilterLogicImpl extends BaseService implements FilterLogic {
 
     private static final Logger LOG = LoggerFactory.getLogger(FilterLogicImpl.class);
 
+    @Autowired
+    HibernateDatabaseConnection hibernateConnection;
+
+    @Autowired
+    UserSecurityService userSecurityService;
+
+    @Autowired
+    AccessRights accessRights;
+
     @Override
-    public void internalSubscribe(SubscriptionInstance s, TemplateDefinition template) throws InvalidSubscriptionException {
-        LOG.info("Should subscribe..!");
+    public String internalSubscribe(SubscriptionInstance s, TemplateDefinition template) throws InvalidSubscriptionException {
+        WvUser user;
+        try {
+            user = super.resolveUser();
+        } catch (NotAuthenticatedException ex) {
+            LOG.warn(ex.getMessage());
+            throw new InvalidSubscriptionException("User is not authenticated");
+        }
+
+        try (Session session = hibernateConnection.createSession()) {
+            Map<String, ParameterInstance> params = s.getTemplate().getParameters();
+
+            WvUser subUser = null;
+            if (params.containsKey(WvSubscriptionTemplateFactory.USER_PARAMETER)) {
+                Integer intVal = (Integer) params.get(WvSubscriptionTemplateFactory.USER_PARAMETER).getValue();
+                Optional<WvUser> targetUser = new HibernateUserDao(session).retrieveById(intVal);
+
+                if (!targetUser.isPresent() || !accessRights.canManageSubscriptionsForUser(user, targetUser.get())) {
+                    throw new InvalidSubscriptionException("Not allowed to set the subscription for the targeted user");
+                }
+
+                subUser = targetUser.get();
+            }
+
+            Group subGroup = null;
+            if (params.containsKey(WvSubscriptionTemplateFactory.GROUP_PARAMETER)) {
+                Integer intVal = (Integer) params.get(WvSubscriptionTemplateFactory.GROUP_PARAMETER).getValue();
+                Optional<Group> targetGroup = new HibernateGroupDao(session).retrieveById(intVal);
+
+                if (!targetGroup.isPresent() || !accessRights.canManageSubscriptionsForGroup(user, targetGroup.get())) {
+                    throw new InvalidSubscriptionException("Not allowed to set the subscription for the targeted group or group not available");
+                }
+
+                subGroup = targetGroup.get();
+            }
+
+            int templateId = super.parseId(template.getId());
+            HibernateRuleDao ruleDao = new HibernateRuleDao(session);
+            Optional<Rule> rule = ruleDao.retrieveById(templateId);
+
+            if (!rule.isPresent()) {
+                throw new InvalidSubscriptionException("The target rule is not available: "+templateId);
+            }
+
+            WvSubscription subscription = new WvSubscription(rule.get());
+            subscription.setGroup(subGroup);
+            subscription.setUser(subUser);
+
+            HibernateSubscriptionDao subDao = new HibernateSubscriptionDao(session);
+            Transaction trans = session.beginTransaction();
+            subDao.store(subscription);
+            trans.commit();
+
+            return Integer.toString(subscription.getId());
+        } catch (DatabaseException ex) {
+            LOG.warn(ex.getMessage());
+            LOG.debug(ex.getMessage(), ex);
+            throw new InvalidSubscriptionException("Could not store subscription", ex);
+        }
     }
 
     @Override
     public void remove(String id) {
-        LOG.info("Should remove {}..!", id);
+        LOG.debug("No operation required, everything will be done by "+SubscriptionsServiceImpl.class.getSimpleName());
     }
 
 }

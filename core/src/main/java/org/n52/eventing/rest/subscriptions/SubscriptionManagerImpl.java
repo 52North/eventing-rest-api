@@ -66,9 +66,6 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
     private TemplatesDao templatesDao;
 
     @Autowired
-    private FilterEngine engine;
-
-    @Autowired
     private FilterLogic filterLogic;
 
     @Autowired
@@ -116,11 +113,10 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         }
 
         DateTime now = new DateTime();
-        String subId = UUID.randomUUID().toString();
+
         String desc = String.format("Subscription using template %s. Parameters: %s", template.getId(), subDef.getTemplate().getParameters());
         String label = Optional.ofNullable(subDef.getLabel()).orElse(desc);
 
-        subDef.setId(subId);
         subDef.setLabel(label);
         subDef.setDescription(desc);
         subDef.setPublicationId(pubId);
@@ -129,7 +125,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         subDef.setModified(now);
 
         //do the actual subscription part
-        filterLogic.internalSubscribe(subDef, template);
+        String subId = filterLogic.internalSubscribe(subDef, template);
+        subDef.setId(subId);
 
         if (subDef.getEndOfLife() != null) {
             SubscriptionManagerImpl.SubscriptionTerminatable term = new SubscriptionManagerImpl.SubscriptionTerminatable(subDef);

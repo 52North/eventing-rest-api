@@ -87,6 +87,10 @@ public class GroupPolicies {
         return readStringArray("editorGroupNames");
     };
 
+    public Set<Integer> getRestrictedSeriesIds() {
+        return readIntegerArray("restrictedSeriesIds");
+    };
+
     private Set<String> readStringArray(String property) {
         JsonNode value = this.config.get(property);
         if (value != null && value.isArray()) {
@@ -94,6 +98,22 @@ public class GroupPolicies {
             value.elements().forEachRemaining(node -> {
                 if (node.isTextual()) {
                     result.add(node.asText());
+                }
+            });
+
+            return result;
+        }
+        return Collections.emptySet();
+    }
+
+
+    private Set<Integer> readIntegerArray(String property) {
+        JsonNode value = this.config.get(property);
+        if (value != null && value.isArray()) {
+            Set<Integer> result = new HashSet<>();
+            value.elements().forEachRemaining(node -> {
+                if (node.isInt()) {
+                    result.add(node.asInt());
                 }
             });
 

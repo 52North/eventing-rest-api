@@ -33,7 +33,6 @@ import org.hibernate.Session;
 import org.n52.eventing.rest.users.UnknownUserException;
 import org.n52.eventing.rest.users.User;
 import org.n52.eventing.rest.users.UsersService;
-import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.model.UserWrapper;
 import org.n52.eventing.wv.model.WvUser;
 import org.slf4j.Logger;

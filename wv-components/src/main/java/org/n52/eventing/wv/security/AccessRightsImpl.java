@@ -30,6 +30,8 @@ package org.n52.eventing.wv.security;
 
 import java.util.Set;
 import org.n52.eventing.wv.model.Group;
+import org.n52.eventing.wv.model.Series;
+import org.n52.eventing.wv.model.WvSubscription;
 import org.n52.eventing.wv.model.WvUser;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,7 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
     private GroupPolicies policies;
     private Set<String> adminGroups;
     private Set<String> editorsGroups;
+    private Set<Integer> restrictedSeries;
 
     public void setPolicies(GroupPolicies policies) {
         this.policies = policies;
@@ -53,10 +56,37 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
     public void afterPropertiesSet() throws Exception {
         this.adminGroups = this.policies.getAdminGroupNames();
         this.editorsGroups = this.policies.getEditorGroupNames();
+        this.restrictedSeries = this.policies.getRestrictedSeriesIds();
+    }
+
+    @Override
+    public boolean canSeeSubscription(WvUser u, WvSubscription sub) {
+        if (isInAdminGroup(u)) {
+            return true;
+        }
+
+        if (sub.getUser() != null) {
+            return canSeeSubscriptionsOfUser(u, sub.getUser());
+        }
+
+        if (sub.getGroup() != null) {
+            return canSeeSubscriptionsOfGroup(u, sub.getGroup());
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean canManageSubscription(WvUser u, WvSubscription sub) {
+        return canSeeSubscription(u, sub);
     }
 
     @Override
     public boolean canSeeSubscriptionsOfGroup(WvUser u, Group g) {
+        if (isInAdminGroup(u)) {
+            return true;
+        }
+
         return u.getGroups() != null && u.getGroups().contains(g);
     }
 
@@ -82,6 +112,15 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
     @Override
     public boolean canManageRules(WvUser u) {
         return isInAdminGroup(u);
+    }
+
+    @Override
+    public boolean canSeeSeries(WvUser u, int seriesId) {
+        if (isInAdminGroup(u)) {
+            return true;
+        }
+
+        return !(this.restrictedSeries.contains(seriesId));
     }
 
     private boolean isInAdminGroup(WvUser u) {

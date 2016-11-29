@@ -25,32 +25,47 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.wv.security;
 
-import org.n52.eventing.wv.model.Group;
-import org.n52.eventing.wv.model.WvSubscription;
+package org.n52.eventing.wv.services;
+
+import java.util.Optional;
+import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.wv.model.WvUser;
+import org.n52.eventing.wv.security.UserSecurityService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface AccessRights {
+public class BaseService {
 
-    boolean canSeeSubscription(WvUser u, WvSubscription sub);
+    private static final Logger LOG = LoggerFactory.getLogger(BaseService.class);
 
-    boolean canManageSubscription(WvUser u, WvSubscription sub);
+    @Autowired
+    private UserSecurityService userSecurityService;
 
-    boolean canSeeSubscriptionsOfGroup(WvUser u, Group g);
 
-    boolean canSeeSubscriptionsOfUser(WvUser u1, WvUser u2);
+    protected int parseId(String id) {
+        try {
+            return Integer.parseInt(id);
+        }
+        catch (NumberFormatException e) {
+            LOG.warn(e.getMessage());
+            throw new NumberFormatException("Invalid ID provided. IDs must be integers");
+        }
+    }
 
-    boolean canManageSubscriptionsForGroup(WvUser u, Group g);
+    protected WvUser resolveUser() throws NotAuthenticatedException {
+        Optional<WvUser> user = userSecurityService.resolveCurrentWvUser();
 
-    boolean canManageSubscriptionsForUser(WvUser u1, WvUser u2);
+        if (user == null || !user.isPresent()) {
+            throw new NotAuthenticatedException("Could not resolve the user from user services");
+        }
 
-    boolean canManageRules(WvUser u);
-
-    boolean canSeeSeries(WvUser u, int seriesId);
+        return user.get();
+    }
 
 }

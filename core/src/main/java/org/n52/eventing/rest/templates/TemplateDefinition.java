@@ -90,7 +90,11 @@ public class TemplateDefinition {
         return parameters;
     }
 
-    void addParameter(String name, ParameterDefinition param) {
+    public void setParameters(Map<String, ParameterDefinition> parameters) {
+        this.parameters = parameters;
+    }
+
+    public void addParameter(String name, ParameterDefinition param) {
         this.parameters.put(name, param);
     }
 
