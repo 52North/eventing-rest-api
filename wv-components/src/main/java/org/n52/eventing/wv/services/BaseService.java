@@ -53,7 +53,7 @@ public class BaseService {
             return Integer.parseInt(id);
         }
         catch (NumberFormatException e) {
-            LOG.warn(e.getMessage());
+            LOG.warn("NumberFormatException: {}", e.getMessage());
             throw new NumberFormatException("Invalid ID provided. IDs must be integers");
         }
     }

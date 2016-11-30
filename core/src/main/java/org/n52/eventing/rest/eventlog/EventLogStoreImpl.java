@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 
 /**
@@ -85,6 +86,13 @@ public class EventLogStoreImpl implements EventLogStore {
             }
             return Collections.unmodifiableCollection(this.internalStore.get(sub));
         }
+    }
+
+    @Override
+    public Optional<EventHolder> getSingleEvent(String eventId) {
+        return getAllEvents().stream()
+                .filter(eh -> eh.getId().equals(eventId))
+                .findFirst();
     }
 
 }

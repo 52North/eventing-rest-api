@@ -80,14 +80,15 @@ public class EventLogController {
         return store.getAllEvents().stream()
                 .map((EventHolder t) -> {
                     String id = t.getId();
-                    return new EventHolderView(id, t.getTime(), t.subscription().getId(), t.getLabel(),
-                            String.format("%s/%s/%s", fullUrl, t.subscription().getId(), id));
+                    return new EventHolderView(id, t.getTime(),
+                            t.subscription() != null ? t.subscription().getId() : null,
+                            t.getLabel(),
+                            String.format("%s/%s", fullUrl, id));
                 })
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/{subId}", method = GET)
-    public Collection<EventHolderView> getEventsForSubscription(@PathVariable("subId") String subId)
+    public Collection<EventHolderView> getEventsForSubscription(String subId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException {
         final String fullUrl = RequestUtils.resolveFullRequestUrl();
 
@@ -96,16 +97,20 @@ public class EventLogController {
         return store.getEventsForSubscription(subscription).stream()
                 .map((EventHolder t) -> {
                     String id = t.getId();
-                    return new EventHolderView(id, t.getTime(), t.subscription().getId(), t.getLabel(),
+                    EventHolderView holderView = new EventHolderView(id, t.getTime(),
+                            t.subscription() != null ? t.subscription().getId() : null,
+                            t.getLabel(),
                             String.format("%s/%s", fullUrl, id));
+                    holderView.setData(t.getData());
+                    return holderView;
                 })
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/{subId}/{eventId}", method = GET)
-    public ModelAndView getSingleEvent(@PathVariable("subId") String subId, @PathVariable("eventId") String eventId)
+    @RequestMapping(value = "/{eventId}", method = GET)
+    public ModelAndView getSingleEvent(@PathVariable("eventId") String eventId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
-        Optional<EventHolder> result = retrieveSingleEvent(subId, eventId);
+        Optional<EventHolder> result = retrieveSingleEvent(eventId);
 
         if (result.isPresent()) {
             final String fullUrl = RequestUtils.resolveFullRequestUrl();
@@ -117,19 +122,22 @@ public class EventLogController {
 
         throw new ResourceNotAvailableException("Could not find event");
     }
+    
+    public ModelAndView getSingleEventForSubscription(String subId, String eventId)
+            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
+        return getSingleEvent(eventId);
+    }
 
-    private Optional<EventHolder> retrieveSingleEvent(String subId, String eventId) throws NotAuthenticatedException, UnknownSubscriptionException {
-        SubscriptionInstance subscription = subDao.getSubscription(subId);
-        Optional<EventHolder> result = store.getEventsForSubscription(subscription).stream()
-                .filter(t -> t.getId().equals(eventId))
-                .findFirst();
+
+    private Optional<EventHolder> retrieveSingleEvent(String eventId) throws NotAuthenticatedException, UnknownSubscriptionException {
+        Optional<EventHolder> result = store.getSingleEvent(eventId);
         return result;
     }
 
-    @RequestMapping(value = "/{subId}/{eventId}/content", method = GET)
-    public void getSingleEventContent(@PathVariable("subId") String subId, @PathVariable("eventId") String eventId)
+    @RequestMapping(value = "/{eventId}/content", method = GET)
+    public void getSingleEventContent(@PathVariable("eventId") String eventId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
-        Optional<EventHolder> holder = retrieveSingleEvent(subId, eventId);
+        Optional<EventHolder> holder = retrieveSingleEvent(eventId);
 
         if (!holder.isPresent()) {
             throw new ResourceNotAvailableException("Could not find event");
@@ -165,6 +173,7 @@ public class EventLogController {
         private final String subscriptionId;
         private final String label;
         private final String href;
+        private Object data;
 
         public EventHolderView(String id, DateTime time, String subscriptionId, String label, String href) {
             this.id = id;
@@ -194,5 +203,13 @@ public class EventLogController {
             return href;
         }
 
+        public void setData(Object data) {
+            this.data = data;
+        }
+
+        public Object getData() {
+            return data;
+        }
+        
     }
 }

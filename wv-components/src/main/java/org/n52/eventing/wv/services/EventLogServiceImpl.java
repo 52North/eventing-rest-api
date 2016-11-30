@@ -30,7 +30,10 @@ package org.n52.eventing.wv.services;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
 import org.joda.time.DateTime;
@@ -88,11 +91,33 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
         return Collections.emptyList();
     }
 
+    @Override
+    public Optional<EventHolder> getSingleEvent(String eventId) {
+        try (Session session = hdc.createSession()) {
+            int idInt = super.parseId(eventId);
+            HibernateEventDao dao = new HibernateEventDao(session);
+            Optional<WvEvent> result = dao.retrieveById(idInt);
+            return Optional.ofNullable(result.isPresent() ? wrapEventBrief(result.get()) : null);
+        }
+        catch (NumberFormatException e) {
+            LOG.warn(e.getMessage());
+        }
+        
+        return Optional.empty();
+    }
+    
+    
+
     private EventHolder wrapEventBrief(WvEvent e) {
         String label = String.format("Match for rule: '%s'", e.getRule());
         EventHolder holder = new EventHolder(Integer.toString(e.getId()),
                 new DateTime(e.getTimestamp()),
                 null, label, null);
+        Map<String, Object> props = new HashMap<>();
+        props.put("value", e.getValue());
+        props.put("previousValue", e.getPreviousValue());
+        props.put("previousTimestamp", new DateTime(e.getPreviousTimestamp()));
+        holder.setData(props);
         return holder;
     }
 

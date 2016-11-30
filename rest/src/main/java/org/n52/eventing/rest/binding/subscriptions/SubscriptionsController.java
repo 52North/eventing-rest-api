@@ -139,6 +139,13 @@ public class SubscriptionsController {
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
         return eventLogController.getEventsForSubscription(subId);
     }
+    
+    @RequestMapping(value = "/{subId}/events/{eventId}", method = GET)
+    public ModelAndView getSingleSubscription(@PathVariable("subId") String subId,
+            @PathVariable("eventId") String eventId)
+            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
+        return eventLogController.getSingleEventForSubscription(subId, eventId);
+    }
 
 
     @RequestMapping(value = "", method = POST)

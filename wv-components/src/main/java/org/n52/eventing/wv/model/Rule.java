@@ -28,6 +28,8 @@
 
 package org.n52.eventing.wv.model;
 
+import com.google.common.base.MoreObjects;
+
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
@@ -98,5 +100,16 @@ public class Rule {
         this.series = series;
     }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(getClass())
+                .add("id", getId())
+                .add("series", getSeries().getId())
+                .add("threshold", getThreshold())
+                .add("trend", getTrendCode())
+                .toString();
+    }
+
+    
 
 }

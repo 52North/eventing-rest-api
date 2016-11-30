@@ -44,6 +44,7 @@ public class EventHolder implements Comparable<EventHolder> {
     private final SubscriptionInstance subscription;
     private final String label;
     private transient final Optional<Streamable> streamable;
+    private Object data;
 
     public EventHolder(String id, DateTime time, SubscriptionInstance subscription, String label, Optional<Streamable> streamable) {
         this.id = id;
@@ -73,6 +74,14 @@ public class EventHolder implements Comparable<EventHolder> {
         return streamable;
     }
 
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+    public Object getData() {
+        return data;
+    }
+    
 
     @Override
     public int compareTo(EventHolder o) {
