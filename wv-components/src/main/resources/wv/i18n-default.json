@@ -1,0 +1,12 @@
+{
+    "adminGroupNames": [
+        "admins",
+        "administrators"
+    ],
+    "editorGroupNames": [
+        "publishers",
+        "editors"
+    ],
+    "restrictedSeriesIds": [
+    ]
+}

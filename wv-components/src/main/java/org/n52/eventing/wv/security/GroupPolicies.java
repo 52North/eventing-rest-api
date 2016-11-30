@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
 public class GroupPolicies {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupPolicies.class);
-    private final static String CONFIG_FILE = "/wv-group-policies.json";
-    private final static String CONFIG_DEFAULT_FILE = "/wv-group-policies-default.json";
+    private final static String CONFIG_FILE = "/wv/group-policies.json";
+    private final static String CONFIG_DEFAULT_FILE = "/wv/group-policies-default.json";
     private final Map<String, JsonNode> config;
 
     public GroupPolicies() {

@@ -45,7 +45,7 @@ public class HibernateDatabaseConnection implements InitializingBean, Disposable
     @Override
     public void afterPropertiesSet() throws Exception {
         Configuration cfg = new Configuration();
-        cfg.configure("/hibernate.cfg.xml");
+        cfg.configure("/wv/hibernate-eventing.cfg.xml");
 
         this.factory = cfg.buildSessionFactory();
     }

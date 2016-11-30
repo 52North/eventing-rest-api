@@ -12,18 +12,18 @@
         <property name="connection.password">postgres</property>
         <property name="connection.driver_class">org.postgresql.Driver</property>
 
-        <mapping resource="/hibernate/wv/user.hbm.xml"/>
-        <mapping resource="/hibernate/wv/group.hbm.xml"/>
-        <mapping resource="/hibernate/wv/subscription.hbm.xml"/>
-        <mapping resource="/hibernate/wv/rule.hbm.xml"/>
-        <mapping resource="/hibernate/wv/series.hbm.xml"/>
-        <mapping resource="/hibernate/wv/unit.hbm.xml"/>
-        <mapping resource="/hibernate/wv/phenomenon.hbm.xml"/>
-        <mapping resource="/hibernate/wv/category.hbm.xml"/>
-        <mapping resource="/hibernate/wv/procedure.hbm.xml"/>
-        <mapping resource="/hibernate/wv/feature.hbm.xml"/>
-        <mapping resource="/hibernate/wv/trend.hbm.xml"/>
-        <mapping resource="/hibernate/wv/event.hbm.xml"/>
+        <mapping resource="/wv/hibernate/user.hbm.xml"/>
+        <mapping resource="/wv/hibernate/group.hbm.xml"/>
+        <mapping resource="/wv/hibernate/subscription.hbm.xml"/>
+        <mapping resource="/wv/hibernate/rule.hbm.xml"/>
+        <mapping resource="/wv/hibernate/series.hbm.xml"/>
+        <mapping resource="/wv/hibernate/unit.hbm.xml"/>
+        <mapping resource="/wv/hibernate/phenomenon.hbm.xml"/>
+        <mapping resource="/wv/hibernate/category.hbm.xml"/>
+        <mapping resource="/wv/hibernate/procedure.hbm.xml"/>
+        <mapping resource="/wv/hibernate/feature.hbm.xml"/>
+        <mapping resource="/wv/hibernate/trend.hbm.xml"/>
+        <mapping resource="/wv/hibernate/event.hbm.xml"/>
 
     </session-factory>
 </hibernate-configuration>
