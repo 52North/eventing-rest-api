@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.wv.dao;
 
+import java.util.List;
 import org.n52.eventing.wv.model.Rule;
 
 /**
@@ -34,5 +35,7 @@ import org.n52.eventing.wv.model.Rule;
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public interface RuleDao extends BaseDao<Rule> {
+
+    List<Rule> retrieveBySeries(String seriesIdentifier) throws DatabaseException;
 
 }

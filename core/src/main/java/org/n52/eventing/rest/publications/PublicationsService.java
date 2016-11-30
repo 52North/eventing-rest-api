@@ -28,6 +28,7 @@
 package org.n52.eventing.rest.publications;
 
 import java.util.List;
+import org.springframework.util.MultiValueMap;
 
 /**
  *
@@ -36,6 +37,10 @@ import java.util.List;
 public interface PublicationsService {
 
     boolean hasPublication(String id);
+
+    default List<Publication> getPublications(MultiValueMap<String, String> filter) {
+        return getPublications();
+    };
 
     List<Publication> getPublications();
 

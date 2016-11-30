@@ -37,15 +37,14 @@ import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.binding.UrlSettings;
 import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.security.NotAuthenticatedException;
-import org.n52.eventing.security.SecurityService;
-import org.n52.eventing.rest.security.SecurityRights;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
-import org.n52.eventing.rest.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -61,26 +60,16 @@ public class TemplatesController {
     @Autowired
     private TemplatesDao dao;
 
-    @Autowired
-    private SecurityService securityService;
-
-    @Autowired
-    private SecurityRights rights;
-
-
 
     @RequestMapping("")
-    public ModelAndView getTemplates() throws IOException, URISyntaxException, NotAuthenticatedException {
+    public ModelAndView getTemplates(@RequestParam(required = false) MultiValueMap<String, String> query) throws IOException, URISyntaxException, NotAuthenticatedException {
         String fullUrl = RequestUtils.resolveFullRequestUrl();
 
-        User user = securityService.resolveCurrentUser();
-
         List<ResourceCollection> list = new ArrayList<>();
-        this.dao.getTemplates().stream().forEach(t -> {
-            if (!rights.canSeeTemplate(user, t)) {
-                return;
-            }
 
+        List<TemplateDefinition> result = query == null ? this.dao.getTemplates() : this.dao.getTemplates(query);
+
+        result.stream().forEach(t -> {
             list.add(ResourceCollection.createResource(t.getId())
                     .withLabel(t.getLabel())
                     .withDescription(t.getDescription())
@@ -99,14 +88,7 @@ public class TemplatesController {
         if (this.dao.hasTemplate(id)) {
             try {
                 TemplateDefinition temp = this.dao.getTemplate(id);
-
-                User user = securityService.resolveCurrentUser();
-
-                if (!rights.canSeeTemplate(user, temp)) {
-                    throw new ResourceNotAvailableException("not there: "+ id);
-                }
                 return temp;
-
             } catch (UnknownTemplateException ex) {
                 throw new ResourceNotAvailableException(ex.getMessage(), ex);
             }

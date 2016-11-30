@@ -25,34 +25,39 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.security;
 
-import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
-import org.n52.eventing.rest.publications.Publication;
-import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
-import org.n52.eventing.rest.templates.TemplateDefinition;
-import org.n52.eventing.rest.users.User;
+package org.n52.eventing.wv.dao.hibernate;
+
+import java.util.List;
+import javax.persistence.criteria.CriteriaQuery;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.n52.eventing.wv.dao.EventDao;
+import org.n52.eventing.wv.model.Rule;
+import org.n52.eventing.wv.model.WvEvent;
+import org.n52.eventing.wv.model.WvSubscription;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface SecurityRights {
+public class HibernateEventDao extends BaseHibernateDao<WvEvent> implements EventDao {
 
-    boolean canSeeSubscription(User user, SubscriptionInstance sub);
-
-    boolean canChangeSubscription(User user, SubscriptionInstance sub);
-
-    default boolean canSeeTemplate(User user, TemplateDefinition template) {
-        return true;
+    public HibernateEventDao(Session session) {
+        super(session);
     }
 
-    default boolean canSeePublication(User user, Publication pub) {
-        return true;
+    @Override
+    public List<WvEvent> retrieveForSubscription(int idInt) {
+        Session s = getSession();
+        String param = "subId";
+        String eventEntity = WvEvent.class.getSimpleName();
+        String subEntity = WvSubscription.class.getSimpleName();
+        String hql = String.format("SELECT e FROM %s e join e.rule r, %s s WHERE s.id=:%s AND s.rule = r", eventEntity, subEntity, param);
+        Query q = getSession().createQuery(hql);
+        q.setParameter(param, idInt);
+        return q.list();
     }
 
-    default boolean canUseDeliveryMethod(User user, DeliveryMethodDefinition delivery) {
-        return true;
-    }
 
 }

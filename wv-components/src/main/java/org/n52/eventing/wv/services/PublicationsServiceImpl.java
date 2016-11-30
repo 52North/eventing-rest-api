@@ -29,7 +29,9 @@
 package org.n52.eventing.wv.services;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
@@ -47,6 +49,7 @@ import org.n52.eventing.wv.security.AccessRights;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.MultiValueMap;
 
 /**
  *
@@ -96,24 +99,40 @@ public class PublicationsServiceImpl extends BaseService implements Publications
     }
 
     @Override
-    public List<Publication> getPublications() {
-        Session session = hdc.createSession();
-        SeriesDao dao = new HibernateSeriesDao(session);
+    public List<Publication> getPublications(MultiValueMap<String, String> filter) {
+        if (filter == null || filter.isEmpty() || !filter.containsKey("feature")) {
+            return getPublications();
+        }
 
-        try {
+        return internalGet((Session session) -> {
+            SeriesDao dao = new HibernateSeriesDao(session);
+            List<String> val = filter.get("feature");
+            if (val.isEmpty()) {
+                throw new DatabaseException("Filter 'feature' cannot be empty");
+            }
+            return dao.retrieveByFeature(val.get(0));
+        });
+    }
+
+    @Override
+    public List<Publication> getPublications() {
+        return internalGet((Session session) -> {
+            SeriesDao dao = new HibernateSeriesDao(session);
+            return dao.retrieve(null);
+        });
+    }
+
+    private List<Publication> internalGet(DaoSupplier<List<Series>> retriever) {
+        try (Session session = hdc.createSession()) {
             WvUser user = super.resolveUser();
-            List<Series> pubs = dao.retrieve(null);
+            List<Series> pubs = retriever.getFromDao(session);
             return pubs.stream()
                     .filter(s -> accessRights.canSeeSeries(user, s.getId()))
-                    .map((Series s) -> {
-                return wrapSeries(s);
-            }).collect(Collectors.toList());
+                    .map((Series s) -> wrapSeriesBrief(s))
+                    .collect(Collectors.toList());
         }
-        catch (NotAuthenticatedException | NumberFormatException | DatabaseException e) {
+        catch (NotAuthenticatedException | DatabaseException e) {
             LOG.warn(e.getMessage());
-        }
-        finally {
-            session.close();
         }
 
         return Collections.emptyList();
@@ -143,12 +162,27 @@ public class PublicationsServiceImpl extends BaseService implements Publications
         throw new UnknownPublicationsException("The publication is unknown: "+id);
     }
 
+    private Publication wrapSeriesBrief(Series s) {
+        String desc = String.format("Series '%s': Phenomenon '%s' of Feature '%s'",
+                s.getId(),
+                s.getPhenomenon().getPhenomenonId(),
+                s.getFeature().getIdentifier());
+        Publication pub = new Publication(Integer.toString(s.getId()), desc, desc);
+        return pub;
+    }
+
     private Publication wrapSeries(Series s) {
         String desc = String.format("Series '%s': Phenomenon '%s' of Feature '%s'",
                 s.getId(),
                 s.getPhenomenon().getPhenomenonId(),
                 s.getFeature().getIdentifier());
         Publication pub = new Publication(Integer.toString(s.getId()), desc, desc);
+        Map<String, Object> props = new HashMap<>();
+        props.put("feature", s.getFeature().getIdentifier());
+        props.put("phenomenon", s.getPhenomenon().getPhenomenonId());
+        props.put("category", s.getCategory().getCategoryId());
+        props.put("procedure", s.getProcedure().getProcedureId());
+        pub.setDetails(props);
         return pub;
     }
 

@@ -25,34 +25,29 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
+package org.n52.eventing.wv.services;
 
-package org.n52.eventing.rest.security;
-
-import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
-import org.n52.eventing.rest.users.User;
+import org.hibernate.Session;
+import org.n52.eventing.security.NotAuthenticatedException;
+import org.n52.eventing.wv.dao.DatabaseException;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
+ *
+ * @param <T> the type of results supplied by this supplier
  */
-public class DefaultSecurityRightsImpl implements SecurityRights {
+@FunctionalInterface
+public interface DaoSupplier<T> {
 
-    @Override
-    public boolean canSeeSubscription(User user, SubscriptionInstance sub) {
-        if (user.isAdmin()) {
-            return true;
-        }
-
-        return user == sub.getUser();
-    }
-
-    @Override
-    public boolean canChangeSubscription(User user, SubscriptionInstance sub) {
-        if (user.isAdmin()) {
-            return true;
-        }
-
-        return user == sub.getUser();
-    }
+    /**
+     * Gets a result.
+     *
+     * @return a result
+     * @throws org.n52.eventing.security.NotAuthenticatedException
+     * @throws org.n52.eventing.wv.dao.DatabaseException
+     *
+     */
+    public T getFromDao(Session session) throws NotAuthenticatedException, DatabaseException;
 
 }

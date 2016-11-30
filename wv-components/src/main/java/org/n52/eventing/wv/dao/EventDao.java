@@ -25,44 +25,17 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
+package org.n52.eventing.wv.dao;
 
-package org.n52.eventing.rest.security;
-
-import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
-import org.n52.eventing.rest.publications.Publication;
-import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
-import org.n52.eventing.rest.templates.TemplateDefinition;
-import org.n52.eventing.rest.users.User;
+import java.util.List;
+import org.n52.eventing.wv.model.WvEvent;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class NonRestrictiveSecurityRightsImpl implements SecurityRights {
+public interface EventDao extends BaseDao<WvEvent> {
 
-    @Override
-    public boolean canSeeSubscription(User user, SubscriptionInstance sub) {
-        return true;
-    }
-
-    @Override
-    public boolean canChangeSubscription(User user, SubscriptionInstance sub) {
-        return true;
-    }
-
-    @Override
-    public boolean canSeePublication(User user, Publication pub) {
-        return true;
-    }
-
-    @Override
-    public boolean canSeeTemplate(User user, TemplateDefinition template) {
-        return true;
-    }
-
-    @Override
-    public boolean canUseDeliveryMethod(User user, DeliveryMethodDefinition delivery) {
-        return true;
-    }
+    List<WvEvent> retrieveForSubscription(int idInt);
 
 }

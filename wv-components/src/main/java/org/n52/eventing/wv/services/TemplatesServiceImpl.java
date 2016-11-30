@@ -29,17 +29,14 @@
 package org.n52.eventing.wv.services;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
-import org.n52.eventing.rest.parameters.ParameterDefinition;
-import org.n52.eventing.rest.templates.Definition;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
+import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.RuleDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateRuleDao;
@@ -48,6 +45,7 @@ import org.n52.eventing.wv.model.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.MultiValueMap;
 
 /**
  *
@@ -102,20 +100,37 @@ public class TemplatesServiceImpl implements TemplatesDao {
 
     @Override
     public List<TemplateDefinition> getTemplates() {
-        Session session = hdc.createSession();
+        return internalGet((Session s ) -> {
+            RuleDao dao = new HibernateRuleDao(s);
+            return dao.retrieve(null);
+        });
+    }
 
-        RuleDao dao = new HibernateRuleDao(session);
-        try {
-            List<Rule> templ = dao.retrieve(null);
+
+    @Override
+    public List<TemplateDefinition> getTemplates(MultiValueMap<String, String> filter) {
+        if (filter == null || filter.isEmpty() || !filter.containsKey("series")) {
+            return getTemplates();
+        }
+        return internalGet((Session s ) -> {
+            RuleDao dao = new HibernateRuleDao(s);
+            List<String> val = filter.get("series");
+            if (val.isEmpty()) {
+                throw new DatabaseException("Filter 'series' cannot be empty");
+            }
+            return dao.retrieveBySeries(val.get(0));
+        });
+    }
+
+    private List<TemplateDefinition> internalGet(DaoSupplier<List<Rule>> supplier) {
+        try (Session session = hdc.createSession()) {
+            List<Rule> templ = supplier.getFromDao(session);
             return templ.stream().map((Rule r) -> {
                 return wrapRuleBrief(r);
             }).collect(Collectors.toList());
         }
-        catch (DatabaseException | NumberFormatException e) {
+        catch (DatabaseException | NumberFormatException | NotAuthenticatedException e) {
             LOG.warn(e.getMessage());
-        }
-        finally {
-            session.close();
         }
 
         return Collections.emptyList();

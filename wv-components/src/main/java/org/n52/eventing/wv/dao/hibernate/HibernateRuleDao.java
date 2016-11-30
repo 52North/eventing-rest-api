@@ -28,11 +28,14 @@
 
 package org.n52.eventing.wv.dao.hibernate;
 
+import java.util.List;
 import java.util.Optional;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.dao.RuleDao;
+import org.n52.eventing.wv.model.Series;
 import org.n52.eventing.wv.model.Trend;
 
 
@@ -62,6 +65,25 @@ public class HibernateRuleDao extends BaseHibernateDao<Rule> implements RuleDao 
 
         return trendCode;
     }
+
+    @Override
+    public List<Rule> retrieveBySeries(String seriesIdentifier) throws DatabaseException {
+        int idInt;
+        try {
+            idInt = Integer.parseInt(seriesIdentifier);
+        }
+        catch (NumberFormatException e) {
+            throw new DatabaseException("Filter 'series' must be a valid integer number");
+        }
+
+        String param = "identifier";
+        String entity = Rule.class.getSimpleName();
+        String hql = String.format("SELECT r FROM %s r join r.series s WHERE s.id=:%s", entity, param);
+        Query q = getSession().createQuery(hql);
+        q.setParameter(param, idInt);
+        return q.list();
+    }
+
 
 
 }

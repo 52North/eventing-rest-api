@@ -22,11 +22,7 @@
         <mapping resource="/hibernate/wv/procedure.hbm.xml"/>
         <mapping resource="/hibernate/wv/feature.hbm.xml"/>
         <mapping resource="/hibernate/wv/trend.hbm.xml"/>
-
-<!--        <mapping resource="/hibernate/wv/event.hbm.xml"/>
-        <mapping resource="/hibernate/wv/trend.hbm.xml"/>
-
-        -->
+        <mapping resource="/hibernate/wv/event.hbm.xml"/>
 
     </session-factory>
 </hibernate-configuration>

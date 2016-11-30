@@ -54,4 +54,8 @@ public interface EventLogStore {
 
     Collection<EventHolder> getEventsForSubscription(SubscriptionInstance subscription);
 
+    default Collection<EventHolder> getEventsForSubscription(SubscriptionInstance subscription, Pagination pagination) {
+        return getEventsForSubscription(subscription);
+    }
+
 }

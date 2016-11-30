@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.wv.dao;
 
+import java.util.List;
 import org.n52.eventing.wv.model.Series;
 
 /**
@@ -35,4 +36,5 @@ import org.n52.eventing.wv.model.Series;
  */
 public interface SeriesDao extends BaseDao<Series> {
 
+    List<Series> retrieveByFeature(String featureIdentifier) throws DatabaseException;
 }

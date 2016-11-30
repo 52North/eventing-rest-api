@@ -20,6 +20,7 @@
     <bean class="org.n52.eventing.wv.services.EmailDeliveryProviderImpl" />
     <bean class="org.n52.eventing.wv.services.TemplatesServiceImpl" />
     <bean class="org.n52.eventing.wv.services.FilterLogicImpl" />
+    <bean class="org.n52.eventing.wv.services.EventLogServiceImpl" />
 
     <!-- access rights and groups config -->
     <bean class="org.n52.eventing.wv.security.GroupPolicies" />

@@ -34,14 +34,15 @@ import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.UrlSettings;
+import org.n52.eventing.rest.binding.eventlog.EventLogController;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.security.SecurityService;
-import org.n52.eventing.rest.security.SecurityRights;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.n52.eventing.rest.subscriptions.SubscriptionManager;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
@@ -85,7 +86,7 @@ public class SubscriptionsController {
     private SecurityService securityService;
 
     @Autowired
-    private SecurityRights rights;
+    private EventLogController eventLogController;
 
     @RequestMapping("")
     public ModelAndView getSubscriptions(@RequestParam(required = false) MultiValueMap<String, String> query)
@@ -104,13 +105,8 @@ public class SubscriptionsController {
     private List<ResourceCollection> retrieveSubscriptions(String fullUrl) throws NotAuthenticatedException {
         List<ResourceCollection> pubs = new ArrayList<>();
 
-        final User user = securityService.resolveCurrentUser();
-
         this.dao.getSubscriptions().stream().forEach(s -> {
             String pubId = s.getId();
-            if (!rights.canSeeSubscription(user, s)) {
-                return;
-            }
             pubs.add(ResourceCollection.createResource(pubId)
                     .withLabel(s.getLabel())
                     .withDescription(s.getDescription())
@@ -130,17 +126,18 @@ public class SubscriptionsController {
             throw new ResourceNotAvailableException("The subscription is not available: "+id);
         }
 
-        final User user = securityService.resolveCurrentUser();
-
         try {
             SubscriptionInstance sub = this.dao.getSubscription(id);
-            if (!rights.canSeeSubscription(user, sub)) {
-                throw new ResourceNotAvailableException("The subscription is not available: "+id);
-            }
             return sub;
         } catch (UnknownSubscriptionException ex) {
             throw new ResourceNotAvailableException(ex.getMessage(), ex);
         }
+    }
+
+    @RequestMapping(value = "/{subId}/events", method = GET)
+    public Collection<EventLogController.EventHolderView> getSubscriptionEvents(@PathVariable("subId") String subId)
+            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
+        return eventLogController.getEventsForSubscription(subId);
     }
 
 

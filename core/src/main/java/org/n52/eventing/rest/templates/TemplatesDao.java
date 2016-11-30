@@ -28,6 +28,7 @@
 package org.n52.eventing.rest.templates;
 
 import java.util.List;
+import org.springframework.util.MultiValueMap;
 
 /**
  *
@@ -40,5 +41,9 @@ public interface TemplatesDao {
     TemplateDefinition getTemplate(String id) throws UnknownTemplateException;
 
     List<TemplateDefinition> getTemplates();
+
+    default List<TemplateDefinition> getTemplates(MultiValueMap<String, String> filter) {
+        return getTemplates();
+    }
 
 }

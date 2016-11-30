@@ -41,13 +41,10 @@ import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.binding.UrlSettings;
 import org.n52.eventing.security.NotAuthenticatedException;
-import org.n52.eventing.security.SecurityService;
 import org.n52.eventing.rest.eventlog.EventHolder;
 import org.n52.eventing.rest.eventlog.EventLogStore;
-import org.n52.eventing.rest.security.SecurityRights;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
-import org.n52.eventing.rest.users.User;
 import org.n52.subverse.delivery.Streamable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
@@ -72,12 +69,6 @@ public class EventLogController {
     private SubscriptionsService subDao;
 
     @Autowired
-    private SecurityService securityService;
-
-    @Autowired
-    private SecurityRights rights;
-
-    @Autowired
     private EventLogStore store;
 
 
@@ -86,10 +77,7 @@ public class EventLogController {
             throws IOException, URISyntaxException, NotAuthenticatedException {
         final String fullUrl = RequestUtils.resolveFullRequestUrl();
 
-        User user = securityService.resolveCurrentUser();
-
         return store.getAllEvents().stream()
-                .filter(eh -> rights.canSeeSubscription(user, eh.subscription()))
                 .map((EventHolder t) -> {
                     String id = t.getId();
                     return new EventHolderView(id, t.getTime(), t.subscription().getId(), t.getLabel(),
@@ -104,11 +92,6 @@ public class EventLogController {
         final String fullUrl = RequestUtils.resolveFullRequestUrl();
 
         SubscriptionInstance subscription = subDao.getSubscription(subId);
-        User user = securityService.resolveCurrentUser();
-
-        if (!rights.canSeeSubscription(user, subscription)) {
-            throw new NotAuthenticatedException("Access denied");
-        }
 
         return store.getEventsForSubscription(subscription).stream()
                 .map((EventHolder t) -> {
@@ -137,10 +120,6 @@ public class EventLogController {
 
     private Optional<EventHolder> retrieveSingleEvent(String subId, String eventId) throws NotAuthenticatedException, UnknownSubscriptionException {
         SubscriptionInstance subscription = subDao.getSubscription(subId);
-        User user = securityService.resolveCurrentUser();
-        if (!rights.canSeeSubscription(user, subscription)) {
-            throw new NotAuthenticatedException("Access denied");
-        }
         Optional<EventHolder> result = store.getEventsForSubscription(subscription).stream()
                 .filter(t -> t.getId().equals(eventId))
                 .findFirst();

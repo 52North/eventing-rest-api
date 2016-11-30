@@ -30,15 +30,12 @@ package org.n52.eventing.rest.subscriptions;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.joda.time.DateTime;
-import org.n52.eventing.rest.security.SecurityRights;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.n52.eventing.rest.users.User;
-import org.n52.subverse.engine.FilterEngine;
 import org.n52.subverse.termination.Terminatable;
 import org.n52.subverse.termination.TerminationScheduler;
 import org.n52.subverse.termination.UnknownTerminatableException;
@@ -67,9 +64,6 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
 
     @Autowired
     private FilterLogic filterLogic;
-
-    @Autowired
-    private SecurityRights rights;
 
     @Autowired
     private TerminationScheduler terminator;
@@ -145,14 +139,6 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
 
     @Override
     public void updateSubscription(SubscriptionUpdateInstance subDef, User user) throws InvalidSubscriptionException {
-        try {
-            if (!rights.canChangeSubscription(user, this.dao.getSubscription(subDef.getId()))) {
-                throw new InvalidSubscriptionException("The current user is not allowed to remove the subscription with id "+subDef.getId());
-            }
-        } catch (UnknownSubscriptionException ex) {
-            throw new InvalidSubscriptionException(ex.getMessage(), ex);
-        }
-
         String eolString = subDef.getEndOfLife();
         if (eolString != null && !eolString.isEmpty()) {
             DateTime eol = parseEndOfLife(eolString);
@@ -192,14 +178,6 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
     @Override
     public void removeSubscription(String id, User user) throws InvalidSubscriptionException {
         if (this.dao.hasSubscription(id)) {
-            try {
-                if (!rights.canChangeSubscription(user, this.dao.getSubscription(id))) {
-                    throw new InvalidSubscriptionException("The current user is not allowed to remove the subscription with id "+id);
-                }
-                this.dao.remove(id);
-            } catch (UnknownSubscriptionException ex) {
-                throw new InvalidSubscriptionException(ex.getMessage(), ex);
-            }
             remove(id);
         }
         else {

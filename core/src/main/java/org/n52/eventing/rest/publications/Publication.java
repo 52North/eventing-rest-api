@@ -37,6 +37,7 @@ public class Publication {
     private String id;
     private String label;
     private String description;
+    private Object details;
 
     public Publication() {
     }
@@ -69,6 +70,14 @@ public class Publication {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Object getDetails() {
+        return details;
+    }
+
+    public void setDetails(Object details) {
+        this.details = details;
     }
 
 }

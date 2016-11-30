@@ -28,7 +28,10 @@
 
 package org.n52.eventing.wv.dao.hibernate;
 
+import java.util.List;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.SeriesDao;
 import org.n52.eventing.wv.model.Series;
 
@@ -41,6 +44,17 @@ public class HibernateSeriesDao extends BaseHibernateDao<Series> implements Seri
     public HibernateSeriesDao(Session session) {
         super(session);
     }
+
+    @Override
+    public List<Series> retrieveByFeature(String featureIdentifier) throws DatabaseException {
+        String param = "featureIdentifer";
+        String entity = Series.class.getSimpleName();
+        String hql = String.format("SELECT s FROM %s s join s.feature f WHERE f.identifier=:%s", entity, param);
+        Query q = getSession().createQuery(hql);
+        q.setParameter(param, featureIdentifier);
+        return q.list();
+    }
+
 
 
 }

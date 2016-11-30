@@ -28,10 +28,80 @@
 
 package org.n52.eventing.wv.model;
 
+import java.util.Date;
+import org.joda.time.DateTime;
+
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public class WvEvent {
+
+    private int id;
+    private Rule rule;
+    private Date timestamp;
+    private Double value;
+    private Date previousTimestamp;
+    private Double previousValue;
+
+
+    public WvEvent() {
+    }
+
+    public WvEvent(Rule rule, Date timestamp, Double value, Date previousTimestamp, Double previousValue) {
+        this.rule = rule;
+        this.timestamp = timestamp;
+        this.value = value;
+        this.previousTimestamp = previousTimestamp;
+        this.previousValue = previousValue;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Rule getRule() {
+        return rule;
+    }
+
+    public void setRule(Rule rule) {
+        this.rule = rule;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Double getValue() {
+        return value;
+    }
+
+    public void setValue(Double value) {
+        this.value = value;
+    }
+
+    public Date getPreviousTimestamp() {
+        return previousTimestamp;
+    }
+
+    public void setPreviousTimestamp(Date previousTimestamp) {
+        this.previousTimestamp = previousTimestamp;
+    }
+
+    public Double getPreviousValue() {
+        return previousValue;
+    }
+
+    public void setPreviousValue(Double previousValue) {
+        this.previousValue = previousValue;
+    }
 
 }
