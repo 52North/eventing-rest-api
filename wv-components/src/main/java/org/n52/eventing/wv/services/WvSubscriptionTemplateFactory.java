@@ -54,6 +54,8 @@ public class WvSubscriptionTemplateFactory {
                 r.getSeries().getProcedure().getProcedureId());
         TemplateDefinition result = new TemplateDefinition(Integer.toString(r.getId()), label, desc, null);
         Map<String, Object> props = new HashMap<>();
+        props.put("trend", r.getTrendCode().toString());
+        props.put("threshold", r.getThreshold());
         props.put("feature", r.getSeries().getFeature().getIdentifier());
         props.put("category", r.getSeries().getCategory().getCategoryId());
         props.put("phenomenon", r.getSeries().getPhenomenon().getPhenomenonId());

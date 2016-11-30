@@ -39,18 +39,18 @@ public class Series {
     private Phenomenon phenomenon;
     private Procedure procedure;
     private FeatureOfInterest feature;
+    private Unit unit;
 
     public Series() {
     }
 
-    public Series(Category category, Phenomenon phenomenon, Procedure procedure, FeatureOfInterest feature) {
+    public Series(Category category, Phenomenon phenomenon, Procedure procedure, FeatureOfInterest feature, Unit u) {
         this.category = category;
         this.phenomenon = phenomenon;
         this.procedure = procedure;
         this.feature = feature;
+        this.unit = u;
     }
-
-
 
     public int getId() {
         return id;
@@ -91,5 +91,14 @@ public class Series {
     public void setFeature(FeatureOfInterest feature) {
         this.feature = feature;
     }
+
+    public Unit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
+
 
 }

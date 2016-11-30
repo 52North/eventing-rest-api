@@ -33,7 +33,11 @@ import java.util.Random;
 import java.util.UUID;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
+import org.junit.After;
 import org.n52.eventing.wv.dao.hibernate.HibernateCategoryDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateEventDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateFeatureOfInterestDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateGroupDao;
 import org.n52.eventing.wv.dao.hibernate.HibernatePhenomenonDao;
@@ -42,6 +46,7 @@ import org.n52.eventing.wv.dao.hibernate.HibernateRuleDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateSeriesDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateSubscriptionDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateTrendDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateUnitDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Category;
@@ -51,7 +56,8 @@ import org.n52.eventing.wv.model.Phenomenon;
 import org.n52.eventing.wv.model.Procedure;
 import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.Series;
-import org.n52.eventing.wv.model.Trend;
+import org.n52.eventing.wv.model.Unit;
+import org.n52.eventing.wv.model.WvEvent;
 import org.n52.eventing.wv.model.WvSubscription;
 import org.n52.eventing.wv.model.WvUser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -89,7 +95,8 @@ public class CreateDummyDataDisabled {
         HibernateSubscriptionDao subDao = new HibernateSubscriptionDao(session);
         HibernateSeriesDao seriesDao = new HibernateSeriesDao(session);
         HibernateRuleDao ruleDao = new HibernateRuleDao(session);
-        HibernateTrendDao dao = new HibernateTrendDao(session);
+        HibernateTrendDao trendDao = new HibernateTrendDao(session);
+        HibernateEventDao eventDao = new HibernateEventDao(session);
 
         Transaction trans = session.beginTransaction();
         Group adminGroup = new Group("admins", "admin group", true);
@@ -99,14 +106,36 @@ public class CreateDummyDataDisabled {
                 Collections.singleton(adminGroup));
         userDao.store(u);
 
-        WvSubscription subscription = createNewSubscription(seriesDao, ruleDao, dao);
-        subDao.store(subscription);
+        for (int j = 0; j < 2; j++) {
+            WvSubscription subscription = createNewSubscription(seriesDao, ruleDao, trendDao);
+            subDao.store(subscription);
+
+            MutableDateTime increasingDate = new MutableDateTime();
+            increasingDate.addMonths(new Random().nextInt(5)*-1);
+            double startValue = new Random().nextDouble()*180;
+            for (int i = 0; i < 60; i++) {
+                DateTime start = increasingDate.toDateTime();
+                increasingDate.addHours(12);
+                DateTime end = increasingDate.toDateTime();
+                WvEvent e = new WvEvent(subscription.getRule(),
+                        start.toDate(),
+                        startValue+i,
+                        end.toDate(),
+                        startValue+i-1);
+                eventDao.store(e);
+            }
+        }
 
         trans.commit();
     }
 
    private WvSubscription createNewSubscription(HibernateSeriesDao seriesDao, HibernateRuleDao ruleDao, HibernateTrendDao trendDao) throws DatabaseException {
+        HibernateUnitDao unitDao = new HibernateUnitDao(session);
+        Unit u1 = new Unit("cm");
+        unitDao.store(u1);
+
         Series s1 = new Series();
+        s1.setUnit(u1);
         s1.setCategory(createCategory("test-category"));
         s1.setPhenomenon(createPhenomenon("test-phenomenon"));
         s1.setProcedure(createProcedure("test-procedure"));
@@ -125,31 +154,37 @@ public class CreateDummyDataDisabled {
         return sub1;
     }
 
-    private Category createCategory(String name) {
+    private Category createCategory(String name) throws DatabaseException {
         HibernateCategoryDao dao = new HibernateCategoryDao(session);
         if (dao.exists(name)) {
             return dao.retrieveByName(name).get();
         }
+        Category r = new Category(name);
+        dao.store(r);
 
-        return new Category(name);
+        return r;
     }
 
-    private Phenomenon createPhenomenon(String name) {
+    private Phenomenon createPhenomenon(String name) throws DatabaseException {
         HibernatePhenomenonDao dao = new HibernatePhenomenonDao(session);
         if (dao.exists(name)) {
             return dao.retrieveByName(name).get();
         }
+        Phenomenon r = new Phenomenon(name);
+        dao.store(r);
 
-        return new Phenomenon(name);
+        return r;
     }
 
-    private Procedure createProcedure(String name) {
+    private Procedure createProcedure(String name) throws DatabaseException {
         HibernateProcedureDao dao = new HibernateProcedureDao(session);
         if (dao.exists(name)) {
             return dao.retrieveByName(name).get();
         }
+        Procedure r = new Procedure(name);
+        dao.store(r);
 
-        return new Procedure(name);
+        return r;
     }
 
 }

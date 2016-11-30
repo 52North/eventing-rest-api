@@ -182,6 +182,7 @@ public class PublicationsServiceImpl extends BaseService implements Publications
         props.put("phenomenon", s.getPhenomenon().getPhenomenonId());
         props.put("category", s.getCategory().getCategoryId());
         props.put("procedure", s.getProcedure().getProcedureId());
+        props.put("unit", s.getUnit().getCode());
         pub.setDetails(props);
         return pub;
     }

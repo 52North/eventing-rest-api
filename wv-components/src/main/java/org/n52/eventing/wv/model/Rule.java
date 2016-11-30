@@ -110,6 +110,6 @@ public class Rule {
                 .toString();
     }
 
-    
+
 
 }

@@ -17,6 +17,7 @@
         <mapping resource="/hibernate/wv/subscription.hbm.xml"/>
         <mapping resource="/hibernate/wv/rule.hbm.xml"/>
         <mapping resource="/hibernate/wv/series.hbm.xml"/>
+        <mapping resource="/hibernate/wv/unit.hbm.xml"/>
         <mapping resource="/hibernate/wv/phenomenon.hbm.xml"/>
         <mapping resource="/hibernate/wv/category.hbm.xml"/>
         <mapping resource="/hibernate/wv/procedure.hbm.xml"/>

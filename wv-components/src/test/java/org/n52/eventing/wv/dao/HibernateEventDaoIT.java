@@ -127,31 +127,37 @@ public class HibernateEventDaoIT {
         return sub1;
     }
 
-    private Category createCategory(String name) {
+    private Category createCategory(String name) throws DatabaseException {
         HibernateCategoryDao dao = new HibernateCategoryDao(session);
         if (dao.exists(name)) {
             return dao.retrieveByName(name).get();
         }
+        Category r = new Category(name);
+        dao.store(r);
 
-        return new Category(name);
+        return r;
     }
 
-    private Phenomenon createPhenomenon(String name) {
+    private Phenomenon createPhenomenon(String name) throws DatabaseException {
         HibernatePhenomenonDao dao = new HibernatePhenomenonDao(session);
         if (dao.exists(name)) {
             return dao.retrieveByName(name).get();
         }
+        Phenomenon r = new Phenomenon(name);
+        dao.store(r);
 
-        return new Phenomenon(name);
+        return r;
     }
 
-    private Procedure createProcedure(String name) {
+    private Procedure createProcedure(String name) throws DatabaseException {
         HibernateProcedureDao dao = new HibernateProcedureDao(session);
         if (dao.exists(name)) {
             return dao.retrieveByName(name).get();
         }
+        Procedure r = new Procedure(name);
+        dao.store(r);
 
-        return new Procedure(name);
+        return r;
     }
 
     @After

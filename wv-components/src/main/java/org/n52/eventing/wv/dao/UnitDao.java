@@ -28,45 +28,12 @@
 
 package org.n52.eventing.wv.dao;
 
-import java.util.Optional;
-import org.hamcrest.CoreMatchers;
-import org.hibernate.Session;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.n52.eventing.wv.dao.hibernate.HibernateTrendDao;
-import org.n52.eventing.wv.database.HibernateDatabaseConnection;
-import org.n52.eventing.wv.model.Trend;
+import org.n52.eventing.wv.model.Unit;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class HibernateTrendDaoIT {
-
-    private HibernateDatabaseConnection hdc;
-    private Session session;
-
-    @Before
-    public void setup() throws Exception {
-        this.hdc = new HibernateDatabaseConnection();
-        this.hdc.afterPropertiesSet();
-        this.session = this.hdc.createSession();
-    }
-
-    @Test
-    public void roundtrip() throws ImmutableException, DatabaseException  {
-        HibernateTrendDao dao = new HibernateTrendDao(session);
-
-        Optional<Trend> t1 = dao.retrieveById(TrendDao.DomainTrend.Failure);
-        Assert.assertThat(t1.get().getCode(), CoreMatchers.is(99));
-
-        t1 = dao.retrieveById(TrendDao.DomainTrend.LessLess);
-        Assert.assertThat(t1.get().getCode(), CoreMatchers.is(11));
-
-        t1 = dao.retrieveById(TrendDao.DomainTrend.GreaterGreater);
-        Assert.assertThat(t1.get().getCode(), CoreMatchers.is(33));
-    }
+public interface UnitDao extends BaseDao<Unit> {
 
 }
-

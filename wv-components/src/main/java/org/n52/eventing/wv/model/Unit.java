@@ -26,75 +26,66 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.eventlog;
+package org.n52.eventing.wv.model;
 
-import java.util.Optional;
-import org.joda.time.DateTime;
-import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
-import org.n52.subverse.delivery.Streamable;
+import java.util.Objects;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class EventHolder implements Comparable<EventHolder> {
+public class Unit {
 
-    private final String id;
-    private final DateTime time;
-    private final SubscriptionInstance subscription;
-    private final String label;
-    private transient final Optional<Streamable> streamable;
-    private Object data;
+    private int id;
+    private String code;
 
-    public EventHolder(String id, DateTime time, SubscriptionInstance subscription, String label, Optional<Streamable> streamable) {
-        this.id = id;
-        this.time = time;
-        this.subscription = subscription;
-        this.label = label;
-        this.streamable = streamable;
+    public Unit(String code) {
+        this.code = code;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public DateTime getTime() {
-        return time;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public SubscriptionInstance subscription() {
-        return subscription;
+    public String getCode() {
+        return code;
     }
 
-    public String getLabel() {
-        return label;
+    public void setCode(String code) {
+        this.code = code;
     }
-
-    public Optional<Streamable> streamableObject() {
-        return streamable;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
-    }
-
-    public Object getData() {
-        return data;
-    }
-
 
     @Override
-    public int compareTo(EventHolder o) {
-        if (this.time == null) {
-            return -1;
-        }
-        if (o.time == null) {
-            return 1;
-        }
-
-        return this.time.compareTo(o.time);
+    public String toString() {
+        return code;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        return hash;
+    }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Unit other = (Unit) obj;
+        if (!Objects.equals(this.code, other.code)) {
+            return false;
+        }
+        return true;
+    }
 
 }

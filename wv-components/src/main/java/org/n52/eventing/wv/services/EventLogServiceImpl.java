@@ -102,11 +102,11 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
         catch (NumberFormatException e) {
             LOG.warn(e.getMessage());
         }
-        
+
         return Optional.empty();
     }
-    
-    
+
+
 
     private EventHolder wrapEventBrief(WvEvent e) {
         String label = String.format("Match for rule: '%s'", e.getRule());

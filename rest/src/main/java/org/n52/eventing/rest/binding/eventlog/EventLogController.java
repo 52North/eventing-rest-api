@@ -122,7 +122,7 @@ public class EventLogController {
 
         throw new ResourceNotAvailableException("Could not find event");
     }
-    
+
     public ModelAndView getSingleEventForSubscription(String subId, String eventId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
         return getSingleEvent(eventId);
@@ -210,6 +210,6 @@ public class EventLogController {
         public Object getData() {
             return data;
         }
-        
+
     }
 }

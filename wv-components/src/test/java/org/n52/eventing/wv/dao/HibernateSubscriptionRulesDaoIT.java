@@ -46,6 +46,7 @@ import org.n52.eventing.wv.dao.hibernate.HibernateGroupDao;
 import org.n52.eventing.wv.dao.hibernate.HibernatePhenomenonDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateProcedureDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateSubscriptionDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateUnitDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Category;
@@ -56,6 +57,7 @@ import org.n52.eventing.wv.model.Procedure;
 import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.Series;
 import org.n52.eventing.wv.model.Trend;
+import org.n52.eventing.wv.model.Unit;
 import org.n52.eventing.wv.model.WvSubscription;
 import org.n52.eventing.wv.model.WvUser;
 
@@ -88,6 +90,7 @@ public class HibernateSubscriptionRulesDaoIT {
         Optional<Rule> r1r = ruleDao.retrieveById(sub1.getRule().getId());
         Assert.assertThat(r1r.isPresent(), CoreMatchers.is(true));
         Assert.assertThat(r1r.get().getThreshold(), CoreMatchers.is(22.0));
+        Assert.assertThat(r1r.get().getSeries().getUnit().getCode(), CoreMatchers.is("cm"));
 
         Optional<WvSubscription> sub1r = subDao.retrieveById(sub1.getId());
         Assert.assertThat(sub1r.isPresent(), CoreMatchers.is(true));
@@ -165,10 +168,15 @@ public class HibernateSubscriptionRulesDaoIT {
 
     private WvSubscription createNewSubscription(HibernateSeriesDao seriesDao, HibernateRuleDao ruleDao) throws DatabaseException {
         Transaction trans = session.beginTransaction();
+
+        Unit u1 = new Unit("cm");
+        new HibernateUnitDao(session).store(u1);
+
         Series s1 = new Series();
         s1.setCategory(createCategory("test-category"));
         s1.setPhenomenon(createPhenomenon("test-phenomenon"));
         s1.setProcedure(createProcedure("test-procedure"));
+        s1.setUnit(u1);
 
         FeatureOfInterest f = new FeatureOfInterest("test-feature-"+UUID.randomUUID().toString().substring(0, 6),
                 "Test Feature", "point", new Random().nextInt(100000), "its not a bug");
@@ -185,31 +193,37 @@ public class HibernateSubscriptionRulesDaoIT {
         return sub1;
     }
 
-    private Category createCategory(String name) {
+    private Category createCategory(String name) throws DatabaseException {
         HibernateCategoryDao dao = new HibernateCategoryDao(session);
         if (dao.exists(name)) {
             return dao.retrieveByName(name).get();
         }
+        Category r = new Category(name);
+        dao.store(r);
 
-        return new Category(name);
+        return r;
     }
 
-    private Phenomenon createPhenomenon(String name) {
+    private Phenomenon createPhenomenon(String name) throws DatabaseException {
         HibernatePhenomenonDao dao = new HibernatePhenomenonDao(session);
         if (dao.exists(name)) {
             return dao.retrieveByName(name).get();
         }
+        Phenomenon r = new Phenomenon(name);
+        dao.store(r);
 
-        return new Phenomenon(name);
+        return r;
     }
 
-    private Procedure createProcedure(String name) {
+    private Procedure createProcedure(String name) throws DatabaseException {
         HibernateProcedureDao dao = new HibernateProcedureDao(session);
         if (dao.exists(name)) {
             return dao.retrieveByName(name).get();
         }
+        Procedure r = new Procedure(name);
+        dao.store(r);
 
-        return new Procedure(name);
+        return r;
     }
 
 }

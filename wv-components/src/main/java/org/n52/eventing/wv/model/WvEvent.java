@@ -29,7 +29,6 @@
 package org.n52.eventing.wv.model;
 
 import java.util.Date;
-import org.joda.time.DateTime;
 
 /**
  *
