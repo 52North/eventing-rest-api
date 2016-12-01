@@ -35,7 +35,6 @@ import org.hibernate.query.Query;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.dao.RuleDao;
-import org.n52.eventing.wv.model.Series;
 import org.n52.eventing.wv.model.Trend;
 
 

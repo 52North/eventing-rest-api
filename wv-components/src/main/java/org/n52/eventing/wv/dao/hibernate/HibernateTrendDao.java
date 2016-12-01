@@ -28,11 +28,15 @@
 
 package org.n52.eventing.wv.dao.hibernate;
 
+import java.util.Locale;
 import java.util.Optional;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.TrendDao;
+import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.Trend;
+import org.n52.eventing.wv.model.i18n.I18nTrend;
 
 /**
  *
@@ -44,9 +48,8 @@ public class HibernateTrendDao extends BaseHibernateDao<Trend> implements TrendD
         super(s);
     }
 
-
     @Override
-    public Optional<Trend> retrieveById(DomainTrend code) throws DatabaseException {
+    public Optional<Trend> retrieveByDomainTrend(DomainTrend code) throws DatabaseException {
         switch (code) {
             case LessLess:
                 return retrieveById(11);
@@ -74,5 +77,18 @@ public class HibernateTrendDao extends BaseHibernateDao<Trend> implements TrendD
 
         return Optional.empty();
     }
+
+    @Override
+    public Optional<I18nTrend> retrieveAsLocale(Locale locale, Trend original) throws DatabaseException {
+        String param = "identifier";
+        String localeParam = "localeParam";
+        String entity = I18nTrend.class.getSimpleName();
+        String hql = String.format("SELECT ti FROM %s ti join ti.trendCode t WHERE t.code=:%s AND ti.locale=:%s", entity, param, localeParam);
+        Query q = getSession().createQuery(hql);
+        q.setParameter(param, original.getCode());
+        q.setParameter(localeParam, locale.getLanguage());
+        return q.list().stream().findFirst();
+    }
+
 
 }

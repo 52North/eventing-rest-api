@@ -28,15 +28,18 @@
 
 package org.n52.eventing.wv.dao;
 
+import java.util.Locale;
 import java.util.Optional;
 import org.hamcrest.CoreMatchers;
 import org.hibernate.Session;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.n52.eventing.wv.dao.hibernate.HibernateTrendDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Trend;
+import org.n52.eventing.wv.model.i18n.I18nTrend;
 
 /**
  *
@@ -58,14 +61,30 @@ public class HibernateTrendDaoIT {
     public void roundtrip() throws ImmutableException, DatabaseException  {
         HibernateTrendDao dao = new HibernateTrendDao(session);
 
-        Optional<Trend> t1 = dao.retrieveById(TrendDao.DomainTrend.Failure);
+        Optional<Trend> t1 = dao.retrieveByDomainTrend(TrendDao.DomainTrend.Failure);
         Assert.assertThat(t1.get().getCode(), CoreMatchers.is(99));
 
-        t1 = dao.retrieveById(TrendDao.DomainTrend.LessLess);
+        t1 = dao.retrieveByDomainTrend(TrendDao.DomainTrend.LessLess);
         Assert.assertThat(t1.get().getCode(), CoreMatchers.is(11));
 
-        t1 = dao.retrieveById(TrendDao.DomainTrend.GreaterGreater);
+        t1 = dao.retrieveByDomainTrend(TrendDao.DomainTrend.GreaterGreater);
         Assert.assertThat(t1.get().getCode(), CoreMatchers.is(33));
+    }
+
+    @Test
+    public void testLocale() throws ImmutableException, DatabaseException  {
+        HibernateTrendDao dao = new HibernateTrendDao(session);
+
+        Optional<Trend> t1 = dao.retrieveByDomainTrend(TrendDao.DomainTrend.LessLess);
+        Optional<I18nTrend> l1 = dao.retrieveAsLocale(Locale.forLanguageTag("en"), t1.get());
+        Assert.assertThat(l1.isPresent(), CoreMatchers.is(true));
+        Assert.assertThat(l1.get().getLocale(), CoreMatchers.is("en"));
+    }
+
+
+    @After
+    public void shutdown() {
+        session.close();
     }
 
 }

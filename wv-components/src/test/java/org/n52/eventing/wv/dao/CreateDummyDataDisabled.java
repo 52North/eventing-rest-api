@@ -152,7 +152,7 @@ public class CreateDummyDataDisabled {
         s1.setFeature(f);
         seriesDao.store(s1);
 
-        Rule r1 = new Rule(22.0, trendDao.retrieveById(TrendDao.DomainTrend.LessLess).get(), 1, s1);
+        Rule r1 = new Rule(22.0, trendDao.retrieveByDomainTrend(TrendDao.DomainTrend.LessLess).get(), 1, s1);
         ruleDao.store(r1);
 
         WvSubscription sub1 = new WvSubscription(r1);

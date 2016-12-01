@@ -3,24 +3,20 @@
  "-//Hibernate/Hibernate Mapping DTD//EN"
  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="org.n52.eventing.wv.model.Rule" table="rule" mutable="true">
+    <class name="org.n52.eventing.wv.model.i18n.I18nTrend" table="trend_i18n" mutable="true">
         <meta attribute="class-description">
-            This class contains the rule details.
+            This class contains the trend (i18n) details.
         </meta>
         <id name="id" type="int" column="pkid">
             <generator class="sequence"/>
         </id>
-        <property name="threshold" column="threshold" type="double"/>
-        <property name="activeFlag" column="active_flag" type="int"/>
-        <many-to-one name="series" class="org.n52.eventing.wv.model.Series" foreign-key="series_pkid">
-            <column name="series_pkid">
-                <comment>Relation/foreign key to the related series</comment>
-            </column>
-        </many-to-one>
         <many-to-one name="trendCode" class="org.n52.eventing.wv.model.Trend" foreign-key="trend_code">
             <column name="trend_code">
                 <comment>Relation/foreign key to the related trend_code</comment>
             </column>
         </many-to-one>
+        <property name="locale" column="locale" type="string" />
+        <property name="name" column="name" type="string" />
+        <property name="description" column="description" type="string" />
     </class>
 </hibernate-mapping>

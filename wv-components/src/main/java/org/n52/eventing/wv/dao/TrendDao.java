@@ -28,16 +28,16 @@
 
 package org.n52.eventing.wv.dao;
 
-import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
-import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.wv.model.Trend;
+import org.n52.eventing.wv.model.i18n.I18nTrend;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface TrendDao {
+public interface TrendDao extends BaseDao<Trend> {
 
     public enum DomainTrend {
         LessLess,
@@ -52,11 +52,9 @@ public interface TrendDao {
         Failure
     }
 
-    Optional<Trend> retrieveById(DomainTrend code) throws DatabaseException;
+    Optional<Trend> retrieveByDomainTrend(DomainTrend code) throws DatabaseException;
 
-    Optional<Trend> retrieveById(int id) throws DatabaseException;
-
-    List<Trend> retrieve(Pagination pagination) throws DatabaseException;
+    Optional<I18nTrend> retrieveAsLocale(Locale locale, Trend original) throws DatabaseException;
 
 
 }
