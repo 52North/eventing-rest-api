@@ -33,6 +33,7 @@ import java.util.Map;
 import org.n52.eventing.rest.parameters.ParameterDefinition;
 import org.n52.eventing.rest.templates.Definition;
 import org.n52.eventing.rest.templates.TemplateDefinition;
+import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.Rule;
 
 /**
@@ -43,10 +44,15 @@ public class WvSubscriptionTemplateFactory {
 
     public static final String USER_PARAMETER = "userId";
     public static final String GROUP_PARAMETER = "groupId";
+    private final I18nProvider i18n;
+
+    WvSubscriptionTemplateFactory(I18nProvider i18n) {
+        this.i18n = i18n;
+    }
 
     public TemplateDefinition createTemplate(Rule r) {
-        String label = String.format("Rule '%s' for Series '%s'", r.getId(), r.getSeries().getId());
-        String desc = String.format("Rule '%s' for Series '%s': '%s' of feature '%s' using procedure '%s'",
+        String label = String.format(i18n.getString("rule.label"), r.getId(), r.getSeries().getId());
+        String desc = String.format(i18n.getString("rule.description"),
                 r.getId(),
                 r.getSeries().getId(),
                 r.getSeries().getPhenomenon().getPhenomenonId(),
@@ -62,8 +68,8 @@ public class WvSubscriptionTemplateFactory {
         props.put("procedure", r.getSeries().getProcedure().getProcedureId());
         result.setDefinition(new Definition(props, null));
 
-        result.addParameter(USER_PARAMETER, new ParameterDefinition("number", "The User reference id", true));
-        result.addParameter(GROUP_PARAMETER, new ParameterDefinition("number", "The Group reference id", true));
+        result.addParameter(USER_PARAMETER, new ParameterDefinition("number", i18n.getString("rule.parameter.userId"), true));
+        result.addParameter(GROUP_PARAMETER, new ParameterDefinition("number", i18n.getString("rule.parameter.groupId"), true));
 
         return result;
     }

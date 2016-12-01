@@ -26,26 +26,30 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.security;
+package org.n52.eventing.wv.i18n;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import java.util.Locale;
 import org.n52.eventing.wv.JsonConfigured;
-import java.util.Set;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class GroupPolicies extends JsonConfigured {
+public class I18nProvider extends JsonConfigured {
 
-    private final static String CONFIG_FILE = "/wv/group-policies.json";
-    private final static String CONFIG_DEFAULT_FILE = "/wv/group-policies-default.json";
+    private final static String CONFIG_FILE = "/wv/i18n.json";
+    private final static String CONFIG_DEFAULT_FILE = "/wv/i18n-default.json";
+    private final Locale defaultLocale;
 
-    public GroupPolicies() {
+    public I18nProvider() {
         this(CONFIG_FILE);
     }
 
-    public GroupPolicies(String configFileResource) {
+    public I18nProvider(String configFileResource) {
         init(configFileResource);
+        this.defaultLocale = Locale.forLanguageTag(getConfig().getOrDefault("defaultLocale", new TextNode("de")).asText());
     }
 
     @Override
@@ -53,16 +57,21 @@ public class GroupPolicies extends JsonConfigured {
         return CONFIG_DEFAULT_FILE;
     }
 
-    public Set<String> getAdminGroupNames() {
-        return readStringArray("adminGroupNames");
-    };
+    public String getString(String key) {
+        return getString(key, this.defaultLocale);
+    }
 
-    public Set<String> getEditorGroupNames() {
-        return readStringArray("editorGroupNames");
-    };
+    public String getString(String key, Locale l) {
+        JsonNode valueObject = getConfig().get(key);
+        if (valueObject == null) {
+            return String.format("Translation missing for key '%s'", key);
+        }
 
-    public Set<Integer> getRestrictedSeriesIds() {
-        return readIntegerArray("restrictedSeriesIds");
-    };
+        if (valueObject.has(l.getLanguage())) {
+            return valueObject.get(l.getLanguage()).asText();
+        }
+
+        return valueObject.get(this.defaultLocale.getLanguage()).asText();
+    }
 
 }

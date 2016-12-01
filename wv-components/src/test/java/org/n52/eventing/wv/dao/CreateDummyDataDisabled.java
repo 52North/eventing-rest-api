@@ -35,7 +35,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
-import org.junit.After;
 import org.n52.eventing.wv.dao.hibernate.HibernateCategoryDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateEventDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateFeatureOfInterestDao;
@@ -108,6 +107,12 @@ public class CreateDummyDataDisabled {
 
         for (int j = 0; j < 2; j++) {
             WvSubscription subscription = createNewSubscription(seriesDao, ruleDao, trendDao);
+            if (j % 2 == 0) {
+                subscription.setUser(u);
+            }
+            else {
+                subscription.setGroup(adminGroup);
+            }
             subDao.store(subscription);
 
             MutableDateTime increasingDate = new MutableDateTime();

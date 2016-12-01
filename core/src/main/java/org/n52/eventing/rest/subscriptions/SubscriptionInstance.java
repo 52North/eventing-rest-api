@@ -54,6 +54,7 @@ public class SubscriptionInstance {
     private Boolean enabled;
     private DateTime endOfLife;
     private Boolean expired = false;
+    private Object details;
 
     public SubscriptionInstance() {
     }
@@ -165,5 +166,12 @@ public class SubscriptionInstance {
         this.modified = modified;
     }
 
+    public Object getDetails() {
+        return details;
+    }
+
+    public void setDetails(Object details) {
+        this.details = details;
+    }
 
 }

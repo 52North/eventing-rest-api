@@ -41,6 +41,7 @@ import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.RuleDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateRuleDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
+import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,10 @@ import org.springframework.util.MultiValueMap;
 public class TemplatesServiceImpl implements TemplatesDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(TemplatesServiceImpl.class);
+
+    @Autowired
+    private I18nProvider i18n;
+
 
     @Autowired
     private HibernateDatabaseConnection hdc;
@@ -137,12 +142,13 @@ public class TemplatesServiceImpl implements TemplatesDao {
     }
 
     private TemplateDefinition wrapRule(Rule r) {
-        return new WvSubscriptionTemplateFactory().createTemplate(r);
+        return new WvSubscriptionTemplateFactory(i18n).createTemplate(r);
     }
 
     private TemplateDefinition wrapRuleBrief(Rule r) {
-        String desc = String.format("Rule '%s' for Series '%s'", r.getId(), r.getSeries().getId());
-        TemplateDefinition result = new TemplateDefinition(Integer.toString(r.getId()), desc, null, null);
+        String labelTemplate = i18n.getString("rule.label");
+        String label = String.format(labelTemplate, r.getId(), r.getSeries().getId());
+        TemplateDefinition result = new TemplateDefinition(Integer.toString(r.getId()), label, null, null);
         return result;
     }
 

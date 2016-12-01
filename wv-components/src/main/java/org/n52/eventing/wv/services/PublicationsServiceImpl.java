@@ -43,6 +43,7 @@ import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.SeriesDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateSeriesDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
+import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.Series;
 import org.n52.eventing.wv.model.WvUser;
 import org.n52.eventing.wv.security.AccessRights;
@@ -58,6 +59,9 @@ import org.springframework.util.MultiValueMap;
 public class PublicationsServiceImpl extends BaseService implements PublicationsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(PublicationsServiceImpl.class);
+
+    @Autowired
+    private I18nProvider i18n;
 
     @Autowired
     private HibernateDatabaseConnection hdc;
@@ -163,20 +167,25 @@ public class PublicationsServiceImpl extends BaseService implements Publications
     }
 
     private Publication wrapSeriesBrief(Series s) {
-        String desc = String.format("Series '%s': Phenomenon '%s' of Feature '%s'",
+        String labelTemplate = this.i18n.getString("publication.label");
+        String label = String.format(labelTemplate,
                 s.getId(),
-                s.getPhenomenon().getPhenomenonId(),
                 s.getFeature().getIdentifier());
-        Publication pub = new Publication(Integer.toString(s.getId()), desc, desc);
+        Publication pub = new Publication(Integer.toString(s.getId()), label, null);
         return pub;
     }
 
     private Publication wrapSeries(Series s) {
-        String desc = String.format("Series '%s': Phenomenon '%s' of Feature '%s'",
+        String labelTemplate = this.i18n.getString("publication.label");
+        String label = String.format(labelTemplate,
+                s.getId(),
+                s.getFeature().getIdentifier());
+        String descTemplate = this.i18n.getString("publication.description");
+        String desc = String.format(descTemplate,
                 s.getId(),
                 s.getPhenomenon().getPhenomenonId(),
                 s.getFeature().getIdentifier());
-        Publication pub = new Publication(Integer.toString(s.getId()), desc, desc);
+        Publication pub = new Publication(Integer.toString(s.getId()), label, desc);
         Map<String, Object> props = new HashMap<>();
         props.put("feature", s.getFeature().getIdentifier());
         props.put("phenomenon", s.getPhenomenon().getPhenomenonId());

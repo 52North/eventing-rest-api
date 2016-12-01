@@ -26,4 +26,7 @@
     <bean class="org.n52.eventing.wv.security.GroupPolicies" />
     <bean class="org.n52.eventing.wv.security.AccessRightsImpl" />
 
+    <!-- others -->
+    <bean class="org.n52.eventing.wv.i18n.I18nProvider" />
+
 </beans>

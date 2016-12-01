@@ -29,7 +29,9 @@
 package org.n52.eventing.wv.services;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
@@ -43,6 +45,7 @@ import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.SubscriptionDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateSubscriptionDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
+import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.WvSubscription;
 import org.n52.eventing.wv.model.WvUser;
 import org.n52.eventing.wv.security.AccessRights;
@@ -60,6 +63,9 @@ public class SubscriptionsServiceImpl extends BaseService implements Subscriptio
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionsServiceImpl.class);
 
     @Autowired
+    private I18nProvider i18n;
+
+    @Autowired
     HibernateDatabaseConnection hibernateConnection;
 
     @Autowired
@@ -73,7 +79,6 @@ public class SubscriptionsServiceImpl extends BaseService implements Subscriptio
         this.defaultDeliveryMethod = new DeliveryMethodInstance(new EmailDeliveryProviderImpl().getIdentifier(),
                 Collections.emptyMap());
     }
-
 
 
     @Override
@@ -121,7 +126,7 @@ public class SubscriptionsServiceImpl extends BaseService implements Subscriptio
             return subs.stream()
                     .filter(s -> accessRights.canSeeSubscription(user, s))
                     .map((WvSubscription t) -> {
-                return wrapSubscription(t);
+                return wrapSubscriptionBrief(t);
             }).collect(Collectors.toList());
         }
         catch (DatabaseException | NumberFormatException e) {
@@ -207,12 +212,42 @@ public class SubscriptionsServiceImpl extends BaseService implements Subscriptio
         }
     }
 
+    private SubscriptionInstance wrapSubscriptionBrief(WvSubscription sub) {
+        SubscriptionInstance result = wrapSubscription(sub);
+        result.setDetails(null);
+        result.setDeliveryMethods(null);
+        return result;
+    }
+
     private SubscriptionInstance wrapSubscription(WvSubscription sub) {
-        String desc = String.format("Subscrition for rule '%s'", sub.getRule().getId());
+        String label = String.format(i18n.getString("subscription.label"), sub.getRule().getId());
+
+        Map<String, Integer> userGroup = new HashMap<>();
+        String type;
+        if (sub.getGroup() != null && sub.getUser() != null) {
+            type = i18n.getString("subscription.description.userGroupType");
+            userGroup.put("user", sub.getUser().getId());
+            userGroup.put("group", sub.getGroup().getId());
+        }
+        else if (sub.getGroup() != null && sub.getUser() == null) {
+            type = i18n.getString("subscription.description.groupType");
+            userGroup.put("group", sub.getGroup().getId());
+        }
+        else if (sub.getUser() != null) {
+            type = i18n.getString("subscription.description.userType");
+            userGroup.put("user", sub.getUser().getId());
+        }
+        else {
+            type = null;
+        }
+
+        String desc = type != null ? String.format("%s. %s", label, type) : label;
         SubscriptionInstance result = new SubscriptionInstance(Integer.toString(sub.getId()),
-                desc,
+                label,
                 desc);
         result.setDeliveryMethods(Collections.singletonList(defaultDeliveryMethod));
+
+        result.setDetails(userGroup);
         return result;
     }
 

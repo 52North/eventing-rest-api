@@ -42,6 +42,7 @@ import org.n52.eventing.rest.eventlog.EventLogStore;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 import org.n52.eventing.wv.dao.hibernate.HibernateEventDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
+import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.WvEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class EventLogServiceImpl extends BaseService implements EventLogStore {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventLogServiceImpl.class);
+
+    @Autowired
+    private I18nProvider i18n;
 
     @Autowired
     private HibernateDatabaseConnection hdc;
@@ -109,7 +113,8 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
 
 
     private EventHolder wrapEventBrief(WvEvent e) {
-        String label = String.format("Match for rule: '%s'", e.getRule());
+        String matchTemplate = i18n.getString("event.match");
+        String label = String.format(matchTemplate, e.getRule());
         EventHolder holder = new EventHolder(Integer.toString(e.getId()),
                 new DateTime(e.getTimestamp()),
                 null, label, null);

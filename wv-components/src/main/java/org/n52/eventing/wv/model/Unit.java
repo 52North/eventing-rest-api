@@ -39,6 +39,9 @@ public class Unit {
     private int id;
     private String code;
 
+    public Unit() {
+    }
+
     public Unit(String code) {
         this.code = code;
     }
