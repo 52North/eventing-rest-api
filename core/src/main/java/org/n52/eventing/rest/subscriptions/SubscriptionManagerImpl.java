@@ -207,8 +207,13 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         subscriptionToTerminatableMap.put(subscription, term);
     }
 
-    private void remove(String id) {
+    private void remove(String id) throws InvalidSubscriptionException {
         this.filterLogic.remove(id);
+        try {
+            this.dao.remove(id);
+        } catch (UnknownSubscriptionException ex) {
+            throw new InvalidSubscriptionException("Subscription is not known: "+ id, ex);
+        }
     }
 
     private void throwExceptionOnNullOrEmpty(String value, String key) throws InvalidSubscriptionException {

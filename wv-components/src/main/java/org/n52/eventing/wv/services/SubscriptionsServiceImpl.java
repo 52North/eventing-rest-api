@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
@@ -196,17 +197,18 @@ public class SubscriptionsServiceImpl extends BaseService implements Subscriptio
             LOG.warn(ex.getMessage());
             throw new UnknownSubscriptionException("Could not find subscription with id: "+id);
         }
+        
+        try (Session session = hibernateConnection.createSession()) {
+            Transaction trans = session.beginTransaction();
+            SubscriptionDao dao = new HibernateSubscriptionDao(session);
+            Optional<WvSubscription> sub = dao.retrieveById(idInt);
 
-        Session session = hibernateConnection.createSession();
-        SubscriptionDao dao = new HibernateSubscriptionDao(session);
-        Optional<WvSubscription> sub = dao.retrieveById(idInt);
+            if (!sub.isPresent() || !accessRights.canManageSubscription(user, sub.get())) {
+                throw new UnknownSubscriptionException("Could not find subscription with id: "+id);
+            }
 
-        if (!sub.isPresent() || !accessRights.canManageSubscription(user, sub.get())) {
-            throw new UnknownSubscriptionException("Could not find subscription with id: "+id);
-        }
-
-        try {
             dao.remove(sub.get());
+            trans.commit();
         } catch (DatabaseException ex) {
             throw new RuntimeException("Could not remove subscription", ex);
         }

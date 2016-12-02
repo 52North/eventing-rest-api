@@ -66,6 +66,7 @@ public class WvSubscriptionTemplateFactory {
         props.put("category", r.getSeries().getCategory().getCategoryId());
         props.put("phenomenon", r.getSeries().getPhenomenon().getPhenomenonId());
         props.put("procedure", r.getSeries().getProcedure().getProcedureId());
+        props.put("series", r.getSeries().getId());
         result.setDefinition(new Definition(props, null));
 
         result.addParameter(USER_PARAMETER, new ParameterDefinition("number", i18n.getString("rule.parameter.userId"), true));
