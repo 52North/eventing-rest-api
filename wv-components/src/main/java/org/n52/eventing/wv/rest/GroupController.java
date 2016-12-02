@@ -62,30 +62,30 @@ import org.slf4j.LoggerFactory;
 @RequestMapping(value = UrlSettings.API_V1_BASE+"/groups",
         produces = {"application/json"})
 public class GroupController {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(GroupController.class);
 
     @Autowired
     private HibernateDatabaseConnection hdc;
-    
+
     @Autowired
     private AccessRights accessRights;
-    
+
     @Autowired
     private UserSecurityService userService;
 
-    
+
     @RequestMapping("")
     public List<Group> getGroups(@RequestParam(required = false) MultiValueMap<String, String> query)
             throws IOException, URISyntaxException, NotAuthenticatedException {
         try (Session session = hdc.createSession()) {
             HibernateGroupDao dao = new HibernateGroupDao(session);
             Optional<WvUser> u = userService.resolveCurrentWvUser();
-            
+
             if (!u.isPresent()) {
                 throw new NotAuthenticatedException("No user present");
             }
-            
+
             return dao.retrieve(null).stream()
                     .filter(g -> accessRights.canSeeSubscriptionsOfGroup(u.get(), g))
                     .collect(Collectors.toList());
@@ -99,17 +99,17 @@ public class GroupController {
         try (Session session = hdc.createSession()) {
             HibernateGroupDao dao = new HibernateGroupDao(session);
             Optional<WvUser> u = userService.resolveCurrentWvUser();
-            
+
             if (!u.isPresent()) {
                 throw new NotAuthenticatedException("No user present");
             }
-            
+
             Optional<Group> result = dao.retrieveById(Integer.parseInt(id));
             if (result.isPresent()) {
                 if (!accessRights.canSeeSubscriptionsOfGroup(u.get(), result.get())) {
                     throw new NotAuthenticatedException("Access denied");
                 }
-                
+
                 return result.get();
             }
             else {
@@ -122,7 +122,6 @@ public class GroupController {
         }
     }
 
-    
     @RequestMapping("/{item}/users")
     public List<UserController.UserView> getGroupUsers(@RequestParam(required = false) MultiValueMap<String, String> query,
             @PathVariable("item") String id)
@@ -131,17 +130,17 @@ public class GroupController {
             HibernateUserDao dao = new HibernateUserDao(session);
             HibernateGroupDao groupDao = new HibernateGroupDao(session);
             Optional<WvUser> u = userService.resolveCurrentWvUser();
-            
+
             if (!u.isPresent()) {
                 throw new NotAuthenticatedException("No user present");
             }
-            
+
             Optional<Group> g = groupDao.retrieveById(Integer.parseInt(id));
-            
+
             if (!g.isPresent()) {
                 throw new IOException("Unknown group");
             }
-            
+
             return dao.retrieveByGroup(g.get()).stream()
                     .filter(gr -> accessRights.canSeeSubscriptionsOfUser(u.get(), gr))
                     .map((WvUser wu) -> {

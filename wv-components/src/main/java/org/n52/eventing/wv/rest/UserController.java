@@ -45,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.n52.eventing.wv.dao.hibernate.HibernateGroupDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Group;
@@ -63,30 +62,30 @@ import org.slf4j.LoggerFactory;
 @RequestMapping(value = UrlSettings.API_V1_BASE+"/users",
         produces = {"application/json"})
 public class UserController {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private HibernateDatabaseConnection hdc;
-    
+
     @Autowired
     private AccessRights accessRights;
-    
+
     @Autowired
     private UserSecurityService userService;
 
-    
+
     @RequestMapping("")
     public List<UserView> getUsers(@RequestParam(required = false) MultiValueMap<String, String> query)
             throws IOException, URISyntaxException, NotAuthenticatedException {
         try (Session session = hdc.createSession()) {
             HibernateUserDao dao = new HibernateUserDao(session);
             Optional<WvUser> u = userService.resolveCurrentWvUser();
-            
+
             if (!u.isPresent()) {
                 throw new NotAuthenticatedException("No user present");
             }
-            
+
             return dao.retrieve(null).stream()
                     .filter(g -> accessRights.canSeeSubscriptionsOfUser(u.get(), g))
                     .map((WvUser wu) -> {
@@ -104,17 +103,17 @@ public class UserController {
         try (Session session = hdc.createSession()) {
             HibernateUserDao dao = new HibernateUserDao(session);
             Optional<WvUser> u = userService.resolveCurrentWvUser();
-            
+
             if (!u.isPresent()) {
                 throw new NotAuthenticatedException("No user present");
             }
-            
+
             Optional<WvUser> result = dao.retrieveById(Integer.parseInt(id));
             if (result.isPresent()) {
                 if (!accessRights.canSeeSubscriptionsOfUser(u.get(), result.get())) {
                     throw new NotAuthenticatedException("Access denied");
                 }
-                
+
                 Hibernate.initialize(result.get().getGroups());
                 return UserView.from(result.get());
             }
@@ -127,16 +126,16 @@ public class UserController {
             throw new NumberFormatException("invalid ID provided. IDs must be an integer");
         }
     }
-    
+
     public static class UserView {
-        
+
         private final int id;
         private final String name;
         private final String firstName;
         private final String lastName;
         private final String email;
         private final Set<Group> groups;
-        
+
         public static UserView from(WvUser wu) {
             return new UserView(wu.getId(), wu.getName(),
                     wu.getFirstName(), wu.getLastName(),
@@ -175,7 +174,7 @@ public class UserController {
         public Set<Group> getGroups() {
             return groups;
         }
-        
+
     }
 
 }
