@@ -39,7 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
-import org.n52.eventing.rest.binding.UrlSettings;
+import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.binding.eventlog.EventLogController;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.security.SecurityService;

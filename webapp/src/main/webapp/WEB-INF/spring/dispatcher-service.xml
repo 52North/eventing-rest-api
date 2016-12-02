@@ -63,4 +63,8 @@
             </list>
         </property>
     </bean>
+    
+    <!-- WV extensions -->
+    <bean class="org.n52.eventing.wv.rest.GroupController" />
+    <bean class="org.n52.eventing.wv.rest.UserController" />
 </beans>

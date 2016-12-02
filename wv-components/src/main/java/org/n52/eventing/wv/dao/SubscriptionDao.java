@@ -42,4 +42,6 @@ public interface SubscriptionDao extends BaseDao<WvSubscription> {
 
     List<WvSubscription> retrieveByGroup(Group group) throws DatabaseException;
 
+    public boolean hasEntity(WvSubscription subscription);
+
 }

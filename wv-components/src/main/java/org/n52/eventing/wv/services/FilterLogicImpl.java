@@ -39,11 +39,13 @@ import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.wv.dao.DatabaseException;
+import org.n52.eventing.wv.dao.SubscriptionDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateGroupDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateRuleDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateSubscriptionDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
+import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.WvSubscription;
@@ -61,6 +63,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class FilterLogicImpl extends BaseService implements FilterLogic {
 
     private static final Logger LOG = LoggerFactory.getLogger(FilterLogicImpl.class);
+
+    @Autowired
+    private I18nProvider i18n;
 
     @Autowired
     HibernateDatabaseConnection hibernateConnection;
@@ -120,7 +125,12 @@ public class FilterLogicImpl extends BaseService implements FilterLogic {
             subscription.setGroup(subGroup);
             subscription.setUser(subUser);
 
-            HibernateSubscriptionDao subDao = new HibernateSubscriptionDao(session);
+            SubscriptionDao subDao = new HibernateSubscriptionDao(session);
+
+            if (subDao.hasEntity(subscription)) {
+                throw new InvalidSubscriptionException(i18n.getString("subscription.alreadyPresent"));
+            }
+
             Transaction trans = session.beginTransaction();
             subDao.store(subscription);
             trans.commit();

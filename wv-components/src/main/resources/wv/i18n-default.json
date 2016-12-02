@@ -42,5 +42,9 @@
     "subscription.description.userType": {
         "de": "Dies ist ein Nutzerabonnement",
         "en": "This is a user subscription"
+    },
+    "subscription.alreadyPresent": {
+        "de": "Diese Regel ist bereits registriert",
+        "en": "This subscription is already present"
     }
 }

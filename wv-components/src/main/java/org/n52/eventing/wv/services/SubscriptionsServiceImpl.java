@@ -197,7 +197,7 @@ public class SubscriptionsServiceImpl extends BaseService implements Subscriptio
             LOG.warn(ex.getMessage());
             throw new UnknownSubscriptionException("Could not find subscription with id: "+id);
         }
-        
+
         try (Session session = hibernateConnection.createSession()) {
             Transaction trans = session.beginTransaction();
             SubscriptionDao dao = new HibernateSubscriptionDao(session);

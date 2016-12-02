@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.rest.binding;
 
+import org.n52.eventing.rest.UrlSettings;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;

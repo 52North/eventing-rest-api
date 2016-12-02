@@ -47,6 +47,7 @@ import org.n52.eventing.wv.dao.hibernate.HibernateProcedureDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateRuleDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateSeriesDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateSubscriptionDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateTrendDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Category;
 import org.n52.eventing.wv.model.FeatureOfInterest;
@@ -120,7 +121,7 @@ public class HibernateEventDaoIT {
         s1.setFeature(f);
         seriesDao.store(s1);
 
-        Rule r1 = new Rule(22.0, new Trend(trendCode, "test-trend"), 1, s1);
+        Rule r1 = new Rule(22.0, new HibernateTrendDao(session).retrieveByDomainTrend(TrendDao.DomainTrend.LessEqual).get(), 1, s1);
         ruleDao.store(r1);
 
         WvSubscription sub1 = new WvSubscription(r1);

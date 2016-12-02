@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
-import org.n52.eventing.rest.binding.UrlSettings;
+import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.eventlog.EventHolder;
 import org.n52.eventing.rest.eventlog.EventLogStore;

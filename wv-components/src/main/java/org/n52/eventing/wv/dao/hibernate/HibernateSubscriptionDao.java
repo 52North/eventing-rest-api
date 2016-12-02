@@ -68,5 +68,31 @@ public class HibernateSubscriptionDao extends BaseHibernateDao<WvSubscription> i
         return q.list();
     }
 
+    @Override
+    public boolean hasEntity(WvSubscription subscription) {
+        String paramGroup = "groupId";
+        String paramUser = "userId";
+        String paramRule = "ruleId";
+        String entity = WvSubscription.class.getSimpleName();
+        String hql = String.format("SELECT s FROM %s s join s.rule r WHERE r.id=:%s ", entity, paramRule);
+        if (subscription.getGroup() != null) {
+            hql = String.format("%s AND s.group.id=:%s", hql, paramGroup);
+        }
+        if (subscription.getUser()!= null) {
+            hql = String.format("%s AND s.user.id=:%s", hql, paramUser);
+        }
+
+        Query q = getSession().createQuery(hql);
+        q.setParameter(paramRule, subscription.getRule().getId());
+
+        if (subscription.getGroup() != null) {
+            q.setParameter(paramGroup, subscription.getGroup().getId());
+        }
+        if (subscription.getUser()!= null) {
+            q.setParameter(paramUser, subscription.getUser().getId());
+        }
+
+        return q.list().size() > 0;
+    }
 
 }

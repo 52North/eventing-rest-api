@@ -46,6 +46,7 @@ import org.n52.eventing.wv.dao.hibernate.HibernateGroupDao;
 import org.n52.eventing.wv.dao.hibernate.HibernatePhenomenonDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateProcedureDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateSubscriptionDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateTrendDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateUnitDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
@@ -56,7 +57,6 @@ import org.n52.eventing.wv.model.Phenomenon;
 import org.n52.eventing.wv.model.Procedure;
 import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.Series;
-import org.n52.eventing.wv.model.Trend;
 import org.n52.eventing.wv.model.Unit;
 import org.n52.eventing.wv.model.WvSubscription;
 import org.n52.eventing.wv.model.WvUser;
@@ -130,6 +130,9 @@ public class HibernateSubscriptionRulesDaoIT {
         subDao.store(sub2);
         trans.commit();
 
+        Assert.assertThat(subDao.hasEntity(sub1), CoreMatchers.is(true));
+        Assert.assertThat(subDao.hasEntity(sub2), CoreMatchers.is(true));
+
         List<WvSubscription> sub1r = subDao.retrieveByUser(u1);
         Assert.assertThat(sub1r.size(), CoreMatchers.is(1));
         Assert.assertThat(sub1r.get(0).getUser(), CoreMatchers.is(u1));
@@ -161,6 +164,9 @@ public class HibernateSubscriptionRulesDaoIT {
         subDao.store(sub2);
         trans.commit();
 
+        Assert.assertThat(subDao.hasEntity(sub1), CoreMatchers.is(true));
+        Assert.assertThat(subDao.hasEntity(sub2), CoreMatchers.is(true));
+
         List<WvSubscription> sub1r = subDao.retrieveByGroup(g1);
         Assert.assertThat(sub1r.size(), CoreMatchers.is(1));
         Assert.assertThat(sub1r.get(0).getGroup(), CoreMatchers.is(g1));
@@ -185,7 +191,7 @@ public class HibernateSubscriptionRulesDaoIT {
         s1.setFeature(f);
         seriesDao.store(s1);
 
-        Rule r1 = new Rule(22.0, new Trend(0, "test-trend"), 1, s1);
+        Rule r1 = new Rule(22.0, new HibernateTrendDao(session).retrieveByDomainTrend(TrendDao.DomainTrend.LessEqual).get(), 1, s1);
         ruleDao.store(r1);
         trans.commit();
 
