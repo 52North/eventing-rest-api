@@ -29,7 +29,6 @@
 package org.n52.eventing.wv.model;
 
 import org.n52.eventing.rest.users.User;
-import org.n52.eventing.wv.model.WvUser;
 
 /**
  *

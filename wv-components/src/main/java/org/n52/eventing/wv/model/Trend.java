@@ -33,25 +33,16 @@ package org.n52.eventing.wv.model;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Trend {
+public class Trend extends BaseEntity {
 
-    private int id;
     private String description;
 
     public Trend() {
     }
 
     public Trend(int code, String description) {
-        this.id = code;
         this.description = description;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        super.setId(code);
     }
 
     public String getDescription() {

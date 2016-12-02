@@ -35,9 +35,8 @@ import java.util.Set;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class WvUser {
+public class WvUser extends BaseEntity {
 
-    private int id;
     private String name;
     private String password;
     private String firstName;
@@ -57,14 +56,6 @@ public class WvUser {
         this.email = email;
         this.status = status;
         this.groups = groups;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -126,7 +117,7 @@ public class WvUser {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 89 * hash + this.id;
+        hash = 89 * hash + this.getId();
         hash = 89 * hash + Objects.hashCode(this.name);
         hash = 89 * hash + Objects.hashCode(this.email);
         return hash;
@@ -144,7 +135,7 @@ public class WvUser {
             return false;
         }
         final WvUser other = (WvUser) obj;
-        if (this.id != other.id) {
+        if (this.getId() != other.getId()) {
             return false;
         }
         if (!Objects.equals(this.name, other.name)) {
@@ -158,7 +149,7 @@ public class WvUser {
 
     @Override
     public String toString() {
-        return "WvUser{" + "id=" + id + ", name=" + name + ", groups=" + groups + '}';
+        return "WvUser{" + "id=" + getId() + ", name=" + name + ", groups=" + groups + '}';
     }
 
 

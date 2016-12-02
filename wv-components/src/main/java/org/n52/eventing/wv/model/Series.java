@@ -32,9 +32,8 @@ package org.n52.eventing.wv.model;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Series {
+public class Series extends BaseEntity {
 
-    private int id;
     private Category category;
     private Phenomenon phenomenon;
     private Procedure procedure;
@@ -50,14 +49,6 @@ public class Series {
         this.procedure = procedure;
         this.feature = feature;
         this.unit = u;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public Category getCategory() {

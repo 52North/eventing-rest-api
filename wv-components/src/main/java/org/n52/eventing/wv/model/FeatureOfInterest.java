@@ -32,9 +32,8 @@ package org.n52.eventing.wv.model;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class FeatureOfInterest {
+public class FeatureOfInterest extends BaseEntity {
 
-    private int id;
     private String identifier;
     private String name;
 //    private Geometry geometry;
@@ -53,15 +52,6 @@ public class FeatureOfInterest {
         this.description = description;
     }
 
-
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getIdentifier() {
         return identifier;
@@ -102,7 +92,5 @@ public class FeatureOfInterest {
     public void setDescription(String description) {
         this.description = description;
     }
-
-
 
 }

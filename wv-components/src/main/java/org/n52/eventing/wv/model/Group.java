@@ -34,9 +34,8 @@ import java.util.Objects;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Group {
+public class Group extends BaseEntity {
 
-    private int id;
     private String name;
     private String description;
     private boolean addedByLdapImport;
@@ -48,14 +47,6 @@ public class Group {
         this.name = name;
         this.description = description;
         this.addedByLdapImport = addedByLdapImport;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -85,7 +76,7 @@ public class Group {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 29 * hash + this.id;
+        hash = 29 * hash + this.getId();
         hash = 29 * hash + Objects.hashCode(this.name);
         hash = 29 * hash + Objects.hashCode(this.description);
         hash = 29 * hash + (this.addedByLdapImport ? 1 : 0);
@@ -104,7 +95,7 @@ public class Group {
             return false;
         }
         final Group other = (Group) obj;
-        if (this.id != other.id) {
+        if (this.getId() != other.getId()) {
             return false;
         }
         if (this.addedByLdapImport != other.addedByLdapImport) {

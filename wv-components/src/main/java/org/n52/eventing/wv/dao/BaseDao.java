@@ -30,12 +30,14 @@ package org.n52.eventing.wv.dao;
 import java.util.List;
 import java.util.Optional;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.wv.model.BaseEntity;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
+ * @param <T> the type derived from base entity
  */
-public interface BaseDao<T> {
+public interface BaseDao<T extends BaseEntity> {
 
     Optional<T> retrieveById(int id);
 

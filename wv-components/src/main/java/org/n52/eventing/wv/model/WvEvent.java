@@ -34,9 +34,8 @@ import java.util.Date;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class WvEvent {
+public class WvEvent extends BaseEntity {
 
-    private int id;
     private Rule rule;
     private Date timestamp;
     private Double value;
@@ -53,14 +52,6 @@ public class WvEvent {
         this.value = value;
         this.previousTimestamp = previousTimestamp;
         this.previousValue = previousValue;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public Rule getRule() {

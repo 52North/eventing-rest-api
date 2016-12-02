@@ -32,9 +32,8 @@ package org.n52.eventing.wv.model;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class WvSubscription {
+public class WvSubscription extends BaseEntity {
 
-    private int id;
     private Rule rule;
     private WvUser user;
     private Group group;
@@ -52,14 +51,6 @@ public class WvSubscription {
 
     public void setRule(Rule rule) {
         this.rule = rule;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public WvUser getUser() {

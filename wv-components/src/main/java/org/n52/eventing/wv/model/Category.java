@@ -32,9 +32,8 @@ package org.n52.eventing.wv.model;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Category {
+public class Category extends BaseEntity {
 
-    private int id;
     private String categoryId;
 
     public Category() {
@@ -44,15 +43,6 @@ public class Category {
         this.categoryId = categoryId;
     }
 
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getCategoryId() {
         return categoryId;
     }
@@ -60,7 +50,5 @@ public class Category {
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
     }
-
-
 
 }

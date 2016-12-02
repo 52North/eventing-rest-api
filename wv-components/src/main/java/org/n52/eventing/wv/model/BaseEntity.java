@@ -28,58 +28,20 @@
 
 package org.n52.eventing.wv.model;
 
-import java.util.Objects;
-
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Unit extends BaseEntity {
+public class BaseEntity {
 
-    private String code;
+    private int id;
 
-    public Unit() {
+    public final int getId() {
+        return id;
     }
 
-    public Unit(String code) {
-        this.code = code;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    @Override
-    public String toString() {
-        return code;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Unit other = (Unit) obj;
-        if (!Objects.equals(this.code, other.code)) {
-            return false;
-        }
-        return true;
+    public final void setId(int id) {
+        this.id = id;
     }
 
 }

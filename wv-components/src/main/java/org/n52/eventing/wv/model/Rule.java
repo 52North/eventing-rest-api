@@ -34,9 +34,8 @@ import com.google.common.base.MoreObjects;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Rule {
+public class Rule extends BaseEntity {
 
-    private int id;
     private double threshold;
     private Trend trendCode;
     private int activeFlag;
@@ -82,14 +81,6 @@ public class Rule {
 
     public void setActiveFlag(int activeFlag) {
         this.activeFlag = activeFlag;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public Series getSeries() {
