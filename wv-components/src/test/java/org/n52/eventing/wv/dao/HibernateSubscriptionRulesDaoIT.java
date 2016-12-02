@@ -36,6 +36,7 @@ import java.util.Random;
 import java.util.UUID;
 import org.hamcrest.CoreMatchers;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.junit.Assert;
 import org.junit.Before;
@@ -87,9 +88,18 @@ public class HibernateSubscriptionRulesDaoIT {
         subDao.store(sub1);
         trans.commit();
 
+        SessionFactory fac = session.getSessionFactory();
+        session.close();
+        session = fac.openSession();
+
+        subDao = new HibernateSubscriptionDao(session);
+        ruleDao = new HibernateRuleDao(session);
+
         Optional<Rule> r1r = ruleDao.retrieveById(sub1.getRule().getId());
         Assert.assertThat(r1r.isPresent(), CoreMatchers.is(true));
         Assert.assertThat(r1r.get().getThreshold(), CoreMatchers.is(22.0));
+        Assert.assertThat(r1r.get().getSeries().getId(), CoreMatchers.is(sub1.getRule().getSeries().getId()));
+        Assert.assertThat(r1r.get().getSeries().getId(), CoreMatchers.not(0));
         Assert.assertThat(r1r.get().getSeries().getUnit().getCode(), CoreMatchers.is("cm"));
 
         Optional<WvSubscription> sub1r = subDao.retrieveById(sub1.getId());
