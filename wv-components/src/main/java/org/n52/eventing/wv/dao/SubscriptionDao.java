@@ -28,6 +28,7 @@
 package org.n52.eventing.wv.dao;
 
 import java.util.List;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvSubscription;
 import org.n52.eventing.wv.model.WvUser;
@@ -40,8 +41,12 @@ public interface SubscriptionDao extends BaseDao<WvSubscription> {
 
     List<WvSubscription> retrieveByUser(WvUser user) throws DatabaseException;
 
+    List<WvSubscription> retrieveByUser(WvUser user, Pagination pagination) throws DatabaseException;
+
     List<WvSubscription> retrieveByGroup(Group group) throws DatabaseException;
 
-    public boolean hasEntity(WvSubscription subscription);
+    List<WvSubscription> retrieveByGroup(Group group, Pagination pagination) throws DatabaseException;
+
+    boolean hasEntity(WvSubscription subscription);
 
 }

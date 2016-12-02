@@ -25,20 +25,21 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.wv.dao;
 
-import java.util.List;
-import org.n52.eventing.rest.Pagination;
-import org.n52.eventing.wv.model.Rule;
+package org.n52.eventing.rest;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface RuleDao extends BaseDao<Rule> {
+public class InvalidPaginationException extends Exception {
 
-    List<Rule> retrieveBySeries(String seriesIdentifier) throws DatabaseException;
+    public InvalidPaginationException(String message) {
+        super(message);
+    }
 
-    List<Rule> retrieveBySeries(String seriesIdentifier, Pagination pagination) throws DatabaseException;
+    public InvalidPaginationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

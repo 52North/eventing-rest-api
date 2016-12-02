@@ -28,6 +28,7 @@
 package org.n52.eventing.wv.dao;
 
 import java.util.List;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.wv.model.WvEvent;
 
 /**
@@ -37,5 +38,7 @@ import org.n52.eventing.wv.model.WvEvent;
 public interface EventDao extends BaseDao<WvEvent> {
 
     List<WvEvent> retrieveForSubscription(int idInt);
+
+    List<WvEvent> retrieveForSubscription(int idInt, Pagination page);
 
 }

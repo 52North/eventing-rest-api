@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.n52.epos.event.MapEposEvent;
 import org.n52.eventing.rest.Configuration;
+import org.n52.eventing.rest.Pagination;
 import org.n52.subverse.engine.FilterEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +74,7 @@ public class DummyPublicationsDao implements PublicationsService, InitializingBe
     }
 
     @Override
-    public synchronized List<Publication> getPublications() {
+    public synchronized List<Publication> getPublications(Pagination p) {
         return Collections.unmodifiableList(new ArrayList<>(publications.values()));
     }
 

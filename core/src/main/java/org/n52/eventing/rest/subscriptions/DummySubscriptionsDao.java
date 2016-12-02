@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.joda.time.DateTime;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
@@ -82,7 +83,7 @@ public class DummySubscriptionsDao implements SubscriptionsService, Initializing
     }
 
     @Override
-    public synchronized List<SubscriptionInstance> getSubscriptions() {
+    public synchronized List<SubscriptionInstance> getSubscriptions(Pagination p) {
         return Collections.unmodifiableList(new ArrayList<>(subscriptions.values()));
     }
 

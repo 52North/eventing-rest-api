@@ -33,6 +33,7 @@ import java.util.Optional;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.wv.model.WvUser;
 import org.n52.eventing.wv.dao.UserDao;
 import org.n52.eventing.wv.model.Group;
@@ -55,13 +56,24 @@ public class HibernateUserDao extends BaseHibernateDao<WvUser> implements UserDa
     }
 
     @Override
-    public List<WvUser> retrieveByGroup(Group g) {
+    public List<WvUser> retrieveByGroup(Group g, Pagination pagination) {
         String param = "groupId";
         String entity = WvUser.class.getSimpleName();
-        String hql = String.format("SELECT u FROM %s u join u.groups r WHERE r.id=:%s", entity, param);
+        String hql = String.format("SELECT u FROM %s u join u.groups r WHERE r.id=:%s order by u.id asc", entity, param);
         Query q = getSession().createQuery(hql);
+
+        if (pagination != null) {
+            q.setFirstResult(pagination.getOffset());
+            q.setMaxResults(pagination.getLimit());
+        }
+
         q.setParameter(param, g.getId());
         return q.list();
+    }
+
+    @Override
+    public List<WvUser> retrieveByGroup(Group g) {
+        return retrieveByGroup(g, null);
     }
 
     private WvUser initializeProxies(WvUser o) {

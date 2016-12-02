@@ -34,7 +34,6 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.TrendDao;
-import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.Trend;
 import org.n52.eventing.wv.model.i18n.I18nTrend;
 
@@ -83,9 +82,9 @@ public class HibernateTrendDao extends BaseHibernateDao<Trend> implements TrendD
         String param = "identifier";
         String localeParam = "localeParam";
         String entity = I18nTrend.class.getSimpleName();
-        String hql = String.format("SELECT ti FROM %s ti join ti.trendCode t WHERE t.code=:%s AND ti.locale=:%s", entity, param, localeParam);
+        String hql = String.format("SELECT ti FROM %s ti join ti.trendCode t WHERE t.id=:%s AND ti.locale=:%s", entity, param, localeParam);
         Query q = getSession().createQuery(hql);
-        q.setParameter(param, original.getCode());
+        q.setParameter(param, original.getId());
         q.setParameter(localeParam, locale.getLanguage());
         return q.list().stream().findFirst();
     }

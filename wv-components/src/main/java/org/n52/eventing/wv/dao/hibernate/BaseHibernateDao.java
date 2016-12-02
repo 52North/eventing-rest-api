@@ -64,7 +64,14 @@ public class BaseHibernateDao<T> {
         CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(this.genericType);
         Root<T> root = criteriaQuery.from(this.genericType);
         criteriaQuery.select(root);
+        criteriaQuery.orderBy(criteriaBuilder.asc(root.get("id")));
         Query<T> query = session.createQuery(criteriaQuery);
+
+        if (pagination != null) {
+            query.setFirstResult(pagination.getOffset());
+            query.setMaxResults(pagination.getLimit());
+        }
+
         return query.list();
     };
 

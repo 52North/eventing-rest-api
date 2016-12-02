@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import org.n52.eventing.rest.InvalidPaginationException;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.UrlSettings;
@@ -64,10 +66,11 @@ public class PublicationsController {
 
     @RequestMapping("")
     public ModelAndView getPublications(@RequestParam(required = false) MultiValueMap<String, String> query)
-            throws IOException, URISyntaxException, NotAuthenticatedException {
+            throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
         String fullUrl = RequestUtils.resolveFullRequestUrl();
+        Pagination p = Pagination.fromQuery(query);
 
-        List<ResourceCollection> pubs = createPublications(fullUrl, query);
+        List<ResourceCollection> pubs = createPublications(fullUrl, query, p);
 
         if (pubs.isEmpty()) {
             return EmptyArrayModel.create();
@@ -76,10 +79,10 @@ public class PublicationsController {
         return new ModelAndView().addObject(pubs);
     }
 
-    private List<ResourceCollection> createPublications(String fullUrl, MultiValueMap<String, String> query) throws NotAuthenticatedException {
+    private List<ResourceCollection> createPublications(String fullUrl, MultiValueMap<String, String> query, Pagination page) throws NotAuthenticatedException {
         List<ResourceCollection> pubs = new ArrayList<>();
 
-        List<Publication> result = query == null ? this.dao.getPublications() : this.dao.getPublications(query);
+        List<Publication> result = query == null ? this.dao.getPublications(page) : this.dao.getPublications(query, page);
 
         result.stream().forEach(p -> {
             String pubId = p.getId();

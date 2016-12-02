@@ -35,23 +35,23 @@ package org.n52.eventing.wv.model;
  */
 public class Trend {
 
-    private int code;
+    private int id;
     private String description;
 
     public Trend() {
     }
 
     public Trend(int code, String description) {
-        this.code = code;
+        this.id = code;
         this.description = description;
     }
 
-    public int getCode() {
-        return code;
+    public int getId() {
+        return id;
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getDescription() {

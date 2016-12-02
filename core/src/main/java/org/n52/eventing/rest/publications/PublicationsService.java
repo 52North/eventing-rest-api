@@ -28,6 +28,7 @@
 package org.n52.eventing.rest.publications;
 
 import java.util.List;
+import org.n52.eventing.rest.Pagination;
 import org.springframework.util.MultiValueMap;
 
 /**
@@ -38,11 +39,11 @@ public interface PublicationsService {
 
     boolean hasPublication(String id);
 
-    default List<Publication> getPublications(MultiValueMap<String, String> filter) {
-        return getPublications();
+    default List<Publication> getPublications(MultiValueMap<String, String> filter, Pagination p) {
+        return getPublications(p);
     };
 
-    List<Publication> getPublications();
+    List<Publication> getPublications( Pagination p);
 
     Publication getPublication(String id) throws UnknownPublicationsException;
 

@@ -29,6 +29,7 @@
 package org.n52.eventing.wv.dao;
 
 import java.util.List;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvUser;
 
@@ -39,5 +40,7 @@ import org.n52.eventing.wv.model.WvUser;
 public interface UserDao extends BaseDao<WvUser> {
 
     List<WvUser> retrieveByGroup(Group g);
+
+    List<WvUser> retrieveByGroup(Group g, Pagination pagination);
 
 }

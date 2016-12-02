@@ -29,6 +29,7 @@ package org.n52.eventing.rest.subscriptions;
 
 import java.util.List;
 import org.joda.time.DateTime;
+import org.n52.eventing.rest.Pagination;
 
 /**
  *
@@ -38,7 +39,7 @@ public interface SubscriptionsService {
 
     boolean hasSubscription(String id);
 
-    List<SubscriptionInstance> getSubscriptions();
+    List<SubscriptionInstance> getSubscriptions(Pagination p);
 
     SubscriptionInstance getSubscription(String id) throws UnknownSubscriptionException;
 

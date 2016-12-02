@@ -31,6 +31,7 @@ package org.n52.eventing.wv.dao.hibernate;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvSubscription;
@@ -49,23 +50,45 @@ public class HibernateSubscriptionDao extends BaseHibernateDao<WvSubscription> i
     }
 
     @Override
-    public List<WvSubscription> retrieveByUser(WvUser user) throws DatabaseException {
+    public List<WvSubscription> retrieveByUser(WvUser user, Pagination pagination) throws DatabaseException {
         String param = "userId";
         String entity = WvSubscription.class.getSimpleName();
-        String hql = String.format("SELECT s FROM %s s join s.user u WHERE u.id=:%s", entity, param);
+        String hql = String.format("SELECT s FROM %s s join s.user u WHERE u.id=:%s order by s.id asc", entity, param);
         Query q = getSession().createQuery(hql);
+
+        if (pagination != null) {
+            q.setFirstResult(pagination.getOffset());
+            q.setMaxResults(pagination.getLimit());
+        }
+
         q.setParameter(param, user.getId());
         return q.list();
     }
 
     @Override
-    public List<WvSubscription> retrieveByGroup(Group group) throws DatabaseException {
+    public List<WvSubscription> retrieveByUser(WvUser user) throws DatabaseException {
+        return retrieveByUser(user, null);
+    }
+
+    @Override
+    public List<WvSubscription> retrieveByGroup(Group group, Pagination pagination) throws DatabaseException {
         String param = "groupId";
         String entity = WvSubscription.class.getSimpleName();
-        String hql = String.format("SELECT s FROM %s s join s.group g WHERE g.id=:%s", entity, param);
+        String hql = String.format("SELECT s FROM %s s join s.group g WHERE g.id=:%s order by s.id asc", entity, param);
         Query q = getSession().createQuery(hql);
+
+        if (pagination != null) {
+            q.setFirstResult(pagination.getOffset());
+            q.setMaxResults(pagination.getLimit());
+        }
+
         q.setParameter(param, group.getId());
         return q.list();
+    }
+
+    @Override
+    public List<WvSubscription> retrieveByGroup(Group group) throws DatabaseException {
+        return retrieveByGroup(group, null);
     }
 
     @Override

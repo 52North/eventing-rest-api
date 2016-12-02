@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.dao.RuleDao;
@@ -57,7 +58,7 @@ public class HibernateRuleDao extends BaseHibernateDao<Rule> implements RuleDao 
 
     private Trend resolveTrend(Trend trendCode) {
         Session s = getSession();
-        Optional<Trend> retrieved = new HibernateTrendDao(s).retrieveById(trendCode.getCode());
+        Optional<Trend> retrieved = new HibernateTrendDao(s).retrieveById(trendCode.getId());
         if (retrieved != null && retrieved.isPresent()) {
             return retrieved.get();
         }
@@ -66,7 +67,7 @@ public class HibernateRuleDao extends BaseHibernateDao<Rule> implements RuleDao 
     }
 
     @Override
-    public List<Rule> retrieveBySeries(String seriesIdentifier) throws DatabaseException {
+    public List<Rule> retrieveBySeries(String seriesIdentifier, Pagination pagination) throws DatabaseException {
         int idInt;
         try {
             idInt = Integer.parseInt(seriesIdentifier);
@@ -77,10 +78,20 @@ public class HibernateRuleDao extends BaseHibernateDao<Rule> implements RuleDao 
 
         String param = "identifier";
         String entity = Rule.class.getSimpleName();
-        String hql = String.format("SELECT r FROM %s r join r.series s WHERE s.id=:%s", entity, param);
+        String hql = String.format("SELECT r FROM %s r join r.series s WHERE s.id=:%s order by r.id asc", entity, param);
         Query q = getSession().createQuery(hql);
+
+        if (pagination != null) {
+            q.setFirstResult(pagination.getOffset());
+            q.setMaxResults(pagination.getLimit());
+        }
         q.setParameter(param, idInt);
         return q.list();
+    }
+
+    @Override
+    public List<Rule> retrieveBySeries(String seriesIdentifier) throws DatabaseException {
+        return retrieveBySeries(seriesIdentifier, null);
     }
 
 

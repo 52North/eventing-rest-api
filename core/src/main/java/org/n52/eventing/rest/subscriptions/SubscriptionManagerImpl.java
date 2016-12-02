@@ -74,7 +74,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
     public void afterPropertiesSet() throws Exception {
         LOG.info("Retrieveing persisted subscriptions...");
         AtomicInteger count = new AtomicInteger();
-        this.dao.getSubscriptions().stream().forEach(s -> {
+        this.dao.getSubscriptions(null).stream().forEach(s -> {
             LOG.info("Registering subscription {}", s.getId());
             try {
                 if (s.getTemplate() != null) {

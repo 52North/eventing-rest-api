@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
 import org.joda.time.DateTime;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.eventlog.EventHolder;
 import org.n52.eventing.rest.eventlog.EventLogStore;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
@@ -69,9 +70,14 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
 
     @Override
     public Collection<EventHolder> getAllEvents() {
+        return getAllEvents(null);
+    }
+
+    @Override
+    public Collection<EventHolder> getAllEvents(Pagination pagination) {
         try (Session session = hdc.createSession()) {
             HibernateEventDao dao = new HibernateEventDao(session);
-            List<WvEvent> result = dao.retrieve(null);
+            List<WvEvent> result = dao.retrieve(pagination);
             return result.stream()
                     .map((WvEvent e) -> wrapEventBrief(e))
                     .collect(Collectors.toList());
@@ -79,11 +85,11 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
     }
 
     @Override
-    public Collection<EventHolder> getEventsForSubscription(SubscriptionInstance subscription) {
+    public Collection<EventHolder> getEventsForSubscription(SubscriptionInstance subscription, Pagination pagination) {
         try (Session session = hdc.createSession()) {
             int idInt = super.parseId(subscription.getId());
             HibernateEventDao dao = new HibernateEventDao(session);
-            List<WvEvent> result = dao.retrieveForSubscription(idInt);
+            List<WvEvent> result = dao.retrieveForSubscription(idInt, pagination);
             return result.stream()
                     .map((WvEvent e) -> wrapEventBrief(e))
                     .collect(Collectors.toList());
@@ -93,6 +99,13 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
         }
 
         return Collections.emptyList();
+    }
+
+
+
+    @Override
+    public Collection<EventHolder> getEventsForSubscription(SubscriptionInstance subscription) {
+        return getEventsForSubscription(subscription, null);
     }
 
     @Override

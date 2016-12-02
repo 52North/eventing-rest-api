@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import org.joda.time.DateTime;
+import org.n52.eventing.rest.InvalidPaginationException;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
@@ -74,10 +76,11 @@ public class EventLogController {
 
     @RequestMapping("")
     public Collection<EventHolderView> getAllEvents(@RequestParam(required = false) MultiValueMap<String, String> query)
-            throws IOException, URISyntaxException, NotAuthenticatedException {
+            throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
         final String fullUrl = RequestUtils.resolveFullRequestUrl();
+        Pagination page = Pagination.fromQuery(query);
 
-        return store.getAllEvents().stream()
+        return store.getAllEvents(page).stream()
                 .map((EventHolder t) -> {
                     String id = t.getId();
                     return new EventHolderView(id, t.getTime(),
@@ -88,13 +91,14 @@ public class EventLogController {
                 .collect(Collectors.toList());
     }
 
-    public Collection<EventHolderView> getEventsForSubscription(String subId)
-            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException {
+    public Collection<EventHolderView> getEventsForSubscription(MultiValueMap<String, String> query, String subId)
+            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, InvalidPaginationException {
         final String fullUrl = RequestUtils.resolveFullRequestUrl();
+        Pagination page = Pagination.fromQuery(query);
 
         SubscriptionInstance subscription = subDao.getSubscription(subId);
 
-        return store.getEventsForSubscription(subscription).stream()
+        return store.getEventsForSubscription(subscription, page).stream()
                 .map((EventHolder t) -> {
                     String id = t.getId();
                     EventHolderView holderView = new EventHolderView(id, t.getTime(),

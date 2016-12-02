@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import org.n52.eventing.rest.InvalidPaginationException;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.UrlSettings;
@@ -90,10 +92,12 @@ public class SubscriptionsController {
 
     @RequestMapping("")
     public ModelAndView getSubscriptions(@RequestParam(required = false) MultiValueMap<String, String> query)
-            throws IOException, URISyntaxException, NotAuthenticatedException {
+            throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
+        Pagination p = Pagination.fromQuery(query);
+
         String fullUrl = RequestUtils.resolveFullRequestUrl();
 
-        List<ResourceCollection> subs = retrieveSubscriptions(fullUrl);
+        List<ResourceCollection> subs = retrieveSubscriptions(fullUrl, p);
 
         if (subs.isEmpty()) {
             return EmptyArrayModel.create();
@@ -102,10 +106,10 @@ public class SubscriptionsController {
         return new ModelAndView().addObject(subs);
     }
 
-    private List<ResourceCollection> retrieveSubscriptions(String fullUrl) throws NotAuthenticatedException {
+    private List<ResourceCollection> retrieveSubscriptions(String fullUrl, Pagination p) throws NotAuthenticatedException {
         List<ResourceCollection> pubs = new ArrayList<>();
 
-        this.dao.getSubscriptions().stream().forEach(s -> {
+        this.dao.getSubscriptions(p).stream().forEach(s -> {
             String pubId = s.getId();
             pubs.add(ResourceCollection.createResource(pubId)
                     .withLabel(s.getLabel())
@@ -135,9 +139,9 @@ public class SubscriptionsController {
     }
 
     @RequestMapping(value = "/{subId}/events", method = GET)
-    public Collection<EventLogController.EventHolderView> getSubscriptionEvents(@PathVariable("subId") String subId)
-            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
-        return eventLogController.getEventsForSubscription(subId);
+    public Collection<EventLogController.EventHolderView> getSubscriptionEvents(@RequestParam(required = false) MultiValueMap<String, String> query, @PathVariable("subId") String subId)
+            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException, InvalidPaginationException {
+        return eventLogController.getEventsForSubscription(query, subId);
     }
 
     @RequestMapping(value = "/{subId}/events/{eventId}", method = GET)

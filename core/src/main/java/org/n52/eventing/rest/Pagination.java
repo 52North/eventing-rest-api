@@ -28,26 +28,58 @@
 
 package org.n52.eventing.rest;
 
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.MultiValueMap;
+
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public class Pagination {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Pagination.class);
+
+    public static Pagination fromQuery(MultiValueMap<String, String> query) throws InvalidPaginationException {
+        if (query == null) {
+            return null;
+        }
+
+        int limit = 100;
+        int offset = 0;
+        try {
+            if (query.containsKey("limit")) {
+                List<String> val = query.get("limit");
+                limit = Integer.parseInt(val.get(0));
+            }
+            if (query.containsKey("offset")) {
+                List<String> val = query.get("offset");
+                offset = Integer.parseInt(val.get(0));
+            }
+
+            return new Pagination(offset, limit);
+        }
+        catch (NumberFormatException e) {
+            LOG.warn(e.getMessage());
+            throw new InvalidPaginationException("Not number: "+e.getMessage());
+        }
+    }
+
     private final int offset;
-    private final int size;
+    private final int limit;
 
     public Pagination(int offset, int size) {
         this.offset = offset;
-        this.size = size;
+        this.limit = size;
     }
 
     public int getOffset() {
         return offset;
     }
 
-    public int getSize() {
-        return size;
+    public int getLimit() {
+        return limit;
     }
 
 

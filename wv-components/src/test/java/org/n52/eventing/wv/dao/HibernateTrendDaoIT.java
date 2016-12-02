@@ -62,13 +62,13 @@ public class HibernateTrendDaoIT {
         HibernateTrendDao dao = new HibernateTrendDao(session);
 
         Optional<Trend> t1 = dao.retrieveByDomainTrend(TrendDao.DomainTrend.Failure);
-        Assert.assertThat(t1.get().getCode(), CoreMatchers.is(99));
+        Assert.assertThat(t1.get().getId(), CoreMatchers.is(99));
 
         t1 = dao.retrieveByDomainTrend(TrendDao.DomainTrend.LessLess);
-        Assert.assertThat(t1.get().getCode(), CoreMatchers.is(11));
+        Assert.assertThat(t1.get().getId(), CoreMatchers.is(11));
 
         t1 = dao.retrieveByDomainTrend(TrendDao.DomainTrend.GreaterGreater);
-        Assert.assertThat(t1.get().getCode(), CoreMatchers.is(33));
+        Assert.assertThat(t1.get().getId(), CoreMatchers.is(33));
     }
 
     @Test

@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.publications.Publication;
 import org.n52.eventing.rest.publications.PublicationsService;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
@@ -103,9 +104,9 @@ public class PublicationsServiceImpl extends BaseService implements Publications
     }
 
     @Override
-    public List<Publication> getPublications(MultiValueMap<String, String> filter) {
+    public List<Publication> getPublications(MultiValueMap<String, String> filter, Pagination page) {
         if (filter == null || filter.isEmpty() || !filter.containsKey("feature")) {
-            return getPublications();
+            return getPublications(page);
         }
 
         return internalGet((Session session) -> {
@@ -114,12 +115,12 @@ public class PublicationsServiceImpl extends BaseService implements Publications
             if (val.isEmpty()) {
                 throw new DatabaseException("Filter 'feature' cannot be empty");
             }
-            return dao.retrieveByFeature(val.get(0));
+            return dao.retrieveByFeature(val.get(0), page);
         });
     }
 
     @Override
-    public List<Publication> getPublications() {
+    public List<Publication> getPublications(Pagination page) {
         return internalGet((Session session) -> {
             SeriesDao dao = new HibernateSeriesDao(session);
             return dao.retrieve(null);

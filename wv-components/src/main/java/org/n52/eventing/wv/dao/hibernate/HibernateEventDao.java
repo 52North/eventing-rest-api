@@ -29,11 +29,10 @@
 package org.n52.eventing.wv.dao.hibernate;
 
 import java.util.List;
-import javax.persistence.criteria.CriteriaQuery;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.wv.dao.EventDao;
-import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.WvEvent;
 import org.n52.eventing.wv.model.WvSubscription;
 
@@ -49,15 +48,27 @@ public class HibernateEventDao extends BaseHibernateDao<WvEvent> implements Even
 
     @Override
     public List<WvEvent> retrieveForSubscription(int idInt) {
+        return retrieveForSubscription(idInt, null);
+    }
+
+    @Override
+    public List<WvEvent> retrieveForSubscription(int idInt, Pagination pagination) {
         Session s = getSession();
         String param = "subId";
         String eventEntity = WvEvent.class.getSimpleName();
         String subEntity = WvSubscription.class.getSimpleName();
-        String hql = String.format("SELECT e FROM %s e join e.rule r, %s s WHERE s.id=:%s AND s.rule = r", eventEntity, subEntity, param);
-        Query q = getSession().createQuery(hql);
-        q.setParameter(param, idInt);
-        return q.list();
+        String hql = String.format("SELECT e FROM %s e join e.rule r, %s s WHERE s.id=:%s AND s.rule = r order by e.id asc", eventEntity, subEntity, param);
+        Query query = getSession().createQuery(hql);
+
+        if (pagination != null) {
+            query.setFirstResult(pagination.getOffset());
+            query.setMaxResults(pagination.getLimit());
+        }
+
+        query.setParameter(param, idInt);
+        return query.list();
     }
+
 
 
 }

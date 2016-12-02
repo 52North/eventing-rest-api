@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.joda.time.DateTime;
+import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 import org.n52.eventing.rest.subscriptions.SubscriptionsService;
@@ -111,7 +112,7 @@ public class SubscriptionsServiceImpl extends BaseService implements Subscriptio
     }
 
     @Override
-    public List<SubscriptionInstance> getSubscriptions() {
+    public List<SubscriptionInstance> getSubscriptions(Pagination p) {
         WvUser user;
         try {
             user = super.resolveUser();
@@ -123,7 +124,7 @@ public class SubscriptionsServiceImpl extends BaseService implements Subscriptio
         Session session = hibernateConnection.createSession();
         SubscriptionDao dao = new HibernateSubscriptionDao(session);
         try {
-            List<WvSubscription> subs = dao.retrieve(null);
+            List<WvSubscription> subs = dao.retrieve(p);
             return subs.stream()
                     .filter(s -> accessRights.canSeeSubscription(user, s))
                     .map((WvSubscription t) -> {
