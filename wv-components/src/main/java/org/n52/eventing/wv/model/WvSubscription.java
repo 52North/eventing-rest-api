@@ -54,10 +54,12 @@ public class WvSubscription implements BaseEntity {
         this.rule = rule;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }

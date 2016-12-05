@@ -50,10 +50,12 @@ public class Group implements BaseEntity {
         this.addedByLdapImport = addedByLdapImport;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }

@@ -45,10 +45,12 @@ public class Category implements BaseEntity {
     }
 
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }

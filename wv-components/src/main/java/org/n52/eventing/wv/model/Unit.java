@@ -46,10 +46,12 @@ public class Unit implements BaseEntity {
         this.code = code;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }

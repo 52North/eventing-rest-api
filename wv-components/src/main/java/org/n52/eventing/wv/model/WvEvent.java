@@ -55,10 +55,12 @@ public class WvEvent implements BaseEntity {
         this.previousValue = previousValue;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }

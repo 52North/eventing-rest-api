@@ -84,10 +84,12 @@ public class Rule implements BaseEntity {
         this.activeFlag = activeFlag;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }

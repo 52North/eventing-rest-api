@@ -34,5 +34,7 @@ package org.n52.eventing.wv.model;
 public interface BaseEntity {
 
     int getId();
+    
+    void setId(int id);
 
 }

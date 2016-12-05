@@ -59,10 +59,12 @@ public class WvUser implements BaseEntity {
         this.groups = groups;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
