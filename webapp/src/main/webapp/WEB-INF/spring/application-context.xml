@@ -41,7 +41,7 @@
 
     <!-- engine -->
     <!--<bean class="org.n52.eventing.rest.subscriptions.SubverseFilterLogic" />-->
-    <bean class="org.n52.subverse.engine.EposFilterEngine" />
+    <!--<bean class="org.n52.subverse.engine.EposFilterEngine" />-->
 
     <mvc:resources mapping="/doc/**" location="/api-docs/"/>
 

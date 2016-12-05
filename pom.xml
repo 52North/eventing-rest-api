@@ -19,6 +19,7 @@
         <module>core</module>
         <module>rest</module>
         <module>webapp</module>
+        <module>subverse-engine</module>
         <module>wv-components</module>
     </modules>
 
@@ -88,6 +89,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>wv-components</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>subverse-engine</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

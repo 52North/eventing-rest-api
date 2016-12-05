@@ -6,9 +6,9 @@
         <artifactId>eventing-rest-api</artifactId>
         <version>1-SNAPSHOT</version>
     </parent>
-    <artifactId>core</artifactId>
+    <artifactId>subverse-engine</artifactId>
     <packaging>jar</packaging>
-    <name>Eventing REST API - core module</name>
+    <name>Eventing REST API - subverse module</name>
     <url>http://52north.org/communities/sensorweb/</url>
     <dependencies>
         <!-- ### EXTERNAL DEPENDENCIES ### -->
@@ -16,22 +16,26 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-<!--        <dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.n52.subverse</groupId>
             <artifactId>filtering</artifactId>
-        </dependency>-->
-        <dependency>
+        </dependency>
+        <!--<dependency>
             <groupId>org.n52.subverse</groupId>
             <artifactId>delivery</artifactId>
         </dependency>
         <dependency>
             <groupId>org.n52.subverse</groupId>
             <artifactId>termination</artifactId>
-        </dependency>
-<!--        <dependency>
+        </dependency>-->
+        <dependency>
             <groupId>org.n52.epos</groupId>
             <artifactId>epos-api</artifactId>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -40,10 +44,10 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
         </dependency>
-<!--        <dependency>
+        <dependency>
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
