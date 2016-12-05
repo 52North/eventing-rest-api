@@ -30,6 +30,7 @@ package org.n52.eventing.rest.binding.templates;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
@@ -43,7 +44,9 @@ import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -61,7 +64,7 @@ public class TemplatesController {
     private TemplatesDao dao;
 
 
-    @RequestMapping("")
+    @RequestMapping(value = "", method = RequestMethod.GET)
     public ModelAndView getTemplates(@RequestParam(required = false) MultiValueMap<String, String> query) throws IOException, URISyntaxException, NotAuthenticatedException {
         String fullUrl = RequestUtils.resolveFullRequestUrl();
 
@@ -83,7 +86,7 @@ public class TemplatesController {
         return new ModelAndView().addObject(list);
     }
 
-    @RequestMapping("/{item}")
+    @RequestMapping(value = "/{item}", method = RequestMethod.GET)
     public TemplateDefinition getTemplate(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException {
         if (this.dao.hasTemplate(id)) {
             try {
@@ -95,6 +98,14 @@ public class TemplatesController {
         }
 
         throw new ResourceNotAvailableException("not there: "+ id);
+    }
+
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public ModelAndView create(@RequestBody TemplateDefinition def) {
+        String id = this.dao.createTemplate(def);
+        ModelAndView result = new ModelAndView();
+        result.addObject(Collections.singletonMap("id", id));
+        return result;
     }
 
 }

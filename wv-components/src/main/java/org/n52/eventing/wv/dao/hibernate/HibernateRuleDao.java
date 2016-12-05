@@ -94,6 +94,21 @@ public class HibernateRuleDao extends BaseHibernateDao<Rule> implements RuleDao 
         return retrieveBySeries(seriesIdentifier, null);
     }
 
+    @Override
+    public boolean hasEntity(Rule rule) {
+        String paramTrend = "paramTrend";
+        String paramSeries = "paramSeries";
+        String paramThreshold = "paramThreshold";
+        String entity = Rule.class.getSimpleName();
+        String hql = String.format("SELECT r FROM %s r join r.trendCode t join r.series s WHERE t.id=:%s AND s.id=:%s AND r.threshold=:%s",
+                entity, paramTrend, paramSeries, paramThreshold);
 
+        Query q = getSession().createQuery(hql);
+        q.setParameter(paramTrend, rule.getTrendCode().getId());
+        q.setParameter(paramSeries, rule.getSeries().getId());
+        q.setParameter(paramThreshold, rule.getThreshold());
+
+        return q.list().size() > 0;
+    }
 
 }

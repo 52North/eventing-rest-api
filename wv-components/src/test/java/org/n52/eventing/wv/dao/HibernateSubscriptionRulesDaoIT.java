@@ -141,7 +141,9 @@ public class HibernateSubscriptionRulesDaoIT {
         trans.commit();
 
         Assert.assertThat(subDao.hasEntity(sub1), CoreMatchers.is(true));
+        Assert.assertThat(ruleDao.hasEntity(sub1.getRule()), CoreMatchers.is(true));
         Assert.assertThat(subDao.hasEntity(sub2), CoreMatchers.is(true));
+        Assert.assertThat(ruleDao.hasEntity(sub2.getRule()), CoreMatchers.is(true));
 
         List<WvSubscription> sub1r = subDao.retrieveByUser(u1);
         Assert.assertThat(sub1r.size(), CoreMatchers.is(1));

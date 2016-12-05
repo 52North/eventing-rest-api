@@ -41,4 +41,6 @@ public interface RuleDao extends BaseDao<Rule> {
 
     List<Rule> retrieveBySeries(String seriesIdentifier, Pagination pagination) throws DatabaseException;
 
+    boolean hasEntity(Rule rule);
+
 }

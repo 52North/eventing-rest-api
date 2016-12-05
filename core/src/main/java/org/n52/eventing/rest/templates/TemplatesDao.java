@@ -46,4 +46,6 @@ public interface TemplatesDao {
         return getTemplates();
     }
 
+    String createTemplate(TemplateDefinition def);
+
 }

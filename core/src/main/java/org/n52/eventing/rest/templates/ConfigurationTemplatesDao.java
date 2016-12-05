@@ -152,4 +152,9 @@ public class ConfigurationTemplatesDao implements TemplatesDao, InitializingBean
         return t;
     }
 
+    @Override
+    public String createTemplate(TemplateDefinition def) {
+        throw new UnsupportedOperationException("Not by this implementation");
+    }
+
 }

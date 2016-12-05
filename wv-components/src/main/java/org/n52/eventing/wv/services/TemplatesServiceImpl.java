@@ -28,11 +28,14 @@
 
 package org.n52.eventing.wv.services;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
@@ -40,9 +43,13 @@ import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.RuleDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateRuleDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateSeriesDao;
+import org.n52.eventing.wv.dao.hibernate.HibernateTrendDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.Rule;
+import org.n52.eventing.wv.model.Series;
+import org.n52.eventing.wv.model.Trend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +69,50 @@ public class TemplatesServiceImpl implements TemplatesDao {
 
     @Autowired
     private HibernateDatabaseConnection hdc;
+
+    @Override
+    public String createTemplate(TemplateDefinition def) {
+        Session session = hdc.createSession();
+
+        RuleDao dao = new HibernateRuleDao(session);
+        try {
+
+            Rule r = new Rule();
+            r.setActive(true);
+            Integer series = extractIntegerParameter(def, "series");
+            Double threshold = extractDoubleParameter(def, "threshold");
+            Integer trendCode = extractIntegerParameter(def, "trend");
+            r.setThreshold(threshold);
+
+            Optional<Series> s = new HibernateSeriesDao(session).retrieveById(series);
+            if (!s.isPresent()) {
+                throw new IllegalArgumentException("Series is not known: "+series);
+            }
+            r.setSeries(s.get());
+
+            Optional<Trend> t = new HibernateTrendDao(session).retrieveById(trendCode);
+            if (!t.isPresent()) {
+                throw new IllegalArgumentException("Trend is not supported: "+trendCode);
+            }
+            r.setTrendCode(t.get());
+
+            if (dao.hasEntity(r)) {
+                throw new IllegalArgumentException("Rule definition already present");
+            }
+
+            Transaction trans = session.beginTransaction();
+            dao.store(r);
+            trans.commit();
+            return Integer.toString(r.getId());
+        }
+        catch (DatabaseException e) {
+            LOG.warn(e.getMessage());
+            throw new RuntimeException("Error on storing rule", e);
+        }
+        finally {
+            session.close();
+        }
+    }
 
     @Override
     public boolean hasTemplate(String id) {
@@ -152,4 +203,34 @@ public class TemplatesServiceImpl implements TemplatesDao {
         return result;
     }
 
+    private Integer extractIntegerParameter(TemplateDefinition def, String param) {
+        try {
+            return extractParameter(def, param);
+        }
+        catch (ClassCastException e) {
+            throw new IllegalArgumentException("Wrong datatype for paramter: "+param);
+        }
+    }
+
+    private Double extractDoubleParameter(TemplateDefinition def, String param) {
+        try {
+            return extractParameter(def, param);
+        }
+        catch (ClassCastException e) {
+            throw new IllegalArgumentException("Wrong datatype for paramter: "+param);
+        }
+    }
+
+    private <T> T extractParameter(TemplateDefinition def, String param) {
+        if (def.getDefinition() != null && def.getDefinition().getContent() instanceof Map<?, ?>) {
+            Map<?, ?> content = (Map<?, ?>) def.getDefinition().getContent();
+            if (content.containsKey(param)) {
+                return (T) content.get(param);
+            }
+        }
+
+        throw new IllegalArgumentException("Required parameter not provided: "+param);
+    }
+
 }
+
