@@ -31,10 +31,12 @@ package org.n52.eventing.wv.rest;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.security.NotAuthenticatedException;
+import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.hibernate.HibernateTrendDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
@@ -42,7 +44,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
+import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.Trend;
+import org.n52.eventing.wv.model.i18n.I18nTrend;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -52,6 +58,11 @@ import org.n52.eventing.wv.model.Trend;
 @RequestMapping(value = UrlSettings.API_V1_BASE+"/trends",
         produces = {"application/json"})
 public class TrendController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TrendController.class);
+
+    @Autowired
+    private I18nProvider i18n;
 
     @Autowired
     private HibernateDatabaseConnection hdc;
@@ -63,6 +74,19 @@ public class TrendController {
             HibernateTrendDao dao = new HibernateTrendDao(session);
 
             return dao.retrieve(null).stream()
+                    .map((Trend t) -> {
+                        try {
+                            Optional<I18nTrend> lt = dao.retrieveAsLocale(i18n.getLocale(), t);
+                            if (lt.isPresent()) {
+                                t.setDescription(lt.get().getName());
+                            }
+                        } catch (DatabaseException ex) {
+                            LOG.warn(ex.getMessage());
+                            LOG.debug(ex.getMessage(), ex);
+                        }
+
+                        return t;
+                    })
                     .collect(Collectors.toList());
         }
     }

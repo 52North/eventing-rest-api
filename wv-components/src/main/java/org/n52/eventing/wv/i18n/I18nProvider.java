@@ -47,7 +47,7 @@ public class I18nProvider extends JsonConfigured {
 
     private final static String CONFIG_FILE = "/wv/i18n.json";
     private final static String CONFIG_DEFAULT_FILE = "/wv/i18n-default.json";
-    private static Locale defaultLocale;
+    private Locale defaultLocale;
 
     public I18nProvider() {
         this(CONFIG_FILE);
@@ -84,7 +84,7 @@ public class I18nProvider extends JsonConfigured {
         return valueObject.get(defaultLocale.getLanguage()).asText();
     }
 
-    private static Locale getLocale() {
+    public Locale getLocale() {
         LocaleContext localeContext = LocaleContextHolder.getLocaleContext();
         if (localeContext != null) {
             Locale locale = localeContext.getLocale();
