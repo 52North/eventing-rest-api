@@ -58,9 +58,9 @@ public class RequestUtils {
         if (path != null && path.endsWith("/")) {
             path = path.substring(0, path.length() - 1);
         }
-        String query = request.getQueryString();
+//        String query = request.getQueryString();
 
-        URI uri = new URI(scheme, userInfo, host, port, path, query, null);
+        URI uri = new URI(scheme, userInfo, host, port, path, null, null);
         return uri.toString();
     }
 
