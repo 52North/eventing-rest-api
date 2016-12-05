@@ -34,7 +34,7 @@ import java.util.Date;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class WvEvent {
+public class WvEvent implements BaseEntity {
 
     private int id;
     private Rule rule;

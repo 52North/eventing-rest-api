@@ -32,7 +32,7 @@ package org.n52.eventing.wv.model;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class FeatureOfInterest {
+public class FeatureOfInterest implements BaseEntity {
 
     private int id;
     private String identifier;

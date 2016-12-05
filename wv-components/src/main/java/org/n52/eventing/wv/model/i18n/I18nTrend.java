@@ -28,13 +28,14 @@
 
 package org.n52.eventing.wv.model.i18n;
 
+import org.n52.eventing.wv.model.BaseEntity;
 import org.n52.eventing.wv.model.Trend;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class I18nTrend {
+public class I18nTrend implements BaseEntity {
 
     private int id;
     private Trend trendCode;

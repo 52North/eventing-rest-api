@@ -35,7 +35,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class WvUser {
+public class WvUser implements BaseEntity {
 
     private int id;
     private String name;

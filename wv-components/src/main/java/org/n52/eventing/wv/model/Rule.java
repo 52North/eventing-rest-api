@@ -34,7 +34,7 @@ import com.google.common.base.MoreObjects;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Rule {
+public class Rule implements BaseEntity {
 
     private int id;
     private double threshold;

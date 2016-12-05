@@ -32,7 +32,7 @@ package org.n52.eventing.wv.model;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Procedure {
+public class Procedure implements BaseEntity {
 
     private int id;
     private String procedureId;

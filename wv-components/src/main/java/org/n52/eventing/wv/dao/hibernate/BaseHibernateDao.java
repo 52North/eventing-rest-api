@@ -37,14 +37,15 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.wv.dao.DatabaseException;
+import org.n52.eventing.wv.model.BaseEntity;
 import org.springframework.core.GenericTypeResolver;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
- * @param <T> the model of this Dao
+ * @param <T> the model entity of this Dao inherting BaseEntity
  */
-public class BaseHibernateDao<T> {
+public class BaseHibernateDao<T extends BaseEntity> {
 
     private final Class<T> genericType;
     private final Session session;

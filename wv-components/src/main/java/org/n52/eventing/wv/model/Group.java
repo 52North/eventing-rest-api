@@ -34,7 +34,7 @@ import java.util.Objects;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Group {
+public class Group implements BaseEntity {
 
     private int id;
     private String name;
