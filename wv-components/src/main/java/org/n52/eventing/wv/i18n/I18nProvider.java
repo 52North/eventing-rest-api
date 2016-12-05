@@ -32,6 +32,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import java.util.Locale;
 import org.n52.eventing.wv.JsonConfigured;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.i18n.LocaleContext;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
  *
@@ -39,9 +43,11 @@ import org.n52.eventing.wv.JsonConfigured;
  */
 public class I18nProvider extends JsonConfigured {
 
+    private static final Logger LOG = LoggerFactory.getLogger(I18nProvider.class);
+
     private final static String CONFIG_FILE = "/wv/i18n.json";
     private final static String CONFIG_DEFAULT_FILE = "/wv/i18n-default.json";
-    private final Locale defaultLocale;
+    private static Locale defaultLocale;
 
     public I18nProvider() {
         this(CONFIG_FILE);
@@ -49,7 +55,10 @@ public class I18nProvider extends JsonConfigured {
 
     public I18nProvider(String configFileResource) {
         init(configFileResource);
-        this.defaultLocale = Locale.forLanguageTag(getConfig().getOrDefault("defaultLocale", new TextNode("de")).asText());
+        defaultLocale = Locale.forLanguageTag(getConfig().getOrDefault("defaultLocale", new TextNode("de")).asText());
+        if (defaultLocale == null) {
+            defaultLocale = Locale.getDefault();
+        }
     }
 
     @Override
@@ -58,7 +67,8 @@ public class I18nProvider extends JsonConfigured {
     }
 
     public String getString(String key) {
-        return getString(key, this.defaultLocale);
+        Locale locale = getLocale();
+        return getString(key, locale);
     }
 
     public String getString(String key, Locale l) {
@@ -71,7 +81,18 @@ public class I18nProvider extends JsonConfigured {
             return valueObject.get(l.getLanguage()).asText();
         }
 
-        return valueObject.get(this.defaultLocale.getLanguage()).asText();
+        return valueObject.get(defaultLocale.getLanguage()).asText();
+    }
+
+    private static Locale getLocale() {
+        LocaleContext localeContext = LocaleContextHolder.getLocaleContext();
+        if (localeContext != null) {
+            Locale locale = localeContext.getLocale();
+            if (locale != null) {
+                return locale;
+            }
+        }
+        return defaultLocale;
     }
 
 }
