@@ -78,7 +78,7 @@ public class TemplatesServiceImpl implements TemplatesDao {
 
             Rule r = new Rule();
             r.setActive(true);
-            Integer series = extractIntegerParameter(def, "series");
+            Integer series = extractIntegerParameter(def, "publication");
             Double threshold = extractDoubleParameter(def, "threshold");
             Integer trendCode = extractIntegerParameter(def, "trend");
             r.setThreshold(threshold);

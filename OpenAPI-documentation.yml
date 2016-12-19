@@ -1,0 +1,344 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: Eventing REST API
+  description: Eventing REST API for the Wupperverband Sensor Web
+  version: "1"
+# the domain of the service
+host: localhost:8080
+# array of all schemes that your API supports
+schemes:
+  - http
+# will be prefixed to all paths
+basePath: /eventing-rest-api/v1
+produces:
+  - application/json
+paths:
+  /publications:
+    get:
+      summary: Available publications (= series)
+      description: |
+        The Publications (= series) of the database
+      parameters:
+        - name: limit
+          in: query
+          description: pagination - page size
+          required: false
+          type: number
+          format: integer
+        - name: offset
+          in: query
+          description: pagination - offset
+          required: false
+          type: number
+          format: integer
+      tags:
+        - Publications
+      responses:
+        200:
+          description: An array of publications
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Publications'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /templates:
+    get:
+      summary: Available templates (= rules)
+      description: |
+        The templates (= rules) registered in the database
+      parameters:
+        - name: limit
+          in: query
+          description: pagination - page size
+          required: false
+          type: number
+          format: integer
+        - name: offset
+          in: query
+          description: pagination - offset
+          required: false
+          type: number
+          format: integer
+      tags:
+        - Templates
+      responses:
+        200:
+          description: An array of teplates
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Templates'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: create a new template
+      description: |
+        register a new template (= rule).
+      tags:
+        - Templates
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateTemplate'
+      responses:
+        200:
+          description: the registered template
+          schema:
+            $ref: '#/definitions/Template'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /subscriptions:
+    get:
+      summary: Registered subscriptions
+      description: |
+        The subscriptions registered in the database
+      parameters:
+        - name: limit
+          in: query
+          description: pagination - page size
+          required: false
+          type: number
+          format: integer
+        - name: offset
+          in: query
+          description: pagination - offset
+          required: false
+          type: number
+          format: integer
+      tags:
+        - Subscriptions
+      responses:
+        200:
+          description: An array of Subscriptions
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Subscriptions'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: register a new subscription
+      description: |
+        register a new subscription.
+      tags:
+        - Subscriptions
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateSubscription'
+      responses:
+        200:
+          description: the registered subscription
+          schema:
+            $ref: '#/definitions/Subscription'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /deliveryMethods:
+    get:
+      summary: available delivery methods
+      description: |
+        The delivery methods of the system
+      tags:
+        - Delivery methods
+      responses:
+        200:
+          description: An array of delivery methods
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/DeliveryMethods'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /events:
+    get:
+      summary: Triggered events
+      description: |
+        The events triggered and stored in the database
+      parameters:
+        - name: limit
+          in: query
+          description: pagination - page size
+          required: false
+          type: number
+          format: integer
+        - name: offset
+          in: query
+          description: pagination - offset
+          required: false
+          type: number
+          format: integer
+      tags:
+        - Events
+      responses:
+        200:
+          description: An array of Events
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Events'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /trends:
+    get:
+      summary: Available trend codes
+      description: |
+        The trends registered in the database
+      tags:
+        - Trends
+      responses:
+        200:
+          description: An array of Trends
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Trends'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /groups:
+    get:
+      summary: Registered groups
+      description: |
+        The groups registered in the database
+      tags:
+        - Groups and Users
+      responses:
+        200:
+          description: An array of Groups
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Groups'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /users:
+    get:
+      summary: Registered users
+      description: |
+        The users registered in the database
+      tags:
+        - Groups and Users
+      responses:
+        200:
+          description: An array of users
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Users'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Publications:
+    type: object
+  Templates:
+    type: object
+  Subscriptions:
+    type: object
+  DeliveryMethods:
+    type: object
+  Events:
+    type: object
+  Trends:
+    type: object
+  Groups:
+    type: object
+  Users:
+    type: object
+  Template:
+    type: object
+  Subscription:
+    type: object
+  CreateSubscription:
+    type: object
+    required: [template, publicationId, deiveryMethods, enabled]
+    properties:
+      publicationId:
+        type: string
+      template:
+        type: object
+        required: [content]
+        properties:
+          content:
+            type: object
+            required: [id, parameters]
+            properties:
+              id:
+                type: string
+              parameters:
+                type: object
+                properties:
+                  groupId:
+                    type: number
+                    format: integer
+                  userId:
+                    type: number
+                    format: integer
+      deiveryMethods:
+        type: array
+        items:
+          type: object
+          required: [id, parameters]
+          properties:
+            id:
+              type: string
+            parameters:
+              type: object
+      enabled:
+        type: boolean
+  CreateTemplate:
+    type: object
+    required: [definition]
+    properties:
+      definition:
+        type: object
+        required: [content]
+        properties:
+          content:
+            type: object
+            required: [publication, threshold, trend]
+            properties:
+              publication:
+                type: number
+                format: integer
+              threshold:
+                type: number
+                format: double
+              trend:
+                type: number
+                format: integer
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
