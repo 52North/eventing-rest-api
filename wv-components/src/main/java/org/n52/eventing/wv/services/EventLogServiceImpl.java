@@ -130,11 +130,12 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
         String label = String.format(matchTemplate, e.getRule());
         EventHolder holder = new EventHolder(Integer.toString(e.getId()),
                 new DateTime(e.getTimestamp()),
-                null, label, null);
+                null, label, Optional.empty());
         Map<String, Object> props = new HashMap<>();
         props.put("value", e.getValue());
         props.put("previousValue", e.getPreviousValue());
         props.put("previousTimestamp", new DateTime(e.getPreviousTimestamp()));
+        props.put("template", e.getRule().getId());
         holder.setData(props);
         return holder;
     }

@@ -28,7 +28,6 @@
 
 package org.n52.eventing.wv.services;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -165,12 +164,12 @@ public class TemplatesServiceImpl implements TemplatesDao {
 
     @Override
     public List<TemplateDefinition> getTemplates(MultiValueMap<String, String> filter) {
-        if (filter == null || filter.isEmpty() || !filter.containsKey("series")) {
+        if (filter == null || filter.isEmpty() || !filter.containsKey("publication")) {
             return getTemplates();
         }
         return internalGet((Session s ) -> {
             RuleDao dao = new HibernateRuleDao(s);
-            List<String> val = filter.get("series");
+            List<String> val = filter.get("publication");
             if (val.isEmpty()) {
                 throw new DatabaseException("Filter 'series' cannot be empty");
             }

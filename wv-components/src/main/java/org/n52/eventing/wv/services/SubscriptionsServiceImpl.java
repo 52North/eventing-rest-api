@@ -225,24 +225,26 @@ public class SubscriptionsServiceImpl extends BaseService implements Subscriptio
     private SubscriptionInstance wrapSubscription(WvSubscription sub) {
         String label = String.format(i18n.getString("subscription.label"), sub.getRule().getId());
 
-        Map<String, Integer> userGroup = new HashMap<>();
+        Map<String, Integer> details = new HashMap<>();
         String type;
         if (sub.getGroup() != null && sub.getUser() != null) {
             type = i18n.getString("subscription.description.userGroupType");
-            userGroup.put("user", sub.getUser().getId());
-            userGroup.put("group", sub.getGroup().getId());
+            details.put("user", sub.getUser().getId());
+            details.put("group", sub.getGroup().getId());
         }
         else if (sub.getGroup() != null && sub.getUser() == null) {
             type = i18n.getString("subscription.description.groupType");
-            userGroup.put("group", sub.getGroup().getId());
+            details.put("group", sub.getGroup().getId());
         }
         else if (sub.getUser() != null) {
             type = i18n.getString("subscription.description.userType");
-            userGroup.put("user", sub.getUser().getId());
+            details.put("user", sub.getUser().getId());
         }
         else {
             type = null;
         }
+        
+        details.put("template", sub.getRule().getId());
 
         String desc = type != null ? String.format("%s. %s", label, type) : label;
         SubscriptionInstance result = new SubscriptionInstance(Integer.toString(sub.getId()),
@@ -250,7 +252,7 @@ public class SubscriptionsServiceImpl extends BaseService implements Subscriptio
                 desc);
         result.setDeliveryMethods(Collections.singletonList(defaultDeliveryMethod));
 
-        result.setDetails(userGroup);
+        result.setDetails(details);
         return result;
     }
 

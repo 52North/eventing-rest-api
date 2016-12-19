@@ -43,6 +43,6 @@ public interface UrlSettings {
 
     String TEMPLATES_RESOURCE = "templates";
 
-    String EVENTLOG_RESOURCE = "eventLog";
+    String EVENTLOG_RESOURCE = "events";
 
 }
