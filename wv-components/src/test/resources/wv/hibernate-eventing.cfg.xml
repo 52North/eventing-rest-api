@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+    <!DOCTYPE hibernate-configuration PUBLIC
+              "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+              "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hbm2ddl.auto">update</property>
+        <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <property name="connection.url">jdbc:postgresql://localhost:5432/wv-eventing?currentSchema=sensorweb2</property>
+        <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+        <property name="connection.username">postgres</property>
+        <property name="connection.password">postgres</property>
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+
+        <mapping resource="/wv/hibernate/user.hbm.xml"/>
+        <mapping resource="/wv/hibernate/group.hbm.xml"/>
+        <mapping resource="/wv/hibernate/subscription.hbm.xml"/>
+        <mapping resource="/wv/hibernate/rule.hbm.xml"/>
+        <mapping resource="/wv/hibernate/series.hbm.xml"/>
+        <mapping resource="/wv/hibernate/unit.hbm.xml"/>
+        <mapping resource="/wv/hibernate/phenomenon.hbm.xml"/>
+        <mapping resource="/wv/hibernate/category.hbm.xml"/>
+        <mapping resource="/wv/hibernate/procedure.hbm.xml"/>
+        <mapping resource="/wv/hibernate/feature.hbm.xml"/>
+        <mapping resource="/wv/hibernate/trend.hbm.xml"/>
+        <mapping resource="/wv/hibernate/i18n/trend.hbm.xml"/>
+        <mapping resource="/wv/hibernate/event.hbm.xml"/>
+
+    </session-factory>
+</hibernate-configuration>

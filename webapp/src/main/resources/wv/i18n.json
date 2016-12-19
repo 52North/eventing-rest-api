@@ -1,0 +1,50 @@
+{
+    "publication.description": {
+        "de": "Zeitreihe '%s': Phänomen '%s' der Station '%s'",
+        "en": "Series '%s': Phenomenon '%s' of Feature '%s'"
+    },
+    "publication.label": {
+        "de": "Zeitreihe '%s' der Station '%s'",
+        "en": "Series '%s' of Feature '%s'"
+    },
+    "event.match": {
+        "de": "Auslösung für die Regel: '%s'",
+        "en": "Match for rule: '%s'"
+    },
+    "rule.label": {
+        "de": "Regel '%s' für Zeitreihe '%s'",
+        "en": "Rule '%s' for Series '%s'"
+    },
+    "rule.description": {
+        "de": "Regel '%s' für Zeitreihe '%s': '%s' der Station '%s' using procedure '%s'",
+        "en": "Rule '%s' for Series '%s': '%s' of feature '%s' using procedure '%s'"
+    },
+    "rule.parameter.userId": {
+        "de": "Die ID des Nutzers für den das Abonnement angelegt werden soll",
+        "en": "The target user ID for the new subscription"
+    },
+    "rule.parameter.groupId": {
+        "de": "Die ID der Gruppe für den das Abonnement angelegt werden soll",
+        "en": "The target group id for the new subscription"
+    },
+    "subscription.label": {
+        "de": "Abonnement für Regel '%s'",
+        "en": "Subscription for rule '%s'"
+    },
+    "subscription.description.userGroupType": {
+        "de": "Dies ist eine Nutzer- sowie Gruppenabonnement",
+        "en": "This is a user and group subscription"
+    },
+    "subscription.description.groupType": {
+        "de": "Dies ist ein Gruppenabonnement",
+        "en": "This is a group subscription"
+    },
+    "subscription.description.userType": {
+        "de": "Dies ist ein Nutzerabonnement",
+        "en": "This is a user subscription"
+    },
+    "subscription.alreadyPresent": {
+        "de": "Diese Regel ist bereits registriert",
+        "en": "This subscription is already present"
+    }
+}

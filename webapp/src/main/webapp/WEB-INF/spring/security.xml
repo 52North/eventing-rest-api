@@ -8,11 +8,11 @@
         <http-basic />
         <csrf disabled="true"/>
         <intercept-url pattern="/v1" access="permitAll" />
-        <intercept-url pattern="/v1/templates" access="hasAnyAuthority('users','admins','publishers')" />
-        <intercept-url pattern="/v1/subscriptions" access="hasAnyAuthority('users','admins','publishers')" />
-        <intercept-url pattern="/v1/publications" access="hasAnyAuthority('users','admins','publishers')" />
-        <intercept-url pattern="/v1/deliveryMethods" access="hasAnyAuthority('users','admins','publishers')" />
-        <intercept-url pattern="/v1/events" access="hasAnyAuthority('users','admins','publishers')" />
+        <intercept-url pattern="/v1/templates" access="hasAnyAuthority('users','admins','editors')" />
+        <intercept-url pattern="/v1/subscriptions" access="hasAnyAuthority('users','admins','editors')" />
+        <intercept-url pattern="/v1/publications" access="hasAnyAuthority('users','admins','editors')" />
+        <intercept-url pattern="/v1/deliveryMethods" access="hasAnyAuthority('users','admins','editors')" />
+        <intercept-url pattern="/v1/events" access="hasAnyAuthority('users','admins','editors')" />
     </http>
 
     <b:bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />

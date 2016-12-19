@@ -67,6 +67,9 @@ public class UserSecurityService implements AuthenticationProvider, Serializable
     private static final Logger LOG = LoggerFactory.getLogger(UserSecurityService.class);
 
     @Autowired
+    private GroupPolicies groupPolicies;
+
+    @Autowired
     private HibernateDatabaseConnection hdc;
 
     @Autowired
@@ -164,22 +167,37 @@ public class UserSecurityService implements AuthenticationProvider, Serializable
         this.passwordEncoder = passwordEncoder;
     }
 
+    public void setGroupPolicies(GroupPolicies groupPolicies) {
+        this.groupPolicies = groupPolicies;
+    }
 
     private boolean containsAdminGroup(Set<Group> groups) {
         if (groups == null) {
             return false;
         }
 
-        return groups.stream().filter((Group g) -> {
-            return "admin".equals(g.getName());
-        }).count() > 0;
+        return groups.stream()
+                .filter((Group g) ->  groupPolicies.getAdminGroupNames().contains(g.getName()))
+                .count() > 0;
     }
 
     private Collection<? extends GrantedAuthority> createPrincipals(Set<Group> groups) {
         if (groups == null) {
-            return Collections.emptyList();
+            return Collections.singletonList(new GroupPrinciple("users"));
         }
-        return groups.stream().map((Group t) -> new GroupPrinciple(t)).collect(Collectors.toList());
+        return groups.stream()
+                .map((Group t) -> {
+                    if (groupPolicies.getAdminGroupNames().contains(t.getName())) {
+                        return new GroupPrinciple("admins");
+                    }
+                    if (groupPolicies.getEditorGroupNames().contains(t.getName())) {
+                        return new GroupPrinciple("editors");
+                    }
+                    return null;
+                })
+                .filter(gp -> gp != null)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
 

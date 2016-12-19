@@ -71,6 +71,7 @@ public class UserSecurityServiceIT {
         this.userSecurityService = new UserSecurityService();
         this.userSecurityService.setPasswordEncoder(this.encoder);
         this.userSecurityService.setDatabaseConnection(hdc);
+        this.userSecurityService.setGroupPolicies(new GroupPolicies());
     }
 
     @Test
@@ -80,7 +81,7 @@ public class UserSecurityServiceIT {
         String password = "asdf";
         u.setName(UUID.randomUUID().toString().substring(0, 8));
         u.setPassword(encoder.encode(password));
-        u.setGroups(Collections.singleton(new Group("admin", "admin users", true)));
+        u.setGroups(Collections.singleton(new Group("admins-test", "admin users", true)));
 
         if (!userDao.retrieveByName(u.getName()).isPresent()) {
             userDao.store(u);
@@ -99,7 +100,7 @@ public class UserSecurityServiceIT {
         auths.forEach(ga -> Assert.assertThat(ga, CoreMatchers.instanceOf(GroupPrinciple.class)));
 
         long adminCount = auths.stream().filter((GrantedAuthority ga) -> {
-            return ((GroupPrinciple) ga).getAuthority().equals("admin");
+            return ((GroupPrinciple) ga).getAuthority().equals("admins");
         }).count();
 
         Assert.assertThat(adminCount, CoreMatchers.is(1L));

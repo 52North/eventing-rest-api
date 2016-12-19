@@ -28,7 +28,7 @@
 
 package org.n52.eventing.wv.security;
 
-import org.n52.eventing.wv.model.Group;
+import java.util.Objects;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
@@ -37,15 +37,40 @@ import org.springframework.security.core.GrantedAuthority;
  */
 public class GroupPrinciple implements GrantedAuthority {
 
-    private final Group group;
+    private final String name;
 
-    public GroupPrinciple(Group group) {
-        this.group = group;
+    public GroupPrinciple(String name) {
+        this.name = name;
     }
 
     @Override
     public String getAuthority() {
-        return this.group.getName();
+        return this.name;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + Objects.hashCode(this.name);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final GroupPrinciple other = (GroupPrinciple) obj;
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        return true;
     }
 
 }
