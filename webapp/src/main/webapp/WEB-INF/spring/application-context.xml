@@ -32,7 +32,7 @@
 
     <!-- core beans -->
     <bean class="org.n52.eventing.rest.ConfigurationImpl" name="config" />
-    <bean class="org.n52.subverse.termination.QuartzTerminationScheduler" />
+    <!--<bean class="org.n52.subverse.termination.QuartzTerminationScheduler" />-->
     <!--<bean class="org.n52.eventing.rest.eventlog.EventLogStoreImpl" />-->
 
     <!-- delivery -->

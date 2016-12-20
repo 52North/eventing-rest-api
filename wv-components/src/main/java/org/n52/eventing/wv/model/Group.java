@@ -28,13 +28,14 @@
 
 package org.n52.eventing.wv.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Group implements BaseEntity {
+public class Group implements BaseEntity, Serializable {
 
     private int id;
     private String name;

@@ -44,12 +44,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.n52.eventing.rest.publications.PublicationsService;
+import org.n52.subverse.termination.QuartzTerminationScheduler;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class SubscriptionManagerImpl implements SubscriptionManager, InitializingBean {
+public class SubscriptionManagerImpl implements SubscriptionManager, InitializingBean, DisposableBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionManagerImpl.class);
 
@@ -65,13 +67,14 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
     @Autowired
     private FilterLogic filterLogic;
 
-    @Autowired
     private TerminationScheduler terminator;
 
     private final Map<SubscriptionInstance, SubscriptionManagerImpl.SubscriptionTerminatable> subscriptionToTerminatableMap = new HashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        terminator = new QuartzTerminationScheduler();
+
         LOG.info("Retrieveing persisted subscriptions...");
         AtomicInteger count = new AtomicInteger();
         this.dao.getSubscriptions(null).stream().forEach(s -> {
@@ -89,6 +92,13 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         });
         LOG.info("Registered {} persisted subscriptions...", count);
     }
+
+    @Override
+    public void destroy() throws Exception {
+        this.terminator.shutdown();
+    }
+
+
 
     @Override
     public String subscribe(SubscriptionInstance subDef, User user) throws InvalidSubscriptionException {

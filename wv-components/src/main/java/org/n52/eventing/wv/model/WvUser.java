@@ -28,6 +28,7 @@
 
 package org.n52.eventing.wv.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
@@ -35,7 +36,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class WvUser implements BaseEntity {
+public class WvUser implements BaseEntity, Serializable {
 
     private int id;
     private String name;

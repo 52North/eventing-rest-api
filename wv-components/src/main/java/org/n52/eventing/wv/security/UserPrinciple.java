@@ -28,13 +28,14 @@
 
 package org.n52.eventing.wv.security;
 
+import java.io.Serializable;
 import org.n52.eventing.wv.model.WvUser;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class UserPrinciple {
+public class UserPrinciple implements Serializable {
 
     private final WvUser user;
     private final boolean adminRights;
