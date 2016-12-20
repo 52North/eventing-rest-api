@@ -27,6 +27,10 @@
         "de": "Die ID der Gruppe für den das Abonnement angelegt werden soll",
         "en": "The target group id for the new subscription"
     },
+    "rule.alreadyPresent": {
+        "de": "Diese Regel ist bereits registriert",
+        "en": "This rule is already present"
+    },
     "subscription.label": {
         "de": "Abonnement für Regel '%s'",
         "en": "Subscription for rule '%s'"
@@ -44,7 +48,7 @@
         "en": "This is a user subscription"
     },
     "subscription.alreadyPresent": {
-        "de": "Diese Regel ist bereits registriert",
+        "de": "Dieses Abonnement ist bereits registriert",
         "en": "This subscription is already present"
     }
 }

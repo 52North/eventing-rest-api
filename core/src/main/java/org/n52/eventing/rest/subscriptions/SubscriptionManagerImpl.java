@@ -103,6 +103,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         try {
             template = this.templatesDao.getTemplate(subDef.getTemplate().getId());
         } catch (UnknownTemplateException ex) {
+            LOG.warn(ex.getMessage());
+            LOG.debug(ex.getMessage(), ex);
             throw new InvalidSubscriptionException("Template unknown: "+pubId);
         }
 

@@ -92,25 +92,29 @@ public class FilterLogicImpl extends BaseService implements FilterLogic {
             WvUser subUser = null;
             if (params.containsKey(WvSubscriptionTemplateFactory.USER_PARAMETER)) {
                 Integer intVal = (Integer) params.get(WvSubscriptionTemplateFactory.USER_PARAMETER).getValue();
-                Optional<WvUser> targetUser = new HibernateUserDao(session).retrieveById(intVal);
+                if (intVal != null) {
+                    Optional<WvUser> targetUser = new HibernateUserDao(session).retrieveById(intVal);
 
-                if (!targetUser.isPresent() || !accessRights.canManageSubscriptionsForUser(user, targetUser.get())) {
-                    throw new InvalidSubscriptionException("Not allowed to set the subscription for the targeted user");
+                    if (!targetUser.isPresent() || !accessRights.canManageSubscriptionsForUser(user, targetUser.get())) {
+                        throw new InvalidSubscriptionException("Not allowed to set the subscription for the targeted user");
+                    }
+
+                    subUser = targetUser.get();
                 }
-
-                subUser = targetUser.get();
             }
 
             Group subGroup = null;
             if (params.containsKey(WvSubscriptionTemplateFactory.GROUP_PARAMETER)) {
                 Integer intVal = (Integer) params.get(WvSubscriptionTemplateFactory.GROUP_PARAMETER).getValue();
-                Optional<Group> targetGroup = new HibernateGroupDao(session).retrieveById(intVal);
+                if (intVal != null) {
+                    Optional<Group> targetGroup = new HibernateGroupDao(session).retrieveById(intVal);
 
-                if (!targetGroup.isPresent() || !accessRights.canManageSubscriptionsForGroup(user, targetGroup.get())) {
-                    throw new InvalidSubscriptionException("Not allowed to set the subscription for the targeted group or group not available");
+                    if (!targetGroup.isPresent() || !accessRights.canManageSubscriptionsForGroup(user, targetGroup.get())) {
+                        throw new InvalidSubscriptionException("Not allowed to set the subscription for the targeted group or group not available");
+                    }
+
+                    subGroup = targetGroup.get();
                 }
-
-                subGroup = targetGroup.get();
             }
 
             int templateId = super.parseId(template.getId());

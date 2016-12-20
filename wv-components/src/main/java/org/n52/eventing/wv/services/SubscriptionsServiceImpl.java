@@ -243,7 +243,7 @@ public class SubscriptionsServiceImpl extends BaseService implements Subscriptio
         else {
             type = null;
         }
-        
+
         details.put("template", sub.getRule().getId());
 
         String desc = type != null ? String.format("%s. %s", label, type) : label;

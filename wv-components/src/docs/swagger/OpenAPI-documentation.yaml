@@ -15,6 +15,22 @@ basePath: /eventing-rest-api/v1
 produces:
   - application/json
 paths:
+  /:
+    get:
+      summary: Available resources
+      description: |
+        The resources of the API
+      tags:
+        - Overview
+      responses:
+        200:
+          description: the resources representation
+          schema:
+            $ref: '#/definitions/Resources'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
   /publications:
     get:
       summary: Available publications (= series)
@@ -150,6 +166,42 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+  /subscriptions/{id}/events:
+    get:
+      summary: events for a subscription
+      description: |
+        The events for a subscriptions as in the database
+      parameters:
+        - name: id
+          in: path
+          description: the subscription id
+          required: true
+          type: string
+        - name: limit
+          in: query
+          description: pagination - page size
+          required: false
+          type: number
+          format: integer
+        - name: offset
+          in: query
+          description: pagination - offset
+          required: false
+          type: number
+          format: integer
+      tags:
+        - Events
+      responses:
+        200:
+          description: An array of events
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Events'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
   /deliveryMethods:
     get:
       summary: available delivery methods
@@ -254,6 +306,24 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 definitions:
+  Resources:
+    type: object
+    properties:
+      deliveryMethods:
+        type: string
+        format: uri
+      events:
+        type: string
+        format: uri
+      publications:
+        type: string
+        format: uri
+      subscriptions:
+        type: string
+        format: uri
+      templates:
+        type: string
+        format: uri
   Publications:
     type: object
   Templates:
@@ -276,30 +346,32 @@ definitions:
     type: object
   CreateSubscription:
     type: object
-    required: [template, publicationId, deiveryMethods, enabled]
+    required: [template, publicationId, deliveryMethods, enabled]
     properties:
       publicationId:
         type: string
       template:
         type: object
-        required: [content]
+        required: [id, parameters]
         properties:
-          content:
+          id:
+            type: string
+          parameters:
             type: object
-            required: [id, parameters]
             properties:
-              id:
-                type: string
-              parameters:
+              groupId:
                 type: object
                 properties:
-                  groupId:
+                  value:
                     type: number
                     format: integer
-                  userId:
+              userId:
+                type: object
+                properties:
+                  value:
                     type: number
                     format: integer
-      deiveryMethods:
+      deliveryMethods:
         type: array
         items:
           type: object

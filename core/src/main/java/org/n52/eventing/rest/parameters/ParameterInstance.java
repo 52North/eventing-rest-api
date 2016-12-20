@@ -28,8 +28,6 @@
 
 package org.n52.eventing.rest.parameters;
 
-import com.google.common.base.MoreObjects;
-
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
@@ -75,7 +73,7 @@ public class ParameterInstance {
 
     @Override
     public String toString() {
-        return value.toString();
+        return value != null ? value.toString() : "null";
     }
 
 }

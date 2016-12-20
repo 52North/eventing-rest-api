@@ -79,9 +79,9 @@ public class TemplatesServiceImpl implements TemplatesDao {
             Rule r = new Rule();
             r.setActive(true);
             Integer series = extractIntegerParameter(def, "publication");
-            Double threshold = extractDoubleParameter(def, "threshold");
+            Number threshold = extractDoubleParameter(def, "threshold");
             Integer trendCode = extractIntegerParameter(def, "trend");
-            r.setThreshold(threshold);
+            r.setThreshold(threshold.doubleValue());
 
             Optional<Series> s = new HibernateSeriesDao(session).retrieveById(series);
             if (!s.isPresent()) {
@@ -96,7 +96,7 @@ public class TemplatesServiceImpl implements TemplatesDao {
             r.setTrendCode(t.get());
 
             if (dao.hasEntity(r)) {
-                throw new IllegalArgumentException("Rule definition already present");
+                throw new IllegalArgumentException(i18n.getString("rule.alreadyPresent"));
             }
 
             Transaction trans = session.beginTransaction();
@@ -211,7 +211,7 @@ public class TemplatesServiceImpl implements TemplatesDao {
         }
     }
 
-    private Double extractDoubleParameter(TemplateDefinition def, String param) {
+    private Number extractDoubleParameter(TemplateDefinition def, String param) {
         try {
             return extractParameter(def, param);
         }
