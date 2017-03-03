@@ -159,8 +159,8 @@ public class HibernateSubscriptionRulesDaoIT {
         HibernateRuleDao ruleDao = new HibernateRuleDao(session);
 
         Transaction trans = session.beginTransaction();
-        Group g1 = new Group(UUID.randomUUID().toString(), "n/a", true);
-        Group g2 = new Group(UUID.randomUUID().toString(), "n/a", true);
+        Group g1 = new Group(UUID.randomUUID().toString(), "n/a");
+        Group g2 = new Group(UUID.randomUUID().toString(), "n/a");
 
         HibernateGroupDao groupDao = new HibernateGroupDao(session, gp);
         groupDao.store(g1);

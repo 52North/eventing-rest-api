@@ -81,7 +81,7 @@ public class UserSecurityServiceIT {
         String password = "asdf";
         u.setName(UUID.randomUUID().toString().substring(0, 8));
         u.setPassword(encoder.encode(password));
-        u.setGroups(Collections.singleton(new Group("admins-test", "admin users", true)));
+        u.setGroups(Collections.singleton(new Group("admins-test", "admin users")));
 
         if (!userDao.retrieveByName(u.getName()).isPresent()) {
             userDao.store(u);

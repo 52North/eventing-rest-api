@@ -100,7 +100,7 @@ public class CreateDummyDataDisabled {
         HibernateEventDao eventDao = new HibernateEventDao(session);
 
         Transaction trans = session.beginTransaction();
-        Group adminGroup = new Group("admins", "admin group", true);
+        Group adminGroup = new Group("admins", "admin group");
         groupDao.store(adminGroup);
 
         WvUser u = new WvUser("matthes", this.encoder.encode("asdf"), "m", "r", "m.rieke@52north.org", 1,

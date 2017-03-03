@@ -102,7 +102,7 @@ public class HibernateUserGroupsDaoIT {
         Optional<Group> gopt = groupDao.retrieveByName("publisher");
         Group g;
         if (!gopt.isPresent()) {
-            g = new Group("publisher", "Publishing users", true);
+            g = new Group("publisher", "Publishing users");
             groupDao.store(g);
         }
         else {
@@ -148,7 +148,7 @@ public class HibernateUserGroupsDaoIT {
 
         String uuid = UUID.randomUUID().toString().substring(0, 12);
         Optional<Group> gopt = groupDao.retrieveByName(uuid);
-        Group g = new Group(uuid, "uuid users", true);
+        Group g = new Group(uuid, "uuid users");
         groupDao.store(g);
 
         for (int i = 0; i < 5; i++) {

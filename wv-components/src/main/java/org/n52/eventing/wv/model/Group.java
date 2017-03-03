@@ -40,15 +40,13 @@ public class Group implements BaseEntity, Serializable {
     private int id;
     private String name;
     private String description;
-    private boolean addedByLdapImport;
 
     public Group() {
     }
 
-    public Group(String name, String description, boolean addedByLdapImport) {
+    public Group(String name, String description) {
         this.name = name;
         this.description = description;
-        this.addedByLdapImport = addedByLdapImport;
     }
 
     @Override
@@ -77,13 +75,6 @@ public class Group implements BaseEntity, Serializable {
         this.description = description;
     }
 
-    public boolean isAddedByLdapImport() {
-        return addedByLdapImport;
-    }
-
-    public void setAddedByLdapImport(boolean addedByLdapImport) {
-        this.addedByLdapImport = addedByLdapImport;
-    }
 
     @Override
     public int hashCode() {
@@ -91,7 +82,6 @@ public class Group implements BaseEntity, Serializable {
         hash = 29 * hash + this.id;
         hash = 29 * hash + Objects.hashCode(this.name);
         hash = 29 * hash + Objects.hashCode(this.description);
-        hash = 29 * hash + (this.addedByLdapImport ? 1 : 0);
         return hash;
     }
 
@@ -110,9 +100,6 @@ public class Group implements BaseEntity, Serializable {
         if (this.id != other.id) {
             return false;
         }
-        if (this.addedByLdapImport != other.addedByLdapImport) {
-            return false;
-        }
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
@@ -121,7 +108,5 @@ public class Group implements BaseEntity, Serializable {
         }
         return true;
     }
-
-
 
 }

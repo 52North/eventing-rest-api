@@ -12,6 +12,5 @@
         </id>
         <property name="name" column="name" type="string" unique="true"/>
         <property name="description" column="description" type="string"/>
-        <property name="addedByLdapImport" column="addedbyldapimport" type="boolean"/>
     </class>
 </hibernate-mapping>
