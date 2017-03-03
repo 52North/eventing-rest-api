@@ -40,6 +40,7 @@ public class Group implements BaseEntity, Serializable {
     private int id;
     private String name;
     private String label;
+    private boolean groupAdmin;
     
     public Group() {
     }
@@ -75,6 +76,14 @@ public class Group implements BaseEntity, Serializable {
         this.label = label;
     }
 
+    public boolean isGroupAdmin() {
+        return groupAdmin;
+    }
+
+    public void setGroupAdmin(boolean groupAdmin) {
+        this.groupAdmin = groupAdmin;
+    }
+    
 
     @Override
     public int hashCode() {

@@ -30,6 +30,7 @@ package org.n52.eventing.wv.rest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -86,11 +87,14 @@ public class GroupController {
             Optional<WvUser> u = userService.resolveCurrentWvUser();
 
             if (!u.isPresent()) {
-                throw new NotAuthenticatedException("No user present");
+                return Collections.emptyList();
             }
 
             return dao.retrieve(null).stream()
-                    .filter(g -> accessRights.canSeeSubscriptionsOfGroup(u.get(), g))
+                    .map(g -> {
+                        g.setGroupAdmin(accessRights.isGroupAdmin(u.get(), g));
+                        return g;
+                    })
                     .collect(Collectors.toList());
         }
     }
