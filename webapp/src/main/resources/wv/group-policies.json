@@ -3,10 +3,6 @@
         "admins",
         "administrators"
     ],
-    "editorGroupNames": [
-        "publishers",
-        "editors"
-    ],
     "groupPrefix": "sensorweb-",
     "adminSuffix": "_admin"
 }

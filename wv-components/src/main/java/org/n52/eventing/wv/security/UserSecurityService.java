@@ -32,6 +32,7 @@ import org.n52.eventing.wv.model.UserWrapper;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -74,6 +75,9 @@ public class UserSecurityService implements AuthenticationProvider, Serializable
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private AccessRights accessRights;
 
     public void setDatabaseConnection(HibernateDatabaseConnection hdc) {
         this.hdc = hdc;
@@ -122,7 +126,7 @@ public class UserSecurityService implements AuthenticationProvider, Serializable
         UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) authentication;
         WvUser user = authenticate((String) auth.getPrincipal(), (String) auth.getCredentials());
         return new UsernamePasswordAuthenticationToken(new UserPrinciple(user,
-                containsAdminGroup(user.getGroups())), null, createPrincipals(user.getGroups()));
+                containsAdminGroup(user.getGroups())), null, createPrincipals(user, user.getGroups()));
     }
 
     public WvUser authenticate(final String username, final String password) throws AuthenticationException {
@@ -181,23 +185,29 @@ public class UserSecurityService implements AuthenticationProvider, Serializable
                 .count() > 0;
     }
 
-    private Collection<? extends GrantedAuthority> createPrincipals(Set<Group> groups) {
+    private Collection<? extends GrantedAuthority> createPrincipals(WvUser user, Set<Group> groups) {
         if (groups == null) {
             return Collections.singletonList(new GroupPrinciple("users"));
         }
-        return groups.stream()
+        List<GroupPrinciple> result = groups.stream()
                 .map((Group t) -> {
                     if (groupPolicies.getAdminGroupNames().contains(t.getName())) {
                         return new GroupPrinciple("admins");
                     }
-                    if (groupPolicies.getEditorGroupNames().contains(t.getName())) {
-                        return new GroupPrinciple("editors");
+                    if (accessRights.isGroupAdmin(user, t)) {
+                        return new GroupPrinciple("groupadmin");
                     }
                     return null;
                 })
                 .filter(gp -> gp != null)
                 .distinct()
                 .collect(Collectors.toList());
+        
+        if (result.size() > 0) {
+            return result;
+        }
+
+        return Collections.singletonList(new GroupPrinciple("users"));
     }
 
 

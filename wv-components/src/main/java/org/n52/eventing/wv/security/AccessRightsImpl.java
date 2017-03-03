@@ -30,7 +30,6 @@ package org.n52.eventing.wv.security;
 
 import java.util.Set;
 import org.n52.eventing.wv.model.Group;
-import org.n52.eventing.wv.model.Series;
 import org.n52.eventing.wv.model.WvSubscription;
 import org.n52.eventing.wv.model.WvUser;
 import org.springframework.beans.factory.InitializingBean;
@@ -123,7 +122,8 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
         return !(this.restrictedSeries.contains(seriesId));
     }
 
-    private boolean isInAdminGroup(WvUser u) {
+    @Override
+    public boolean isInAdminGroup(WvUser u) {
         if (u.getGroups() != null) {
             if (u.getGroups().stream().anyMatch((group) -> (adminGroups.contains(group.getName())))) {
                 return true;
@@ -133,7 +133,8 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
         return false;
     }
     
-    private boolean isGroupAdmin(WvUser u, Group g) {
+    @Override
+    public boolean isGroupAdmin(WvUser u, Group g) {
         return u.getGroups().stream().filter((Group ag) -> {
             String agName = ag.getName();
             return agName.startsWith(g.getName()) && agName.endsWith(policies.getAdminSuffix());

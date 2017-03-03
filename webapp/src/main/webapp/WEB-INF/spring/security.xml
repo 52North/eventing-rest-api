@@ -8,16 +8,20 @@
         <http-basic />
         <csrf disabled="true"/>
         <intercept-url pattern="/v1" access="permitAll" />
-        <intercept-url pattern="/v1/templates" access="hasAnyAuthority('users','admins','editors')" />
-        <intercept-url pattern="/v1/templates/*" access="hasAnyAuthority('users','admins','editors')" />
-        <intercept-url pattern="/v1/subscriptions" access="hasAnyAuthority('users','admins','editors')" />
-        <intercept-url pattern="/v1/subscriptions/*" access="hasAnyAuthority('users','admins','editors')" />
-        <intercept-url pattern="/v1/publications" access="hasAnyAuthority('users','admins','editors')" />
-        <intercept-url pattern="/v1/publications/*" access="hasAnyAuthority('users','admins','editors')" />
-        <intercept-url pattern="/v1/deliveryMethods" access="hasAnyAuthority('users','admins','editors')" />
-        <intercept-url pattern="/v1/deliveryMethods/*" access="hasAnyAuthority('users','admins','editors')" />
-        <intercept-url pattern="/v1/events" access="hasAnyAuthority('users','admins','editors')" />
-        <intercept-url pattern="/v1/events/*" access="hasAnyAuthority('users','admins','editors')" />
+        <intercept-url pattern="/v1/users" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/users/*" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/groups" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/groups/*" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/templates" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/templates/*" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/subscriptions" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/subscriptions/*" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/publications" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/publications/*" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/deliveryMethods" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/deliveryMethods/*" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/events" access="hasAnyAuthority('users','admins','groupadmin')" />
+        <intercept-url pattern="/v1/events/*" access="hasAnyAuthority('users','admins','groupadmin')" />
     </http>
 
     <b:bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
