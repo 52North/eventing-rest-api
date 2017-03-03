@@ -7,6 +7,6 @@
         "publishers",
         "editors"
     ],
-    "restrictedSeriesIds": [
-    ]
+    "groupPrefix": "sensorweb-",
+    "adminSuffix": "_admin"
 }

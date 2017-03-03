@@ -29,11 +29,12 @@
 package org.n52.eventing.wv.dao;
 
 import org.n52.eventing.wv.model.Group;
+import org.n52.eventing.wv.model.WvUser;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public interface GroupDao extends BaseDao<Group> {
-
+    
 }

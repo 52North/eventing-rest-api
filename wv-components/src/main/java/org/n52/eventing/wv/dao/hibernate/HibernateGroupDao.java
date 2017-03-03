@@ -28,9 +28,14 @@
 
 package org.n52.eventing.wv.dao.hibernate;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.n52.eventing.wv.dao.GroupDao;
 import org.n52.eventing.wv.model.Group;
+import org.n52.eventing.wv.model.WvUser;
+import org.n52.eventing.wv.security.GroupPolicies;
 
 /**
  *
@@ -38,8 +43,16 @@ import org.n52.eventing.wv.model.Group;
  */
 public class HibernateGroupDao extends BaseHibernateDao<Group> implements GroupDao {
 
-    public HibernateGroupDao(Session s) {
+    private final GroupPolicies policies;
+    
+    public HibernateGroupDao(Session s, GroupPolicies gp) {
         super(s);
+        this.policies = gp;
+    }
+
+    @Override
+    protected void applyCriteria(CriteriaQuery<Group> query, CriteriaBuilder criteriaBuilder, Root<Group> from) {
+        query.where(criteriaBuilder.like(from.get("name"), policies.getGroupPrefix()+"%"));
     }
 
 }

@@ -10,7 +10,7 @@
         <id name="id" type="int" column="userid">
             <generator class="sequence"/>
         </id>
-        <property name="name" column="uuid_" type="string" unique="true"/>
+        <property name="name" column="screenname" type="string" unique="true"/>
         <property name="password" column="password_" type="string"/>
         <property name="firstName" column="firstname" type="string"/>
         <property name="lastName" column="lastname" type="string"/>

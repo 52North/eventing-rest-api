@@ -59,6 +59,7 @@ import org.n52.eventing.wv.model.Unit;
 import org.n52.eventing.wv.model.WvEvent;
 import org.n52.eventing.wv.model.WvSubscription;
 import org.n52.eventing.wv.model.WvUser;
+import org.n52.eventing.wv.security.GroupPolicies;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
@@ -70,6 +71,7 @@ public class CreateDummyDataDisabled {
     private final HibernateDatabaseConnection hdc;
     private final Session session;
     private final BCryptPasswordEncoder encoder;
+    private GroupPolicies gp = new GroupPolicies();
 
     public CreateDummyDataDisabled() throws Exception {
         this.hdc = new HibernateDatabaseConnection();
@@ -89,7 +91,7 @@ public class CreateDummyDataDisabled {
     }
 
     private void feed() throws DatabaseException {
-        HibernateGroupDao groupDao = new HibernateGroupDao(session);
+        HibernateGroupDao groupDao = new HibernateGroupDao(session, gp);
         HibernateUserDao userDao = new HibernateUserDao(session);
         HibernateSubscriptionDao subDao = new HibernateSubscriptionDao(session);
         HibernateSeriesDao seriesDao = new HibernateSeriesDao(session);

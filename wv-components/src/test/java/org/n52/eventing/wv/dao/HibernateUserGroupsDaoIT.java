@@ -71,6 +71,7 @@ import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvUser;
+import org.n52.eventing.wv.security.GroupPolicies;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
@@ -82,6 +83,7 @@ public class HibernateUserGroupsDaoIT {
     private HibernateDatabaseConnection hdc;
     private Session session;
     private BCryptPasswordEncoder encoder;
+    private GroupPolicies gp = new GroupPolicies();
 
     @Before
     public void setup() throws Exception {
@@ -93,7 +95,7 @@ public class HibernateUserGroupsDaoIT {
 
     @Test
     public void roundtrip() throws ImmutableException, DatabaseException  {
-        HibernateGroupDao groupDao = new HibernateGroupDao(session);
+        HibernateGroupDao groupDao = new HibernateGroupDao(session, gp);
         HibernateUserDao userDao = new HibernateUserDao(session);
         Transaction trans = session.beginTransaction();
 
@@ -140,7 +142,7 @@ public class HibernateUserGroupsDaoIT {
 
     @Test
     public void retrieveByGroupTest() throws DatabaseException {
-        HibernateGroupDao groupDao = new HibernateGroupDao(session);
+        HibernateGroupDao groupDao = new HibernateGroupDao(session, gp);
         HibernateUserDao userDao = new HibernateUserDao(session);
         Transaction trans = session.beginTransaction();
 

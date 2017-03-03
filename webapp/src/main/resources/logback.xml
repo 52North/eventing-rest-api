@@ -25,8 +25,7 @@
             <pattern>%d{ISO8601} [%t] %-5p %c{32}: %m%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.n52.eventing" level="DEBUG" />
-    <logger name="org.n52.epos" level="DEBUG" />
+    <logger name="org.n52" level="DEBUG" />
     <root level="WARN">
         <appender-ref ref="eventing-rest-file" />
         <appender-ref ref="eventing-rest-console" />

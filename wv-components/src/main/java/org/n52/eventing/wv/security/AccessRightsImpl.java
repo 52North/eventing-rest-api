@@ -101,7 +101,7 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
 
     @Override
     public boolean canManageSubscriptionsForGroup(WvUser u, Group g) {
-        return isInAdminGroup(u);
+        return isInAdminGroup(u) || isGroupAdmin(u, g);
     }
 
     @Override
@@ -131,6 +131,13 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
         }
 
         return false;
+    }
+    
+    private boolean isGroupAdmin(WvUser u, Group g) {
+        return u.getGroups().stream().filter((Group ag) -> {
+            String agName = ag.getName();
+            return agName.startsWith(g.getName()) && agName.endsWith(policies.getAdminSuffix());
+        }).count() > 0;
     }
 
 

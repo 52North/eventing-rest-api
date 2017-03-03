@@ -50,6 +50,7 @@ import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvUser;
 import org.n52.eventing.wv.security.AccessRights;
+import org.n52.eventing.wv.security.GroupPolicies;
 import org.n52.eventing.wv.security.UserSecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,12 +75,14 @@ public class GroupController {
     @Autowired
     private UserSecurityService userService;
 
+    @Autowired
+    private GroupPolicies groupPolicies;
 
     @RequestMapping("")
     public List<Group> getGroups(@RequestParam(required = false) MultiValueMap<String, String> query)
             throws IOException, URISyntaxException, NotAuthenticatedException {
         try (Session session = hdc.createSession()) {
-            HibernateGroupDao dao = new HibernateGroupDao(session);
+            HibernateGroupDao dao = new HibernateGroupDao(session, groupPolicies);
             Optional<WvUser> u = userService.resolveCurrentWvUser();
 
             if (!u.isPresent()) {
@@ -97,7 +100,7 @@ public class GroupController {
             @PathVariable("item") String id)
             throws IOException, URISyntaxException, NotAuthenticatedException {
         try (Session session = hdc.createSession()) {
-            HibernateGroupDao dao = new HibernateGroupDao(session);
+            HibernateGroupDao dao = new HibernateGroupDao(session, groupPolicies);
             Optional<WvUser> u = userService.resolveCurrentWvUser();
 
             if (!u.isPresent()) {
@@ -128,7 +131,7 @@ public class GroupController {
             throws IOException, URISyntaxException, NotAuthenticatedException {
         try (Session session = hdc.createSession()) {
             HibernateUserDao dao = new HibernateUserDao(session);
-            HibernateGroupDao groupDao = new HibernateGroupDao(session);
+            HibernateGroupDao groupDao = new HibernateGroupDao(session, groupPolicies);
             Optional<WvUser> u = userService.resolveCurrentWvUser();
 
             if (!u.isPresent()) {

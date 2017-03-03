@@ -61,6 +61,7 @@ import org.n52.eventing.wv.model.Series;
 import org.n52.eventing.wv.model.Unit;
 import org.n52.eventing.wv.model.WvSubscription;
 import org.n52.eventing.wv.model.WvUser;
+import org.n52.eventing.wv.security.GroupPolicies;
 
 /**
  *
@@ -69,6 +70,7 @@ import org.n52.eventing.wv.model.WvUser;
 public class HibernateSubscriptionRulesDaoIT {
 
     private Session session;
+    private GroupPolicies gp = new GroupPolicies();
 
     @Before
     public void setup() throws Exception {
@@ -160,7 +162,7 @@ public class HibernateSubscriptionRulesDaoIT {
         Group g1 = new Group(UUID.randomUUID().toString(), "n/a", true);
         Group g2 = new Group(UUID.randomUUID().toString(), "n/a", true);
 
-        HibernateGroupDao groupDao = new HibernateGroupDao(session);
+        HibernateGroupDao groupDao = new HibernateGroupDao(session, gp);
         groupDao.store(g1);
         groupDao.store(g2);
         trans.commit();

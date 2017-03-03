@@ -97,7 +97,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
     public void destroy() throws Exception {
         this.terminator.shutdown();
     }
-
+    
 
 
     @Override

@@ -66,6 +66,8 @@ public class BaseHibernateDao<T extends BaseEntity> {
         Root<T> root = criteriaQuery.from(this.genericType);
         criteriaQuery.select(root);
         criteriaQuery.orderBy(criteriaBuilder.asc(root.get("id")));
+        applyCriteria(criteriaQuery, criteriaBuilder, root);
+        
         Query<T> query = session.createQuery(criteriaQuery);
 
         if (pagination != null) {
@@ -112,6 +114,9 @@ public class BaseHibernateDao<T extends BaseEntity> {
 
     protected Class<T> getGenericType() {
         return genericType;
+    }
+
+    protected void applyCriteria(CriteriaQuery<T> criteriaQuery, CriteriaBuilder criteriaBuilder, Root<T> from) {
     }
 
 }

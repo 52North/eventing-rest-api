@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +103,15 @@ public abstract class JsonConfigured {
             return result;
         }
         return Collections.emptySet();
+    }
+    
+    protected Optional<String> readStringProperty(String property) {
+        JsonNode value = this.config.get(property);
+        if (value != null && value.isTextual()) {
+            return Optional.of(value.asText());
+        }
+        
+        return Optional.empty();
     }
 
     public final Map<String, JsonNode> getConfig() {

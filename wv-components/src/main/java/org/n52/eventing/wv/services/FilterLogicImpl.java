@@ -51,6 +51,7 @@ import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.WvSubscription;
 import org.n52.eventing.wv.model.WvUser;
 import org.n52.eventing.wv.security.AccessRights;
+import org.n52.eventing.wv.security.GroupPolicies;
 import org.n52.eventing.wv.security.UserSecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +76,9 @@ public class FilterLogicImpl extends BaseService implements FilterLogic {
 
     @Autowired
     AccessRights accessRights;
+    
+    @Autowired
+    GroupPolicies groupPolicies;
 
     @Override
     public String internalSubscribe(SubscriptionInstance s, TemplateDefinition template) throws InvalidSubscriptionException {
@@ -107,7 +111,7 @@ public class FilterLogicImpl extends BaseService implements FilterLogic {
             if (params.containsKey(WvSubscriptionTemplateFactory.GROUP_PARAMETER)) {
                 Integer intVal = (Integer) params.get(WvSubscriptionTemplateFactory.GROUP_PARAMETER).getValue();
                 if (intVal != null) {
-                    Optional<Group> targetGroup = new HibernateGroupDao(session).retrieveById(intVal);
+                    Optional<Group> targetGroup = new HibernateGroupDao(session, groupPolicies).retrieveById(intVal);
 
                     if (!targetGroup.isPresent() || !accessRights.canManageSubscriptionsForGroup(user, targetGroup.get())) {
                         throw new InvalidSubscriptionException("Not allowed to set the subscription for the targeted group or group not available");

@@ -47,7 +47,7 @@ public class GroupPolicies extends JsonConfigured {
     public GroupPolicies(String configFileResource) {
         init(configFileResource);
     }
-
+    
     @Override
     protected String getDefaultConfigFileName() {
         return CONFIG_DEFAULT_FILE;
@@ -64,5 +64,12 @@ public class GroupPolicies extends JsonConfigured {
     public Set<Integer> getRestrictedSeriesIds() {
         return readIntegerArray("restrictedSeriesIds");
     };
+    
+    public String getAdminSuffix() {
+        return readStringProperty("adminSuffix").orElse("_admin");
+    }
 
+    public String getGroupPrefix() {
+        return readStringProperty("groupPrefix").orElse("sensorweb-");
+    }
 }
