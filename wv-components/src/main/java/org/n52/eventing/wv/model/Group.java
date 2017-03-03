@@ -39,14 +39,14 @@ public class Group implements BaseEntity, Serializable {
 
     private int id;
     private String name;
-    private String description;
-
+    private String label;
+    
     public Group() {
     }
 
     public Group(String name, String description) {
         this.name = name;
-        this.description = description;
+        this.label = description;
     }
 
     @Override
@@ -67,12 +67,12 @@ public class Group implements BaseEntity, Serializable {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public String getLabel() {
+        return label;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
 
@@ -81,7 +81,7 @@ public class Group implements BaseEntity, Serializable {
         int hash = 7;
         hash = 29 * hash + this.id;
         hash = 29 * hash + Objects.hashCode(this.name);
-        hash = 29 * hash + Objects.hashCode(this.description);
+        hash = 29 * hash + Objects.hashCode(this.label);
         return hash;
     }
 
@@ -103,7 +103,7 @@ public class Group implements BaseEntity, Serializable {
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
-        if (!Objects.equals(this.description, other.description)) {
+        if (!Objects.equals(this.label, other.label)) {
             return false;
         }
         return true;

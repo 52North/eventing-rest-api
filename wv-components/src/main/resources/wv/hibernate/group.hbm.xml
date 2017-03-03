@@ -11,6 +11,6 @@
             <generator class="sequence"/>
         </id>
         <property name="name" column="name" type="string" unique="true"/>
-        <property name="description" column="description" type="string"/>
+        <property name="label" column="description" type="string"/>
     </class>
 </hibernate-mapping>
