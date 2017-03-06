@@ -76,7 +76,7 @@ public class FilterLogicImpl extends BaseService implements FilterLogic {
 
     @Autowired
     AccessRights accessRights;
-    
+
     @Autowired
     GroupPolicies groupPolicies;
 

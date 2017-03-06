@@ -52,9 +52,9 @@ public interface AccessRights {
     boolean canManageRules(WvUser u);
 
     boolean canSeeSeries(WvUser u, int seriesId);
-    
+
     boolean isInAdminGroup(WvUser u);
-    
+
     boolean isGroupAdmin(WvUser u, Group g);
 
 }

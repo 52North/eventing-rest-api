@@ -37,9 +37,9 @@ import org.n52.eventing.wv.model.Rule;
  */
 public interface RuleDao extends BaseDao<Rule> {
 
-    List<Rule> retrieveBySeries(String seriesIdentifier) throws DatabaseException;
+    List<Rule> retrieveBySeries(String... seriesIdentifier) throws DatabaseException;
 
-    List<Rule> retrieveBySeries(String seriesIdentifier, Pagination pagination) throws DatabaseException;
+    List<Rule> retrieveBySeries(Pagination pagination, String... seriesIdentifier) throws DatabaseException;
 
     boolean hasEntity(Rule rule);
 

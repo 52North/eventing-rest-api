@@ -25,51 +25,17 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
+package org.n52.eventing.rest.factory;
 
-package org.n52.eventing.wv.security;
-
-import org.n52.eventing.wv.JsonConfigured;
-import java.util.Set;
+import org.n52.eventing.rest.RequestContext;
+import org.n52.eventing.rest.templates.TemplatesDao;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class GroupPolicies extends JsonConfigured {
+public interface TemplatesDaoFactory {
 
-    private final static String CONFIG_FILE = "/wv/group-policies.json";
-    private final static String CONFIG_DEFAULT_FILE = "/wv/group-policies-default.json";
+    TemplatesDao newDao(RequestContext context);
 
-    public GroupPolicies() {
-        this(CONFIG_FILE);
-    }
-
-    public GroupPolicies(String configFileResource) {
-        init(configFileResource);
-    }
-
-    @Override
-    protected String getDefaultConfigFileName() {
-        return CONFIG_DEFAULT_FILE;
-    }
-
-    public Set<String> getAdminGroupNames() {
-        return readStringArray("adminGroupNames");
-    };
-
-    public Set<String> getEditorGroupNames() {
-        return readStringArray("editorGroupNames");
-    };
-
-    public Set<Integer> getRestrictedSeriesIds() {
-        return readIntegerArray("restrictedSeriesIds");
-    };
-
-    public String getAdminSuffix() {
-        return readStringProperty("adminSuffix").orElse("_admin");
-    }
-
-    public String getGroupPrefix() {
-        return readStringProperty("groupPrefix").orElse("sensorweb-");
-    }
 }

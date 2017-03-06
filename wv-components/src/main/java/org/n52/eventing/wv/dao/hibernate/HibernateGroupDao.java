@@ -44,7 +44,7 @@ import org.n52.eventing.wv.security.GroupPolicies;
 public class HibernateGroupDao extends BaseHibernateDao<Group> implements GroupDao {
 
     private final GroupPolicies policies;
-    
+
     public HibernateGroupDao(Session s, GroupPolicies gp) {
         super(s);
         this.policies = gp;

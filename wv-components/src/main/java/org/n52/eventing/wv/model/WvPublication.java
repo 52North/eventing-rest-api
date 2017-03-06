@@ -26,50 +26,32 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.security;
+package org.n52.eventing.wv.model;
 
-import org.n52.eventing.wv.JsonConfigured;
-import java.util.Set;
+import org.n52.eventing.rest.publications.Publication;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class GroupPolicies extends JsonConfigured {
+public class WvPublication extends Publication {
 
-    private final static String CONFIG_FILE = "/wv/group-policies.json";
-    private final static String CONFIG_DEFAULT_FILE = "/wv/group-policies-default.json";
+    private String seriesHref;
 
-    public GroupPolicies() {
-        this(CONFIG_FILE);
+    public WvPublication() {
+        super();
     }
 
-    public GroupPolicies(String configFileResource) {
-        init(configFileResource);
+    public WvPublication(String id, String label, String description) {
+        super(id, label, description);
     }
 
-    @Override
-    protected String getDefaultConfigFileName() {
-        return CONFIG_DEFAULT_FILE;
+    public String getSeriesHref() {
+        return seriesHref;
     }
 
-    public Set<String> getAdminGroupNames() {
-        return readStringArray("adminGroupNames");
-    };
-
-    public Set<String> getEditorGroupNames() {
-        return readStringArray("editorGroupNames");
-    };
-
-    public Set<Integer> getRestrictedSeriesIds() {
-        return readIntegerArray("restrictedSeriesIds");
-    };
-
-    public String getAdminSuffix() {
-        return readStringProperty("adminSuffix").orElse("_admin");
+    public void setSeriesHref(String seriesHref) {
+        this.seriesHref = seriesHref;
     }
 
-    public String getGroupPrefix() {
-        return readStringProperty("groupPrefix").orElse("sensorweb-");
-    }
 }

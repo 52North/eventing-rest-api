@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.binding.RequestUtils;
@@ -70,7 +71,7 @@ public class PublicationsController {
         String fullUrl = RequestUtils.resolveFullRequestUrl();
         Pagination p = Pagination.fromQuery(query);
 
-        List<ResourceCollection> pubs = createPublications(fullUrl, query, p);
+        List<Publication> pubs = createPublications(fullUrl, query, p);
 
         if (pubs.isEmpty()) {
             return EmptyArrayModel.create();
@@ -79,21 +80,14 @@ public class PublicationsController {
         return new ModelAndView().addObject(pubs);
     }
 
-    private List<ResourceCollection> createPublications(String fullUrl, MultiValueMap<String, String> query, Pagination page) throws NotAuthenticatedException {
-        List<ResourceCollection> pubs = new ArrayList<>();
-
+    private List<Publication> createPublications(String fullUrl, MultiValueMap<String, String> query, Pagination page) throws NotAuthenticatedException {
         List<Publication> result = query == null ? this.dao.getPublications(page) : this.dao.getPublications(query, page);
 
-        result.stream().forEach(p -> {
-            String pubId = p.getId();
-
-            pubs.add(ResourceCollection.createResource(pubId)
-                    .withLabel(p.getLabel())
-                    .withDescription(p.getDescription())
-                    .withHref(String.format("%s/%s", fullUrl, pubId)));
+        result.stream().forEach((Publication p) -> {
+            p.setHref(String.format("%s/%s", fullUrl, p.getId()));
         });
 
-        return pubs;
+        return result;
     }
 
     @RequestMapping(value = "/{item}", method = GET)

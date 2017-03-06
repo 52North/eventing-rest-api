@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.joda.time.DateTime;
+import org.n52.eventing.rest.factory.TemplatesDaoFactory;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
@@ -62,7 +63,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
     private PublicationsService publicationsDao;
 
     @Autowired
-    private TemplatesDao templatesDao;
+    private TemplatesDaoFactory templatesDaoFactory;
 
     @Autowired
     private FilterLogic filterLogic;
@@ -81,7 +82,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
             LOG.info("Registering subscription {}", s.getId());
             try {
                 if (s.getTemplate() != null) {
-                    filterLogic.internalSubscribe(s, templatesDao.getTemplate(s.getTemplate().getId()));
+                    filterLogic.internalSubscribe(s, templatesDaoFactory.newDao(null).getTemplate(s.getTemplate().getId()));
                     count.getAndIncrement();
                 }
             } catch (UnknownTemplateException ex) {
@@ -97,7 +98,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
     public void destroy() throws Exception {
         this.terminator.shutdown();
     }
-    
+
 
 
     @Override
@@ -111,7 +112,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
 
         TemplateDefinition template;
         try {
-            template = this.templatesDao.getTemplate(subDef.getTemplate().getId());
+            template = this.templatesDaoFactory.newDao(null).getTemplate(subDef.getTemplate().getId());
         } catch (UnknownTemplateException ex) {
             LOG.warn(ex.getMessage());
             LOG.debug(ex.getMessage(), ex);

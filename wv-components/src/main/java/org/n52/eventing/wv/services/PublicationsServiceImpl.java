@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
+import org.n52.eventing.rest.Configuration;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.publications.Publication;
 import org.n52.eventing.rest.publications.PublicationsService;
@@ -46,10 +47,12 @@ import org.n52.eventing.wv.dao.hibernate.HibernateSeriesDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.Series;
+import org.n52.eventing.wv.model.WvPublication;
 import org.n52.eventing.wv.model.WvUser;
 import org.n52.eventing.wv.security.AccessRights;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
 
@@ -57,7 +60,7 @@ import org.springframework.util.MultiValueMap;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class PublicationsServiceImpl extends BaseService implements PublicationsService {
+public class PublicationsServiceImpl extends BaseService implements PublicationsService, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(PublicationsServiceImpl.class);
 
@@ -69,6 +72,15 @@ public class PublicationsServiceImpl extends BaseService implements Publications
 
     @Autowired
     private AccessRights accessRights;
+
+    @Autowired
+    private Configuration config;
+    private String seriesHref;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.seriesHref = config.getParameter("timeSeriesApiBaseUrl").orElse("http://localhost/series-api/");
+    }
 
     @Override
     public boolean hasPublication(String id) {
@@ -172,7 +184,8 @@ public class PublicationsServiceImpl extends BaseService implements Publications
         String label = String.format(labelTemplate,
                 s.getId(),
                 s.getFeature().getIdentifier());
-        Publication pub = new Publication(Integer.toString(s.getId()), label, null);
+        WvPublication pub = new WvPublication(Integer.toString(s.getId()), label+"!", null);
+        pub.setSeriesHref(String.format(this.seriesHref, s.getId()));
         return pub;
     }
 
@@ -186,7 +199,7 @@ public class PublicationsServiceImpl extends BaseService implements Publications
                 s.getId(),
                 s.getPhenomenon().getPhenomenonId(),
                 s.getFeature().getIdentifier());
-        Publication pub = new Publication(Integer.toString(s.getId()), label, desc);
+        WvPublication pub = new WvPublication(Integer.toString(s.getId()), label, desc);
         Map<String, Object> props = new HashMap<>();
         props.put("feature", s.getFeature().getIdentifier());
         props.put("phenomenon", s.getPhenomenon().getPhenomenonId());
@@ -194,6 +207,8 @@ public class PublicationsServiceImpl extends BaseService implements Publications
         props.put("procedure", s.getProcedure().getProcedureId());
         props.put("unit", s.getUnit().getCode());
         pub.setDetails(props);
+
+        pub.setSeriesHref(String.format(this.seriesHref, s.getId()));
         return pub;
     }
 

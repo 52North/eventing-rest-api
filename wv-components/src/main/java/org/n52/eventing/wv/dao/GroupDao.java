@@ -36,5 +36,5 @@ import org.n52.eventing.wv.model.WvUser;
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 public interface GroupDao extends BaseDao<Group> {
-    
+
 }

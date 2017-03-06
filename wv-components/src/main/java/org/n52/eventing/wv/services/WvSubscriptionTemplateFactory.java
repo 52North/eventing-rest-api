@@ -30,11 +30,13 @@ package org.n52.eventing.wv.services;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.parameters.ParameterDefinition;
 import org.n52.eventing.rest.templates.Definition;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.Rule;
+import org.n52.eventing.wv.model.WvTemplateDefinition;
 
 /**
  *
@@ -50,23 +52,17 @@ public class WvSubscriptionTemplateFactory {
         this.i18n = i18n;
     }
 
-    public TemplateDefinition createTemplate(Rule r) {
-        String label = String.format(i18n.getString("rule.label"), r.getId(), r.getSeries().getId());
-        String desc = String.format(i18n.getString("rule.description"),
-                r.getId(),
-                r.getSeries().getId(),
-                r.getSeries().getPhenomenon().getPhenomenonId(),
+    public WvTemplateDefinition createTemplate(Rule r) {
+        String trendcodeLabel = i18n.getString("trendcode."+r.getTrendCode().getId());
+        String label = String.format(i18n.getString("rule.label"),
+                r.getSeries().getPhenomenon().getName(),
                 r.getSeries().getFeature().getIdentifier(),
-                r.getSeries().getProcedure().getProcedureId());
-        TemplateDefinition result = new TemplateDefinition(Integer.toString(r.getId()), label, desc, null);
+                trendcodeLabel,
+                r.getThreshold());
+        WvTemplateDefinition result = new WvTemplateDefinition(Integer.toString(r.getId()), label, null, null);
         Map<String, Object> props = new HashMap<>();
-        props.put("trend", r.getTrendCode().toString());
+        props.put("trend", r.getTrendCode().getId());
         props.put("threshold", r.getThreshold());
-        props.put("feature", r.getSeries().getFeature().getIdentifier());
-        props.put("category", r.getSeries().getCategory().getCategoryId());
-        props.put("phenomenon", r.getSeries().getPhenomenon().getPhenomenonId());
-        props.put("procedure", r.getSeries().getProcedure().getProcedureId());
-        props.put("publication", r.getSeries().getId());
         result.setDefinition(new Definition(props, null));
 
         result.addParameter(USER_PARAMETER, new ParameterDefinition("number", i18n.getString("rule.parameter.userId"), true));

@@ -29,7 +29,11 @@
 package org.n52.eventing.wv.dao.hibernate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.n52.eventing.rest.Pagination;
@@ -67,31 +71,28 @@ public class HibernateRuleDao extends BaseHibernateDao<Rule> implements RuleDao 
     }
 
     @Override
-    public List<Rule> retrieveBySeries(String seriesIdentifier, Pagination pagination) throws DatabaseException {
-        int idInt;
-        try {
-            idInt = Integer.parseInt(seriesIdentifier);
-        }
-        catch (NumberFormatException e) {
-            throw new DatabaseException("Filter 'series' must be a valid integer number");
-        }
+    public List<Rule> retrieveBySeries(Pagination pagination, String... seriesIdentifier) throws DatabaseException {
+        Stream<String> idStream = Stream.of(seriesIdentifier).distinct();
+        Map<String, Integer> idMap = idStream.collect(Collectors.toMap(id -> "param"+id, id -> Integer.parseInt(id)));
 
-        String param = "identifier";
         String entity = Rule.class.getSimpleName();
-        String hql = String.format("SELECT r FROM %s r join r.series s WHERE s.id=:%s order by r.id asc", entity, param);
+        String whereClause = idMap.keySet().stream().map(id -> String.format("s.id=:%s", id)).collect(Collectors.joining(" OR "));
+        String hql = String.format("SELECT r FROM %s r join r.series s WHERE %s order by r.id asc", entity, whereClause);
         Query q = getSession().createQuery(hql);
 
         if (pagination != null) {
             q.setFirstResult(pagination.getOffset());
             q.setMaxResults(pagination.getLimit());
         }
-        q.setParameter(param, idInt);
+
+        idMap.keySet().stream().forEach(param -> q.setParameter(param, idMap.get(param)));
+
         return q.list();
     }
 
     @Override
-    public List<Rule> retrieveBySeries(String seriesIdentifier) throws DatabaseException {
-        return retrieveBySeries(seriesIdentifier, null);
+    public List<Rule> retrieveBySeries(String... seriesIdentifier) throws DatabaseException {
+        return retrieveBySeries(null, seriesIdentifier);
     }
 
     @Override

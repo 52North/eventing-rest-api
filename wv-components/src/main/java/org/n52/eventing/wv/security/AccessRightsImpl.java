@@ -132,7 +132,7 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
 
         return false;
     }
-    
+
     @Override
     public boolean isGroupAdmin(WvUser u, Group g) {
         return u.getGroups().stream().filter((Group ag) -> {

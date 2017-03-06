@@ -38,6 +38,7 @@ public class Publication {
     private String label;
     private String description;
     private Object details;
+    private String href;
 
     public Publication() {
     }
@@ -78,6 +79,14 @@ public class Publication {
 
     public void setDetails(Object details) {
         this.details = details;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
     }
 
 }

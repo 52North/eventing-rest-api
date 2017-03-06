@@ -29,12 +29,15 @@
 package org.n52.eventing.wv.services;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.n52.eventing.rest.RequestContext;
+import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
@@ -49,9 +52,9 @@ import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.Series;
 import org.n52.eventing.wv.model.Trend;
+import org.n52.eventing.wv.model.WvTemplateDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
 
 /**
@@ -62,12 +65,15 @@ public class TemplatesServiceImpl implements TemplatesDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(TemplatesServiceImpl.class);
 
-    @Autowired
-    private I18nProvider i18n;
+    private final I18nProvider i18n;
+    private final HibernateDatabaseConnection hdc;
+    private final RequestContext context;
 
-
-    @Autowired
-    private HibernateDatabaseConnection hdc;
+    public TemplatesServiceImpl(I18nProvider i18n, HibernateDatabaseConnection hdc, RequestContext context) {
+        this.i18n = i18n;
+        this.hdc = hdc;
+        this.context = context;
+    }
 
     @Override
     public String createTemplate(TemplateDefinition def) {
@@ -145,6 +151,7 @@ public class TemplatesServiceImpl implements TemplatesDao {
         }
         catch (NumberFormatException e) {
             LOG.warn(e.getMessage());
+            LOG.debug(e.getMessage(), e);
         }
         finally {
             session.close();
@@ -171,9 +178,9 @@ public class TemplatesServiceImpl implements TemplatesDao {
             RuleDao dao = new HibernateRuleDao(s);
             List<String> val = filter.get("publication");
             if (val.isEmpty()) {
-                throw new DatabaseException("Filter 'series' cannot be empty");
+                throw new DatabaseException("Filter 'publication' cannot be empty");
             }
-            return dao.retrieveBySeries(val.get(0));
+            return dao.retrieveBySeries(val.get(0).split(","));
         });
     }
 
@@ -186,18 +193,31 @@ public class TemplatesServiceImpl implements TemplatesDao {
         }
         catch (DatabaseException | NumberFormatException | NotAuthenticatedException e) {
             LOG.warn(e.getMessage());
+            LOG.debug(e.getMessage(), e);
         }
 
         return Collections.emptyList();
     }
 
     private TemplateDefinition wrapRule(Rule r) {
-        return new WvSubscriptionTemplateFactory(i18n).createTemplate(r);
+        WvTemplateDefinition result = new WvSubscriptionTemplateFactory(i18n).createTemplate(r);
+        Map<String, String> publicationMap = new HashMap<>();
+        publicationMap.put("id", Integer.toString(r.getSeries().getId()));
+        publicationMap.put("href", String.format("%s/%s/%s",
+                context.getBaseApiUrl(),
+                UrlSettings.PUBLICATIONS_RESOURCE,
+                r.getSeries().getId()));
+        result.setPublication(publicationMap);
+        return result;
     }
 
     private TemplateDefinition wrapRuleBrief(Rule r) {
-        String labelTemplate = i18n.getString("rule.label");
-        String label = String.format(labelTemplate, r.getId(), r.getSeries().getId());
+        String trendcodeLabel = i18n.getString("trendcode."+r.getTrendCode().getId());
+        String label = String.format(i18n.getString("rule.label"),
+                r.getSeries().getPhenomenon().getName(),
+                r.getSeries().getFeature().getIdentifier(),
+                trendcodeLabel,
+                r.getThreshold());
         TemplateDefinition result = new TemplateDefinition(Integer.toString(r.getId()), label, null, null);
         return result;
     }

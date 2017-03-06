@@ -26,50 +26,33 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.security;
+package org.n52.eventing.wv.model;
 
-import org.n52.eventing.wv.JsonConfigured;
-import java.util.Set;
+import org.n52.eventing.rest.templates.Definition;
+import org.n52.eventing.rest.templates.TemplateDefinition;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class GroupPolicies extends JsonConfigured {
+public class WvTemplateDefinition extends TemplateDefinition {
 
-    private final static String CONFIG_FILE = "/wv/group-policies.json";
-    private final static String CONFIG_DEFAULT_FILE = "/wv/group-policies-default.json";
+    private Object publication;
 
-    public GroupPolicies() {
-        this(CONFIG_FILE);
+    public WvTemplateDefinition(String id, String label, String description, Definition definition) {
+        super(id, label, description, definition);
     }
 
-    public GroupPolicies(String configFileResource) {
-        init(configFileResource);
+    public WvTemplateDefinition() {
+        super();
     }
 
-    @Override
-    protected String getDefaultConfigFileName() {
-        return CONFIG_DEFAULT_FILE;
+    public Object getPublication() {
+        return publication;
     }
 
-    public Set<String> getAdminGroupNames() {
-        return readStringArray("adminGroupNames");
-    };
-
-    public Set<String> getEditorGroupNames() {
-        return readStringArray("editorGroupNames");
-    };
-
-    public Set<Integer> getRestrictedSeriesIds() {
-        return readIntegerArray("restrictedSeriesIds");
-    };
-
-    public String getAdminSuffix() {
-        return readStringProperty("adminSuffix").orElse("_admin");
+    public void setPublication(Object publication) {
+        this.publication = publication;
     }
 
-    public String getGroupPrefix() {
-        return readStringProperty("groupPrefix").orElse("sensorweb-");
-    }
 }

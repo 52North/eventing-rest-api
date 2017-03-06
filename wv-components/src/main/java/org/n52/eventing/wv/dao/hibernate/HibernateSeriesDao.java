@@ -29,6 +29,9 @@
 package org.n52.eventing.wv.dao.hibernate;
 
 import java.util.List;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.n52.eventing.rest.Pagination;
@@ -60,6 +63,12 @@ public class HibernateSeriesDao extends BaseHibernateDao<Series> implements Seri
 
         q.setParameter(param, featureIdentifier);
         return q.list();
+    }
+
+    @Override
+    protected void applyCriteria(CriteriaQuery<Series> criteriaQuery, CriteriaBuilder criteriaBuilder, Root<Series> from) {
+        super.applyCriteria(criteriaQuery, criteriaBuilder, from);
+        criteriaQuery.where(criteriaBuilder.equal(from.get("activeForEventing"), 1));
     }
 
 

@@ -36,6 +36,7 @@ public class Phenomenon implements BaseEntity {
 
     private int id;
     private String phenomenonId;
+    private String name;
 
     public Phenomenon() {
     }
@@ -62,5 +63,15 @@ public class Phenomenon implements BaseEntity {
     public void setPhenomenonId(String phenomenonId) {
         this.phenomenonId = phenomenonId;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
 
 }

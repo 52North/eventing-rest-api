@@ -26,50 +26,31 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.security;
+package org.n52.eventing.wv.services.factory;
 
-import org.n52.eventing.wv.JsonConfigured;
-import java.util.Set;
+import org.n52.eventing.rest.RequestContext;
+import org.n52.eventing.rest.factory.TemplatesDaoFactory;
+import org.n52.eventing.rest.templates.TemplatesDao;
+import org.n52.eventing.wv.database.HibernateDatabaseConnection;
+import org.n52.eventing.wv.i18n.I18nProvider;
+import org.n52.eventing.wv.services.TemplatesServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class GroupPolicies extends JsonConfigured {
+public class WvTemplatesDaoFactory implements TemplatesDaoFactory {
 
-    private final static String CONFIG_FILE = "/wv/group-policies.json";
-    private final static String CONFIG_DEFAULT_FILE = "/wv/group-policies-default.json";
+    @Autowired
+    private I18nProvider i18n;
 
-    public GroupPolicies() {
-        this(CONFIG_FILE);
-    }
-
-    public GroupPolicies(String configFileResource) {
-        init(configFileResource);
-    }
+    @Autowired
+    private HibernateDatabaseConnection hdc;
 
     @Override
-    protected String getDefaultConfigFileName() {
-        return CONFIG_DEFAULT_FILE;
+    public TemplatesDao newDao(RequestContext context) {
+        return new TemplatesServiceImpl(i18n, hdc, context);
     }
 
-    public Set<String> getAdminGroupNames() {
-        return readStringArray("adminGroupNames");
-    };
-
-    public Set<String> getEditorGroupNames() {
-        return readStringArray("editorGroupNames");
-    };
-
-    public Set<Integer> getRestrictedSeriesIds() {
-        return readIntegerArray("restrictedSeriesIds");
-    };
-
-    public String getAdminSuffix() {
-        return readStringProperty("adminSuffix").orElse("_admin");
-    }
-
-    public String getGroupPrefix() {
-        return readStringProperty("groupPrefix").orElse("sensorweb-");
-    }
 }

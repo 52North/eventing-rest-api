@@ -1,5 +1,6 @@
 {
     "templateDirectory": "/templates",
     "publishDummyMessages": true,
-    "securityDisabled": true
+    "securityDisabled": true,
+    "timeSeriesApiBaseUrl": "https://test.timeseries.wv/%s"
 }

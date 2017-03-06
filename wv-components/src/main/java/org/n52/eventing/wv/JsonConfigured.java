@@ -104,13 +104,13 @@ public abstract class JsonConfigured {
         }
         return Collections.emptySet();
     }
-    
+
     protected Optional<String> readStringProperty(String property) {
         JsonNode value = this.config.get(property);
         if (value != null && value.isTextual()) {
             return Optional.of(value.asText());
         }
-        
+
         return Optional.empty();
     }
 

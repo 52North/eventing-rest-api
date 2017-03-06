@@ -75,7 +75,7 @@ public class UserSecurityService implements AuthenticationProvider, Serializable
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
+
     @Autowired
     private AccessRights accessRights;
 
@@ -202,7 +202,7 @@ public class UserSecurityService implements AuthenticationProvider, Serializable
                 .filter(gp -> gp != null)
                 .distinct()
                 .collect(Collectors.toList());
-        
+
         if (result.size() > 0) {
             return result;
         }

@@ -10,6 +10,7 @@
         <id name="id" type="int" column="pkid">
             <generator class="sequence"/>
         </id>
+        <property name="activeForEventing" column="eventing_flag" type="int"/>
         <many-to-one name="category" class="org.n52.eventing.wv.model.Category" foreign-key="category_pkid">
             <column name="category_pkid">
                 <comment>Relation/foreign key to the category</comment>

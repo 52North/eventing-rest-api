@@ -26,50 +26,34 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.security;
-
-import org.n52.eventing.wv.JsonConfigured;
-import java.util.Set;
+package org.n52.eventing.rest;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class GroupPolicies extends JsonConfigured {
+public class RequestContext {
 
-    private final static String CONFIG_FILE = "/wv/group-policies.json";
-    private final static String CONFIG_DEFAULT_FILE = "/wv/group-policies-default.json";
+    private String baseApiUrl;
+    private String fullUrl;
 
-    public GroupPolicies() {
-        this(CONFIG_FILE);
+    public RequestContext() {
     }
 
-    public GroupPolicies(String configFileResource) {
-        init(configFileResource);
+    public String getBaseApiUrl() {
+        return baseApiUrl;
     }
 
-    @Override
-    protected String getDefaultConfigFileName() {
-        return CONFIG_DEFAULT_FILE;
+    public void setBaseApiUrl(String baseApiUrl) {
+        this.baseApiUrl = baseApiUrl;
     }
 
-    public Set<String> getAdminGroupNames() {
-        return readStringArray("adminGroupNames");
-    };
-
-    public Set<String> getEditorGroupNames() {
-        return readStringArray("editorGroupNames");
-    };
-
-    public Set<Integer> getRestrictedSeriesIds() {
-        return readIntegerArray("restrictedSeriesIds");
-    };
-
-    public String getAdminSuffix() {
-        return readStringProperty("adminSuffix").orElse("_admin");
+    public String getFullUrl() {
+        return fullUrl;
     }
 
-    public String getGroupPrefix() {
-        return readStringProperty("groupPrefix").orElse("sensorweb-");
+    public void setFullUrl(String fullUrl) {
+        this.fullUrl = fullUrl;
     }
+
 }

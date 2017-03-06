@@ -32,11 +32,13 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.binding.EmptyArrayModel;
+import org.n52.eventing.rest.factory.TemplatesDaoFactory;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
@@ -61,22 +63,22 @@ import org.springframework.web.servlet.ModelAndView;
 public class TemplatesController {
 
     @Autowired
-    private TemplatesDao dao;
+    private TemplatesDaoFactory daoFactory;
 
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ModelAndView getTemplates(@RequestParam(required = false) MultiValueMap<String, String> query) throws IOException, URISyntaxException, NotAuthenticatedException {
-        String fullUrl = RequestUtils.resolveFullRequestUrl();
+        RequestContext context = RequestUtils.createRequestContext("/"+UrlSettings.TEMPLATES_RESOURCE);
 
         List<ResourceCollection> list = new ArrayList<>();
 
-        List<TemplateDefinition> result = query == null ? this.dao.getTemplates() : this.dao.getTemplates(query);
+        List<TemplateDefinition> result = query == null ? this.daoFactory.newDao(context).getTemplates() : this.daoFactory.newDao(context).getTemplates(query);
 
         result.stream().forEach(t -> {
             list.add(ResourceCollection.createResource(t.getId())
                     .withLabel(t.getLabel())
                     .withDescription(t.getDescription())
-                    .withHref(String.format("%s/%s", fullUrl, t.getId())));
+                    .withHref(String.format("%s/%s", context.getFullUrl(), t.getId())));
         });
 
         if (list.isEmpty()) {
@@ -87,10 +89,12 @@ public class TemplatesController {
     }
 
     @RequestMapping(value = "/{item}", method = RequestMethod.GET)
-    public TemplateDefinition getTemplate(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException {
-        if (this.dao.hasTemplate(id)) {
+    public TemplateDefinition getTemplate(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException, IOException, URISyntaxException {
+        RequestContext context = RequestUtils.createRequestContext("/"+UrlSettings.TEMPLATES_RESOURCE+"/"+id);
+        TemplatesDao dao = this.daoFactory.newDao(context);
+        if (dao.hasTemplate(id)) {
             try {
-                TemplateDefinition temp = this.dao.getTemplate(id);
+                TemplateDefinition temp = dao.getTemplate(id);
                 return temp;
             } catch (UnknownTemplateException ex) {
                 throw new ResourceNotAvailableException(ex.getMessage(), ex);
@@ -101,8 +105,10 @@ public class TemplatesController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ModelAndView create(@RequestBody TemplateDefinition def) {
-        String id = this.dao.createTemplate(def);
+    public ModelAndView create(@RequestBody TemplateDefinition def) throws IOException, URISyntaxException {
+        RequestContext context = RequestUtils.createRequestContext("/"+UrlSettings.TEMPLATES_RESOURCE);
+        TemplatesDao dao = this.daoFactory.newDao(context);
+        String id = dao.createTemplate(def);
         ModelAndView result = new ModelAndView();
         result.addObject(Collections.singletonMap("id", id));
         return result;

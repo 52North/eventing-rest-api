@@ -67,7 +67,7 @@ public class BaseHibernateDao<T extends BaseEntity> {
         criteriaQuery.select(root);
         criteriaQuery.orderBy(criteriaBuilder.asc(root.get("id")));
         applyCriteria(criteriaQuery, criteriaBuilder, root);
-        
+
         Query<T> query = session.createQuery(criteriaQuery);
 
         if (pagination != null) {
