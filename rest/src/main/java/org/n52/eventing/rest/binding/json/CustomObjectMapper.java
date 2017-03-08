@@ -44,7 +44,7 @@ public class CustomObjectMapper extends ObjectMapper {
         this.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         this.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         this.registerModule(new JodaModule());
-        this.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        this.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
 }
