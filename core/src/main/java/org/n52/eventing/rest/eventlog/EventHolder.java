@@ -40,15 +40,17 @@ import org.n52.subverse.delivery.Streamable;
 public class EventHolder implements Comparable<EventHolder> {
 
     private final String id;
-    private final DateTime time;
+    private final DateTime timestamp;
     private final SubscriptionInstance subscription;
     private final String label;
     private transient final Optional<Streamable> streamable;
     private Object data;
+    private String href;
+    private String content;
 
     public EventHolder(String id, DateTime time, SubscriptionInstance subscription, String label, Optional<Streamable> streamable) {
         this.id = id;
-        this.time = time;
+        this.timestamp = time;
         this.subscription = subscription;
         this.label = label;
         this.streamable = streamable;
@@ -58,8 +60,8 @@ public class EventHolder implements Comparable<EventHolder> {
         return id;
     }
 
-    public DateTime getTime() {
-        return time;
+    public DateTime getTimestamp() {
+        return timestamp;
     }
 
     public SubscriptionInstance subscription() {
@@ -82,19 +84,32 @@ public class EventHolder implements Comparable<EventHolder> {
         return data;
     }
 
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 
     @Override
     public int compareTo(EventHolder o) {
-        if (this.time == null) {
+        if (this.timestamp == null) {
             return -1;
         }
-        if (o.time == null) {
+        if (o.timestamp == null) {
             return 1;
         }
 
-        return this.time.compareTo(o.time);
+        return this.timestamp.compareTo(o.timestamp);
     }
-
-
 
 }

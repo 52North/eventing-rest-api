@@ -116,8 +116,10 @@ public class GroupController {
                 if (!accessRights.canSeeSubscriptionsOfGroup(u.get(), result.get())) {
                     throw new NotAuthenticatedException("Access denied");
                 }
+                Group g = result.get();
+                g.setGroupAdmin(accessRights.isGroupAdmin(u.get(), g));
 
-                return result.get();
+                return g;
             }
             else {
                 return null;
@@ -152,6 +154,14 @@ public class GroupController {
                     .filter(gr -> accessRights.canSeeSubscriptionsOfUser(u.get(), gr))
                     .map((WvUser wu) -> {
                         Hibernate.initialize(wu.getGroups());
+
+                        wu.setGroups(wu.getGroups().stream()
+                            .map(gr -> {
+                                gr.setGroupAdmin(accessRights.isGroupAdmin(wu, gr));
+                                return gr;
+                            }).collect(Collectors.toSet()));
+
+                        wu.setAdmin(accessRights.isInAdminGroup(wu));
                         return UserController.UserView.from(wu);
                     })
                     .collect(Collectors.toList());

@@ -25,35 +25,20 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-
 package org.n52.eventing.rest;
+
+import java.util.Map;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class RequestContext {
+public interface RequestContext {
 
-    private String baseApiUrl;
-    private String fullUrl;
+    String getBaseApiUrl();
 
-    public RequestContext() {
-    }
+    String getFullUrl();
 
-    public String getBaseApiUrl() {
-        return baseApiUrl;
-    }
-
-    public void setBaseApiUrl(String baseApiUrl) {
-        this.baseApiUrl = baseApiUrl;
-    }
-
-    public String getFullUrl() {
-        return fullUrl;
-    }
-
-    public void setFullUrl(String fullUrl) {
-        this.fullUrl = fullUrl;
-    }
+    Map<String, String[]> getParameters();
 
 }

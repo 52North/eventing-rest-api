@@ -28,7 +28,7 @@
 package org.n52.eventing.rest.templates;
 
 import java.util.List;
-import org.springframework.util.MultiValueMap;
+import java.util.Map;
 
 /**
  *
@@ -42,7 +42,7 @@ public interface TemplatesDao {
 
     List<TemplateDefinition> getTemplates();
 
-    default List<TemplateDefinition> getTemplates(MultiValueMap<String, String> filter) {
+    default List<TemplateDefinition> getTemplates(Map<String, String[]>  filter) {
         return getTemplates();
     }
 

@@ -33,9 +33,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.UrlSettings;
@@ -65,10 +67,14 @@ public class PublicationsController {
     @Autowired
     private PublicationsService dao;
 
+    @Autowired
+    private RequestContext context;
+
     @RequestMapping("")
-    public ModelAndView getPublications(@RequestParam(required = false) MultiValueMap<String, String> query)
+    public ModelAndView getPublications()
             throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
-        String fullUrl = RequestUtils.resolveFullRequestUrl();
+        String fullUrl = context.getFullUrl();
+        Map<String, String[]> query = context.getParameters();
         Pagination p = Pagination.fromQuery(query);
 
         List<Publication> pubs = createPublications(fullUrl, query, p);
@@ -80,8 +86,8 @@ public class PublicationsController {
         return new ModelAndView().addObject(pubs);
     }
 
-    private List<Publication> createPublications(String fullUrl, MultiValueMap<String, String> query, Pagination page) throws NotAuthenticatedException {
-        List<Publication> result = query == null ? this.dao.getPublications(page) : this.dao.getPublications(query, page);
+    private List<Publication> createPublications(String fullUrl, Map<String, String[]> query, Pagination page) throws NotAuthenticatedException {
+        List<Publication> result = query == null ? this.dao.getPublications(page, context) : this.dao.getPublications(query, page, context);
 
         result.stream().forEach((Publication p) -> {
             p.setHref(String.format("%s/%s", fullUrl, p.getId()));
@@ -100,7 +106,7 @@ public class PublicationsController {
         }
 
         try {
-            Publication pub = this.dao.getPublication(id);
+            Publication pub = this.dao.getPublication(id, context);
 
             return new ModelAndView().addObject(pub);
         } catch (UnknownPublicationsException ex) {

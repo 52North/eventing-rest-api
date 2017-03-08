@@ -10,7 +10,7 @@
         <id name="id" type="int" column="pkid">
             <generator class="sequence"/>
         </id>
-        <property name="activeForEventing" column="eventing_flag" type="int"/>
+        <property name="activeForEventing" access="field" column="eventing_flag" type="int" insert="false" update="false"/>
         <many-to-one name="category" class="org.n52.eventing.wv.model.Category" foreign-key="category_pkid">
             <column name="category_pkid">
                 <comment>Relation/foreign key to the category</comment>
@@ -28,7 +28,7 @@
         </many-to-one>
         <many-to-one name="feature" class="org.n52.eventing.wv.model.FeatureOfInterest" foreign-key="feature_of_interest_pkid">
             <column name="feature_of_interest_pkid">
-                <comment>Relation/foreign key to the procedure</comment>
+                <comment>Relation/foreign key to the feature</comment>
             </column>
         </many-to-one>
         <many-to-one name="unit" class="org.n52.eventing.wv.model.Unit" foreign-key="unit_pkid">

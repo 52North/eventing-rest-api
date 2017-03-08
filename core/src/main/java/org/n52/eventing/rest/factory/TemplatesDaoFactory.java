@@ -38,4 +38,8 @@ public interface TemplatesDaoFactory {
 
     TemplatesDao newDao(RequestContext context);
 
+    default TemplatesDao newDao(RequestContext context, boolean expanded) {
+        return newDao(context);
+    };
+
 }

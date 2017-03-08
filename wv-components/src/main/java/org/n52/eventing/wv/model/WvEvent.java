@@ -39,6 +39,7 @@ public class WvEvent implements BaseEntity {
     private int id;
     private Rule rule;
     private Date timestamp;
+    private Date created;
     private Double value;
     private Date previousTimestamp;
     private Double previousValue;
@@ -103,6 +104,14 @@ public class WvEvent implements BaseEntity {
 
     public void setPreviousValue(Double previousValue) {
         this.previousValue = previousValue;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
 }

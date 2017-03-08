@@ -15,9 +15,10 @@
                 <comment>Relation/foreign key to the rule</comment>
             </column>
         </many-to-one>
-        <property name="timestamp" column="time_stamp" type="timestamp"/>
-        <property name="value" column="numeric_value" type="double"/>
-        <property name="previousTimestamp" column="previous_time_stamp" type="timestamp"/>
-        <property name="previousValue" column="previous_numeric_value" type="double"/>
+        <property name="timestamp" column="observation_time_stamp" type="timestamp"/>
+        <property name="created" column="event_created" type="timestamp"/>
+        <property name="value" column="observation_numeric_value" type="double"/>
+        <property name="previousTimestamp" column="observation_previous_time_stamp" type="timestamp"/>
+        <property name="previousValue" column="observation_previous_numeric_value" type="double"/>
     </class>
 </hibernate-mapping>

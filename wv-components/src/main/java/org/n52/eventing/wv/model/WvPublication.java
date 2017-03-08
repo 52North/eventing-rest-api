@@ -28,7 +28,9 @@
 
 package org.n52.eventing.wv.model;
 
+import java.util.List;
 import org.n52.eventing.rest.publications.Publication;
+import org.n52.eventing.rest.templates.TemplateDefinition;
 
 /**
  *
@@ -37,6 +39,7 @@ import org.n52.eventing.rest.publications.Publication;
 public class WvPublication extends Publication {
 
     private String seriesHref;
+    private List<TemplateDefinition> templates;
 
     public WvPublication() {
         super();
@@ -52,6 +55,14 @@ public class WvPublication extends Publication {
 
     public void setSeriesHref(String seriesHref) {
         this.seriesHref = seriesHref;
+    }
+
+    public List<TemplateDefinition> getTemplates() {
+        return templates;
+    }
+
+    public void setTemplates(List<TemplateDefinition> templates) {
+        this.templates = templates;
     }
 
 }

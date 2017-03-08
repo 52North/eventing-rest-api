@@ -32,13 +32,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import org.joda.time.DateTime;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
@@ -49,13 +50,10 @@ import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
 import org.n52.subverse.delivery.Streamable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 import org.n52.eventing.rest.subscriptions.SubscriptionsService;
 
 /**
@@ -73,27 +71,30 @@ public class EventLogController {
     @Autowired
     private EventLogStore store;
 
+    @Autowired
+    private RequestContext context;
+
 
     @RequestMapping("")
-    public Collection<EventHolderView> getAllEvents(@RequestParam(required = false) MultiValueMap<String, String> query)
+    public Collection<EventHolder> getAllEvents()
             throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
-        final String fullUrl = RequestUtils.resolveFullRequestUrl();
+        final String fullUrl = context.getFullUrl();
+        Map<String, String[]> query = context.getParameters();
         Pagination page = Pagination.fromQuery(query);
 
         return store.getAllEvents(page).stream()
                 .map((EventHolder t) -> {
                     String id = t.getId();
-                    return new EventHolderView(id, t.getTime(),
-                            t.subscription() != null ? t.subscription().getId() : null,
-                            t.getLabel(),
-                            String.format("%s/%s", fullUrl, id));
+                    t.setHref(String.format("%s/%s", fullUrl, id));
+                    return t;
                 })
                 .collect(Collectors.toList());
     }
 
-    public Collection<EventHolderView> getEventsForSubscription(MultiValueMap<String, String> query, String subId)
+    public Collection<EventHolder> getEventsForSubscription(String subId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, InvalidPaginationException {
-        final String fullUrl = RequestUtils.resolveFullRequestUrl();
+        final String fullUrl = context.getFullUrl();
+        Map<String, String[]> query = context.getParameters();
         Pagination page = Pagination.fromQuery(query);
 
         SubscriptionInstance subscription = subDao.getSubscription(subId);
@@ -101,40 +102,37 @@ public class EventLogController {
         return store.getEventsForSubscription(subscription, page).stream()
                 .map((EventHolder t) -> {
                     String id = t.getId();
-                    EventHolderView holderView = new EventHolderView(id, t.getTime(),
-                            t.subscription() != null ? t.subscription().getId() : null,
-                            t.getLabel(),
-                            String.format("%s/%s", fullUrl, id));
-                    holderView.setData(t.getData());
-                    return holderView;
+                    t.setHref(String.format("%s/%s", fullUrl, id));
+                    return t;
                 })
                 .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/{eventId}", method = GET)
-    public ModelAndView getSingleEvent(@PathVariable("eventId") String eventId)
+    public EventHolder getSingleEvent(@PathVariable("eventId") String eventId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
         Optional<EventHolder> result = retrieveSingleEvent(eventId);
 
         if (result.isPresent()) {
             final String fullUrl = RequestUtils.resolveFullRequestUrl();
-            ModelAndView mav = new ModelAndView();
-            mav.addObject("event", result.get());
-            mav.addObject("href", fullUrl.concat("/content"));
-            return mav;
+            EventHolder event = result.get();
+            if (event.streamableObject().isPresent()) {
+                event.setContent(String.format("%s/content", fullUrl));
+            }
+            return event;
         }
 
         throw new ResourceNotAvailableException("Could not find event");
     }
 
-    public ModelAndView getSingleEventForSubscription(String subId, String eventId)
+    public EventHolder getSingleEventForSubscription(String subId, String eventId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
         return getSingleEvent(eventId);
     }
 
 
     private Optional<EventHolder> retrieveSingleEvent(String eventId) throws NotAuthenticatedException, UnknownSubscriptionException {
-        Optional<EventHolder> result = store.getSingleEvent(eventId);
+        Optional<EventHolder> result = store.getSingleEvent(eventId, context);
         return result;
     }
 
@@ -170,50 +168,4 @@ public class EventLogController {
         }
     }
 
-    public static class EventHolderView {
-
-        private final String id;
-        private final DateTime time;
-        private final String subscriptionId;
-        private final String label;
-        private final String href;
-        private Object data;
-
-        public EventHolderView(String id, DateTime time, String subscriptionId, String label, String href) {
-            this.id = id;
-            this.time = time;
-            this.subscriptionId = subscriptionId;
-            this.label = label;
-            this.href = href;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public DateTime getTime() {
-            return time;
-        }
-
-        public String getSubscriptionId() {
-            return subscriptionId;
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public String getHref() {
-            return href;
-        }
-
-        public void setData(Object data) {
-            this.data = data;
-        }
-
-        public Object getData() {
-            return data;
-        }
-
-    }
 }

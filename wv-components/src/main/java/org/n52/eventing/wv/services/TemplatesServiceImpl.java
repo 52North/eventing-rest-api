@@ -55,7 +55,6 @@ import org.n52.eventing.wv.model.Trend;
 import org.n52.eventing.wv.model.WvTemplateDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.MultiValueMap;
 
 /**
  *
@@ -68,11 +67,13 @@ public class TemplatesServiceImpl implements TemplatesDao {
     private final I18nProvider i18n;
     private final HibernateDatabaseConnection hdc;
     private final RequestContext context;
+    private final boolean expanded;
 
-    public TemplatesServiceImpl(I18nProvider i18n, HibernateDatabaseConnection hdc, RequestContext context) {
+    public TemplatesServiceImpl(I18nProvider i18n, HibernateDatabaseConnection hdc, RequestContext context, boolean expanded) {
         this.i18n = i18n;
         this.hdc = hdc;
         this.context = context;
+        this.expanded = expanded;
     }
 
     @Override
@@ -83,7 +84,6 @@ public class TemplatesServiceImpl implements TemplatesDao {
         try {
 
             Rule r = new Rule();
-            r.setActive(true);
             Integer series = extractIntegerParameter(def, "publication");
             Number threshold = extractDoubleParameter(def, "threshold");
             Integer trendCode = extractIntegerParameter(def, "trend");
@@ -170,17 +170,17 @@ public class TemplatesServiceImpl implements TemplatesDao {
 
 
     @Override
-    public List<TemplateDefinition> getTemplates(MultiValueMap<String, String> filter) {
+    public List<TemplateDefinition> getTemplates(Map<String, String[]>  filter) {
         if (filter == null || filter.isEmpty() || !filter.containsKey("publication")) {
             return getTemplates();
         }
         return internalGet((Session s ) -> {
             RuleDao dao = new HibernateRuleDao(s);
-            List<String> val = filter.get("publication");
-            if (val.isEmpty()) {
+            String[] val = filter.get("publication");
+            if (val == null || val.length == 0) {
                 throw new DatabaseException("Filter 'publication' cannot be empty");
             }
-            return dao.retrieveBySeries(val.get(0).split(","));
+            return dao.retrieveBySeries(val[0].split(","));
         });
     }
 
@@ -188,7 +188,7 @@ public class TemplatesServiceImpl implements TemplatesDao {
         try (Session session = hdc.createSession()) {
             List<Rule> templ = supplier.getFromDao(session);
             return templ.stream().map((Rule r) -> {
-                return wrapRuleBrief(r);
+                return expanded ? wrapRule(r) : wrapRuleBrief(r);
             }).collect(Collectors.toList());
         }
         catch (DatabaseException | NumberFormatException | NotAuthenticatedException e) {

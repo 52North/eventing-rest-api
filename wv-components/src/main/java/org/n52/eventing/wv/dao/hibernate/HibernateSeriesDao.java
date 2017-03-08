@@ -28,9 +28,10 @@
 
 package org.n52.eventing.wv.dao.hibernate;
 
+import java.util.Collections;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -53,7 +54,7 @@ public class HibernateSeriesDao extends BaseHibernateDao<Series> implements Seri
     public List<Series> retrieveByFeature(String featureIdentifier, Pagination pagination) throws DatabaseException {
         String param = "featureIdentifer";
         String entity = Series.class.getSimpleName();
-        String hql = String.format("SELECT s FROM %s s join s.feature f WHERE f.identifier=:%s order by s.id asc", entity, param);
+        String hql = String.format("SELECT s FROM %s s join s.feature f WHERE s.activeForEventing = 1 AND f.identifier=:%s order by s.id asc", entity, param);
         Query q = getSession().createQuery(hql);
 
         if (pagination != null) {
@@ -66,9 +67,8 @@ public class HibernateSeriesDao extends BaseHibernateDao<Series> implements Seri
     }
 
     @Override
-    protected void applyCriteria(CriteriaQuery<Series> criteriaQuery, CriteriaBuilder criteriaBuilder, Root<Series> from) {
-        super.applyCriteria(criteriaQuery, criteriaBuilder, from);
-        criteriaQuery.where(criteriaBuilder.equal(from.get("activeForEventing"), 1));
+    protected List<Predicate> customCriteria(CriteriaBuilder criteriaBuilder, Root<Series> from) {
+        return Collections.singletonList(criteriaBuilder.equal(from.get("activeForEventing"), 1));
     }
 
 

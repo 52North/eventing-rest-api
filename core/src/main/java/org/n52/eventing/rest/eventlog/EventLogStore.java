@@ -30,6 +30,7 @@ package org.n52.eventing.rest.eventlog;
 import java.util.Collection;
 import java.util.Optional;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 
 /**
@@ -59,6 +60,6 @@ public interface EventLogStore {
         return getEventsForSubscription(subscription);
     }
 
-    public Optional<EventHolder> getSingleEvent(String eventId);
+    public Optional<EventHolder> getSingleEvent(String eventId, RequestContext context);
 
 }

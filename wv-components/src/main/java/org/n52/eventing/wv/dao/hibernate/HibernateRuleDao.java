@@ -28,12 +28,15 @@
 
 package org.n52.eventing.wv.dao.hibernate;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.n52.eventing.rest.Pagination;
@@ -71,13 +74,20 @@ public class HibernateRuleDao extends BaseHibernateDao<Rule> implements RuleDao 
     }
 
     @Override
+    protected List<Predicate> customCriteria(CriteriaBuilder criteriaBuilder, Root<Rule> from) {
+        return Collections.singletonList(criteriaBuilder.equal(from.join("series").get("activeForEventing"), 1));
+    }
+    
+    
+
+    @Override
     public List<Rule> retrieveBySeries(Pagination pagination, String... seriesIdentifier) throws DatabaseException {
         Stream<String> idStream = Stream.of(seriesIdentifier).distinct();
         Map<String, Integer> idMap = idStream.collect(Collectors.toMap(id -> "param"+id, id -> Integer.parseInt(id)));
 
         String entity = Rule.class.getSimpleName();
         String whereClause = idMap.keySet().stream().map(id -> String.format("s.id=:%s", id)).collect(Collectors.joining(" OR "));
-        String hql = String.format("SELECT r FROM %s r join r.series s WHERE %s order by r.id asc", entity, whereClause);
+        String hql = String.format("SELECT r FROM %s r join r.series s WHERE s.activeForEventing = 1 AND %s order by r.id asc", entity, whereClause);
         Query q = getSession().createQuery(hql);
 
         if (pagination != null) {
@@ -101,7 +111,7 @@ public class HibernateRuleDao extends BaseHibernateDao<Rule> implements RuleDao 
         String paramSeries = "paramSeries";
         String paramThreshold = "paramThreshold";
         String entity = Rule.class.getSimpleName();
-        String hql = String.format("SELECT r FROM %s r join r.trendCode t join r.series s WHERE t.id=:%s AND s.id=:%s AND r.threshold=:%s",
+        String hql = String.format("SELECT r FROM %s r join r.trendCode t join r.series s WHERE s.activeForEventing = 1 AND t.id=:%s AND s.id=:%s AND r.threshold=:%s",
                 entity, paramTrend, paramSeries, paramThreshold);
 
         Query q = getSession().createQuery(hql);

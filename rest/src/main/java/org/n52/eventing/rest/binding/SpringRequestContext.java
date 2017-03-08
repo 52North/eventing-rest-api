@@ -26,36 +26,62 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.services.factory;
+package org.n52.eventing.rest.binding;
 
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.n52.eventing.rest.RequestContext;
-import org.n52.eventing.rest.factory.TemplatesDaoFactory;
-import org.n52.eventing.rest.templates.TemplatesDao;
-import org.n52.eventing.wv.database.HibernateDatabaseConnection;
-import org.n52.eventing.wv.i18n.I18nProvider;
-import org.n52.eventing.wv.services.TemplatesServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.n52.eventing.rest.UrlSettings;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class WvTemplatesDaoFactory implements TemplatesDaoFactory {
+public class SpringRequestContext implements RequestContext, InitializingBean {
 
-    @Autowired
-    private I18nProvider i18n;
+    private String baseApiUrl;
+    private String fullUrl;
+    private Map<String, String[]> parameters;
 
-    @Autowired
-    private HibernateDatabaseConnection hdc;
-
-    @Override
-    public TemplatesDao newDao(RequestContext context) {
-        return new TemplatesServiceImpl(i18n, hdc, context, false);
+    public SpringRequestContext() {
     }
 
     @Override
-    public TemplatesDao newDao(RequestContext context, boolean expanded) {
-        return new TemplatesServiceImpl(i18n, hdc, context, expanded);
+    public void afterPropertiesSet() throws Exception {
+        HttpServletRequest request = RequestUtils.resolveRequestObject();
+        String resolved = RequestUtils.resolveFullRequestUrl(request);
+        setFullUrl(resolved);
+        setBaseApiUrl(resolved.substring(0, resolved.indexOf(UrlSettings.API_V1_BASE) + UrlSettings.API_V1_BASE.length()));
+        setParameters(request.getParameterMap());
     }
+
+    @Override
+    public String getBaseApiUrl() {
+        return baseApiUrl;
+    }
+
+    public void setBaseApiUrl(String baseApiUrl) {
+        this.baseApiUrl = baseApiUrl;
+    }
+
+    @Override
+    public String getFullUrl() {
+        return fullUrl;
+    }
+
+    public void setFullUrl(String fullUrl) {
+        this.fullUrl = fullUrl;
+    }
+
+    @Override
+    public Map<String, String[]> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, String[]> parameters) {
+        this.parameters = parameters;
+    }
+
 
 }

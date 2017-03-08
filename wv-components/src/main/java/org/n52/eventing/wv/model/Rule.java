@@ -39,7 +39,6 @@ public class Rule implements BaseEntity {
     private int id;
     private double threshold;
     private Trend trendCode;
-    private int activeFlag;
     private Series series;
 
     public Rule() {
@@ -48,7 +47,6 @@ public class Rule implements BaseEntity {
     public Rule(double threshold, Trend trendCode, int activeFlag, Series series) {
         this.threshold = threshold;
         this.trendCode = trendCode;
-        this.activeFlag = activeFlag;
         this.series = series;
     }
 
@@ -66,22 +64,6 @@ public class Rule implements BaseEntity {
 
     public void setTrendCode(Trend trendCode) {
         this.trendCode = trendCode;
-    }
-
-    public boolean isActive() {
-        return activeFlag == 1;
-    }
-
-    public void setActive(boolean active) {
-        this.activeFlag = active ? 1 : 0;
-    }
-
-    public int getActiveFlag() {
-        return activeFlag;
-    }
-
-    public void setActiveFlag(int activeFlag) {
-        this.activeFlag = activeFlag;
     }
 
     @Override
@@ -111,7 +93,5 @@ public class Rule implements BaseEntity {
                 .add("trend", getTrendCode())
                 .toString();
     }
-
-
 
 }

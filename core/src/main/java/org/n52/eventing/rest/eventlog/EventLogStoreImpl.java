@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 
 /**
@@ -89,7 +90,7 @@ public class EventLogStoreImpl implements EventLogStore {
     }
 
     @Override
-    public Optional<EventHolder> getSingleEvent(String eventId) {
+    public Optional<EventHolder> getSingleEvent(String eventId, RequestContext context) {
         return getAllEvents().stream()
                 .filter(eh -> eh.getId().equals(eventId))
                 .findFirst();

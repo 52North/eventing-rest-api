@@ -28,10 +28,12 @@
 
 package org.n52.eventing.wv.dao.hibernate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -56,8 +58,7 @@ public class BaseHibernateDao<T extends BaseEntity> {
     }
 
     public Optional<T> retrieveById(int id) {
-        T retrieved = session.get(this.genericType, id);
-        return Optional.ofNullable(retrieved);
+        return retrieveByKey("id", Integer.toString(id));
     }
 
     public List<T> retrieve(Pagination pagination) {
@@ -66,7 +67,12 @@ public class BaseHibernateDao<T extends BaseEntity> {
         Root<T> root = criteriaQuery.from(this.genericType);
         criteriaQuery.select(root);
         criteriaQuery.orderBy(criteriaBuilder.asc(root.get("id")));
-        applyCriteria(criteriaQuery, criteriaBuilder, root);
+        
+        List<Predicate> criteria = customCriteria(criteriaBuilder, root);
+        if (criteria != null && criteria.size() > 0) {
+            Predicate[] arr = new Predicate[criteria.size()];
+            criteriaQuery.where(criteriaBuilder.and(criteria.toArray(arr)));
+        }
 
         Query<T> query = session.createQuery(criteriaQuery);
 
@@ -79,8 +85,7 @@ public class BaseHibernateDao<T extends BaseEntity> {
     };
 
     public boolean exists(int id) {
-        T retrieved = session.get(this.genericType, id);
-        return retrieved != null;
+        return retrieveById(id).isPresent();
     }
 
     public boolean exists(String name) {
@@ -95,7 +100,21 @@ public class BaseHibernateDao<T extends BaseEntity> {
         CriteriaBuilder builder = getSession().getCriteriaBuilder();
         CriteriaQuery<T> query = builder.createQuery(this.genericType);
         Root<T> root = query.from(this.genericType);
-        query.where(builder.equal(root.get(key), value));
+        
+        List<Predicate> criteria = customCriteria(builder, root);
+        if (criteria != null && criteria.size() > 0) {
+            Predicate[] finalCriteria = new Predicate[criteria.size()+1];
+            int i = 0;
+            finalCriteria[i++] = builder.equal(root.get(key), value);
+            for (Predicate c : criteria) {
+                finalCriteria[i++] = c;
+            }
+            query.where(builder.and(finalCriteria));
+        }
+        else {
+            query.where(builder.equal(root.get(key), value));
+        }
+
         List<T> result = getSession().createQuery(query).list();
         return Optional.ofNullable(result.isEmpty() ? null : result.get(0));
     }
@@ -116,7 +135,8 @@ public class BaseHibernateDao<T extends BaseEntity> {
         return genericType;
     }
 
-    protected void applyCriteria(CriteriaQuery<T> criteriaQuery, CriteriaBuilder criteriaBuilder, Root<T> from) {
+    protected List<Predicate> customCriteria(CriteriaBuilder criteriaBuilder, Root<T> from) {
+        return null;
     }
 
 }

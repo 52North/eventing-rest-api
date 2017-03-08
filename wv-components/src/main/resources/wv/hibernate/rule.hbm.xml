@@ -11,7 +11,6 @@
             <generator class="sequence"/>
         </id>
         <property name="threshold" column="threshold" type="double"/>
-        <property name="activeFlag" column="active_flag" type="int"/>
         <many-to-one name="series" class="org.n52.eventing.wv.model.Series" foreign-key="series_pkid">
             <column name="series_pkid">
                 <comment>Relation/foreign key to the related series</comment>

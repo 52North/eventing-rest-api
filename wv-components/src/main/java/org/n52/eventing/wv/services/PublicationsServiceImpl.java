@@ -37,9 +37,12 @@ import java.util.stream.Collectors;
 import org.hibernate.Session;
 import org.n52.eventing.rest.Configuration;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.RequestContext;
+import org.n52.eventing.rest.factory.TemplatesDaoFactory;
 import org.n52.eventing.rest.publications.Publication;
 import org.n52.eventing.rest.publications.PublicationsService;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
+import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.SeriesDao;
@@ -54,7 +57,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.MultiValueMap;
 
 /**
  *
@@ -72,6 +74,9 @@ public class PublicationsServiceImpl extends BaseService implements Publications
 
     @Autowired
     private AccessRights accessRights;
+
+    @Autowired
+    private TemplatesDaoFactory templatesDaoFactory;
 
     @Autowired
     private Configuration config;
@@ -116,36 +121,36 @@ public class PublicationsServiceImpl extends BaseService implements Publications
     }
 
     @Override
-    public List<Publication> getPublications(MultiValueMap<String, String> filter, Pagination page) {
+    public List<Publication> getPublications(Map<String, String[]> filter, Pagination page, RequestContext context) {
         if (filter == null || filter.isEmpty() || !filter.containsKey("feature")) {
-            return getPublications(page);
+            return getPublications(page, context);
         }
 
         return internalGet((Session session) -> {
             SeriesDao dao = new HibernateSeriesDao(session);
-            List<String> val = filter.get("feature");
-            if (val.isEmpty()) {
+            String[] val = filter.get("feature");
+            if (val == null || val.length == 0) {
                 throw new DatabaseException("Filter 'feature' cannot be empty");
             }
-            return dao.retrieveByFeature(val.get(0), page);
-        });
+            return dao.retrieveByFeature(val[0], page);
+        }, context);
     }
 
     @Override
-    public List<Publication> getPublications(Pagination page) {
+    public List<Publication> getPublications(Pagination page, RequestContext context) {
         return internalGet((Session session) -> {
             SeriesDao dao = new HibernateSeriesDao(session);
             return dao.retrieve(null);
-        });
+        }, context);
     }
 
-    private List<Publication> internalGet(DaoSupplier<List<Series>> retriever) {
+    private List<Publication> internalGet(DaoSupplier<List<Series>> retriever, RequestContext context) {
         try (Session session = hdc.createSession()) {
             WvUser user = super.resolveUser();
             List<Series> pubs = retriever.getFromDao(session);
             return pubs.stream()
                     .filter(s -> accessRights.canSeeSeries(user, s.getId()))
-                    .map((Series s) -> wrapSeriesBrief(s))
+                    .map((Series s) -> wrapSeriesBrief(s, context))
                     .collect(Collectors.toList());
         }
         catch (NotAuthenticatedException | DatabaseException e) {
@@ -156,7 +161,7 @@ public class PublicationsServiceImpl extends BaseService implements Publications
     }
 
     @Override
-    public Publication getPublication(String id) throws UnknownPublicationsException {
+    public Publication getPublication(String id, RequestContext context) throws UnknownPublicationsException {
         int idInt = super.parseId(id);
 
         Session session = hdc.createSession();
@@ -166,7 +171,7 @@ public class PublicationsServiceImpl extends BaseService implements Publications
             WvUser user = super.resolveUser();
             Optional<Series> series = dao.retrieveById(idInt);
             if (series.isPresent() && accessRights.canSeeSeries(user, series.get().getId())) {
-                return wrapSeries(series.get());
+                return wrapSeries(series.get(), context);
             }
         }
         catch (NotAuthenticatedException | NumberFormatException e) {
@@ -179,17 +184,20 @@ public class PublicationsServiceImpl extends BaseService implements Publications
         throw new UnknownPublicationsException("The publication is unknown: "+id);
     }
 
-    private Publication wrapSeriesBrief(Series s) {
+    private Publication wrapSeriesBrief(Series s, RequestContext context) {
         String labelTemplate = this.i18n.getString("publication.label");
         String label = String.format(labelTemplate,
                 s.getId(),
                 s.getFeature().getIdentifier());
         WvPublication pub = new WvPublication(Integer.toString(s.getId()), label+"!", null);
         pub.setSeriesHref(String.format(this.seriesHref, s.getId()));
+
+        injectTemplates(pub, context);
+
         return pub;
     }
 
-    private Publication wrapSeries(Series s) {
+    private Publication wrapSeries(Series s, RequestContext context) {
         String labelTemplate = this.i18n.getString("publication.label");
         String label = String.format(labelTemplate,
                 s.getId(),
@@ -209,7 +217,19 @@ public class PublicationsServiceImpl extends BaseService implements Publications
         pub.setDetails(props);
 
         pub.setSeriesHref(String.format(this.seriesHref, s.getId()));
+
+        injectTemplates(pub, context);
+
         return pub;
+    }
+
+    private void injectTemplates(WvPublication pub, RequestContext context) {
+        Map<String, String[]> params = context.getParameters();
+        if (params.containsKey("expanded") && Boolean.parseBoolean(params.get("expanded")[0])) {
+            List<TemplateDefinition> templates = templatesDaoFactory.newDao(context, true)
+                    .getTemplates(Collections.singletonMap("publication", new String[] {pub.getId()}));
+            pub.setTemplates(templates);
+        }
     }
 
 }

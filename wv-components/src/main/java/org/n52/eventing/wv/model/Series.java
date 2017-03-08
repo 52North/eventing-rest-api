@@ -40,7 +40,8 @@ public class Series implements BaseEntity {
     private Procedure procedure;
     private FeatureOfInterest feature;
     private Unit unit;
-    private int activeForEventing;
+    protected int activeForEventing;
+
 
     public Series() {
     }
@@ -103,12 +104,5 @@ public class Series implements BaseEntity {
         this.unit = unit;
     }
 
-    public int getActiveForEventing() {
-        return activeForEventing;
-    }
-
-    public void setActiveForEventing(int activeForEventing) {
-        this.activeForEventing = activeForEventing;
-    }
 
 }

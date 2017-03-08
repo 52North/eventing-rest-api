@@ -29,12 +29,12 @@
 package org.n52.eventing.rest.binding;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.n52.eventing.rest.RequestContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -47,6 +47,10 @@ public class RequestUtils {
     public static String resolveFullRequestUrl() throws IOException, URISyntaxException {
         HttpServletRequest request = resolveRequestObject();
 
+        return resolveFullRequestUrl(request);
+    }
+
+    public static String resolveFullRequestUrl(HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         URL url = new URL(request.getRequestURL().toString());
 
         String scheme = url.getProtocol();
@@ -73,14 +77,6 @@ public class RequestUtils {
     public static HttpServletResponse resolveResponseObject() {
         return ((ServletRequestAttributes)
                 RequestContextHolder.currentRequestAttributes()).getResponse();
-    }
-
-    public static RequestContext createRequestContext(String resourceMapping) throws IOException, URISyntaxException {
-        RequestContext result = new RequestContext();
-        String fullUrl = resolveFullRequestUrl();
-        result.setFullUrl(fullUrl);
-        result.setBaseApiUrl(fullUrl.substring(0, fullUrl.indexOf(resourceMapping)));
-        return result;
     }
 
 }

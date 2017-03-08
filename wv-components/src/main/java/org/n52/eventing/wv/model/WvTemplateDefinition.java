@@ -28,6 +28,7 @@
 
 package org.n52.eventing.wv.model;
 
+import java.util.Map;
 import org.n52.eventing.rest.templates.Definition;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 
@@ -37,7 +38,7 @@ import org.n52.eventing.rest.templates.TemplateDefinition;
  */
 public class WvTemplateDefinition extends TemplateDefinition {
 
-    private Object publication;
+    private Map<String, String> publication;
 
     public WvTemplateDefinition(String id, String label, String description, Definition definition) {
         super(id, label, description, definition);
@@ -51,7 +52,7 @@ public class WvTemplateDefinition extends TemplateDefinition {
         return publication;
     }
 
-    public void setPublication(Object publication) {
+    public void setPublication(Map<String, String> publication) {
         this.publication = publication;
     }
 

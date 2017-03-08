@@ -37,12 +37,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.binding.eventlog.EventLogController;
+import org.n52.eventing.rest.eventlog.EventHolder;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.security.SecurityService;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
@@ -54,7 +57,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,7 +64,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.n52.eventing.rest.subscriptions.SubscriptionsService;
@@ -90,9 +91,13 @@ public class SubscriptionsController {
     @Autowired
     private EventLogController eventLogController;
 
+    @Autowired
+    private RequestContext context;
+
     @RequestMapping("")
-    public ModelAndView getSubscriptions(@RequestParam(required = false) MultiValueMap<String, String> query)
+    public ModelAndView getSubscriptions()
             throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
+        Map<String, String[]> query = context.getParameters();
         Pagination p = Pagination.fromQuery(query);
 
         String fullUrl = RequestUtils.resolveFullRequestUrl();
@@ -122,8 +127,7 @@ public class SubscriptionsController {
     }
 
     @RequestMapping(value = "/{item}", method = GET)
-    public SubscriptionInstance getSubscription(@RequestParam(required = false) MultiValueMap<String, String> query,
-            @PathVariable("item") String id)
+    public SubscriptionInstance getSubscription(@PathVariable("item") String id)
             throws IOException, URISyntaxException, ResourceNotAvailableException, NotAuthenticatedException {
 
         if (!this.dao.hasSubscription(id)) {
@@ -139,13 +143,13 @@ public class SubscriptionsController {
     }
 
     @RequestMapping(value = "/{subId}/events", method = GET)
-    public Collection<EventLogController.EventHolderView> getSubscriptionEvents(@RequestParam(required = false) MultiValueMap<String, String> query, @PathVariable("subId") String subId)
+    public Collection<EventHolder> getSubscriptionEvents(@PathVariable("subId") String subId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException, InvalidPaginationException {
-        return eventLogController.getEventsForSubscription(query, subId);
+        return eventLogController.getEventsForSubscription(subId);
     }
 
     @RequestMapping(value = "/{subId}/events/{eventId}", method = GET)
-    public ModelAndView getSingleSubscription(@PathVariable("subId") String subId,
+    public EventHolder getSingleSubscription(@PathVariable("subId") String subId,
             @PathVariable("eventId") String eventId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
         return eventLogController.getSingleEventForSubscription(subId, eventId);

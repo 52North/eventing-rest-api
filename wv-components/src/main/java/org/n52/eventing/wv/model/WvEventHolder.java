@@ -26,36 +26,42 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.wv.services.factory;
+package org.n52.eventing.wv.model;
 
-import org.n52.eventing.rest.RequestContext;
-import org.n52.eventing.rest.factory.TemplatesDaoFactory;
-import org.n52.eventing.rest.templates.TemplatesDao;
-import org.n52.eventing.wv.database.HibernateDatabaseConnection;
-import org.n52.eventing.wv.i18n.I18nProvider;
-import org.n52.eventing.wv.services.TemplatesServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;
+import java.util.Optional;
+import org.joda.time.DateTime;
+import org.n52.eventing.rest.eventlog.EventHolder;
+import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
+import org.n52.subverse.delivery.Streamable;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class WvTemplatesDaoFactory implements TemplatesDaoFactory {
+public class WvEventHolder extends EventHolder {
 
-    @Autowired
-    private I18nProvider i18n;
+    private Map<String, String> series;
+    private Map<String, String> rule;
 
-    @Autowired
-    private HibernateDatabaseConnection hdc;
-
-    @Override
-    public TemplatesDao newDao(RequestContext context) {
-        return new TemplatesServiceImpl(i18n, hdc, context, false);
+    public WvEventHolder(String id, DateTime time, SubscriptionInstance subscription, String label, Optional<Streamable> streamable) {
+        super(id, time, subscription, label, streamable);
     }
 
-    @Override
-    public TemplatesDao newDao(RequestContext context, boolean expanded) {
-        return new TemplatesServiceImpl(i18n, hdc, context, expanded);
+    public Map<String, String> getSeries() {
+        return series;
+    }
+
+    public void setSeries(Map<String, String> series) {
+        this.series = series;
+    }
+
+    public Map<String, String> getRule() {
+        return rule;
+    }
+
+    public void setRule(Map<String, String> rule) {
+        this.rule = rule;
     }
 
 }

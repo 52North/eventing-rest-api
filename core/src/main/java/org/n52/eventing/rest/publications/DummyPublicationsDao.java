@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import org.n52.eventing.rest.Configuration;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.RequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -67,12 +68,12 @@ public class DummyPublicationsDao implements PublicationsService, InitializingBe
     }
 
     @Override
-    public synchronized List<Publication> getPublications(Pagination p) {
+    public synchronized List<Publication> getPublications(Pagination p, RequestContext context) {
         return Collections.unmodifiableList(new ArrayList<>(publications.values()));
     }
 
     @Override
-    public synchronized Publication getPublication(String id) throws UnknownPublicationsException {
+    public synchronized Publication getPublication(String id, RequestContext context) throws UnknownPublicationsException {
         if (!hasPublication(id)) {
             throw new UnknownPublicationsException("Publication does not exist: "+id);
         }

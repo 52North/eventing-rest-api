@@ -46,6 +46,7 @@ public class WvUser implements BaseEntity, Serializable {
     private String email;
     private int status;
     private Set<Group> groups;
+    private boolean admin;
 
     public WvUser() {
     }
@@ -126,12 +127,31 @@ public class WvUser implements BaseEntity, Serializable {
         this.groups = groups;
     }
 
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    @Override
+    public String toString() {
+        return "WvUser{" + "id=" + id + ", name=" + name + ", password=" + password + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", status=" + status + ", groups=" + groups + ", admin=" + admin + '}';
+    }
+
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 89 * hash + this.id;
-        hash = 89 * hash + Objects.hashCode(this.name);
-        hash = 89 * hash + Objects.hashCode(this.email);
+        int hash = 7;
+        hash = 59 * hash + this.id;
+        hash = 59 * hash + Objects.hashCode(this.name);
+        hash = 59 * hash + Objects.hashCode(this.password);
+        hash = 59 * hash + Objects.hashCode(this.firstName);
+        hash = 59 * hash + Objects.hashCode(this.lastName);
+        hash = 59 * hash + Objects.hashCode(this.email);
+        hash = 59 * hash + this.status;
+        hash = 59 * hash + Objects.hashCode(this.groups);
+        hash = 59 * hash + (this.admin ? 1 : 0);
         return hash;
     }
 
@@ -150,19 +170,33 @@ public class WvUser implements BaseEntity, Serializable {
         if (this.id != other.id) {
             return false;
         }
+        if (this.status != other.status) {
+            return false;
+        }
+        if (this.admin != other.admin) {
+            return false;
+        }
         if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (!Objects.equals(this.password, other.password)) {
+            return false;
+        }
+        if (!Objects.equals(this.firstName, other.firstName)) {
+            return false;
+        }
+        if (!Objects.equals(this.lastName, other.lastName)) {
             return false;
         }
         if (!Objects.equals(this.email, other.email)) {
             return false;
         }
+        if (!Objects.equals(this.groups, other.groups)) {
+            return false;
+        }
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "WvUser{" + "id=" + id + ", name=" + name + ", groups=" + groups + '}';
-    }
 
 
 

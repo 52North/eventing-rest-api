@@ -90,6 +90,13 @@ public class UserController {
                     .filter(g -> accessRights.canSeeSubscriptionsOfUser(u.get(), g))
                     .map((WvUser wu) -> {
                         Hibernate.initialize(wu.getGroups());
+                        wu.setGroups(wu.getGroups().stream()
+                            .map(g -> {
+                                g.setGroupAdmin(accessRights.isGroupAdmin(wu, g));
+                                return g;
+                            }).collect(Collectors.toSet()));
+
+                        wu.setAdmin(accessRights.isInAdminGroup(wu));
                         return UserView.from(wu);
                     })
                     .collect(Collectors.toList());
@@ -114,8 +121,17 @@ public class UserController {
                     throw new NotAuthenticatedException("Access denied");
                 }
 
-                Hibernate.initialize(result.get().getGroups());
-                return UserView.from(result.get());
+                WvUser resultUser = result.get();
+
+                Hibernate.initialize(resultUser.getGroups());
+                resultUser.setGroups(resultUser.getGroups().stream()
+                    .map(g -> {
+                        g.setGroupAdmin(accessRights.isGroupAdmin(resultUser, g));
+                        return g;
+                    }).collect(Collectors.toSet()));
+
+                resultUser.setAdmin(accessRights.isInAdminGroup(resultUser));
+                return UserView.from(resultUser);
             }
             else {
                 return null;
@@ -135,20 +151,22 @@ public class UserController {
         private final String lastName;
         private final String email;
         private final Set<Group> groups;
+        private final boolean admin;
 
         public static UserView from(WvUser wu) {
             return new UserView(wu.getId(), wu.getName(),
                     wu.getFirstName(), wu.getLastName(),
-                    wu.getEmail(), wu.getGroups());
+                    wu.getEmail(), wu.getGroups(), wu.isAdmin());
         }
 
-        private UserView(int id, String name, String firstName, String lastName, String email, Set<Group> groups) {
+        private UserView(int id, String name, String firstName, String lastName, String email, Set<Group> groups, boolean admin) {
             this.id = id;
             this.name = name;
             this.firstName = firstName;
             this.lastName = lastName;
             this.email = email;
             this.groups = groups;
+            this.admin = admin;
         }
 
         public int getId() {
@@ -174,6 +192,12 @@ public class UserController {
         public Set<Group> getGroups() {
             return groups;
         }
+
+        public boolean isAdmin() {
+            return admin;
+        }
+
+
 
     }
 
