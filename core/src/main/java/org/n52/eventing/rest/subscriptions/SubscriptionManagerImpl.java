@@ -82,7 +82,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
             LOG.info("Registering subscription {}", s.getId());
             try {
                 if (s.getTemplate() != null) {
-                    filterLogic.internalSubscribe(s, templatesDaoFactory.newDao(null).getTemplate(s.getTemplate().getId()));
+                    filterLogic.internalSubscribe(s, templatesDaoFactory.newDao().getTemplate(s.getTemplate().getId()));
                     count.getAndIncrement();
                 }
             } catch (UnknownTemplateException ex) {
@@ -112,7 +112,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
 
         TemplateDefinition template;
         try {
-            template = this.templatesDaoFactory.newDao(null).getTemplate(subDef.getTemplate().getId());
+            template = this.templatesDaoFactory.newDao().getTemplate(subDef.getTemplate().getId());
         } catch (UnknownTemplateException ex) {
             LOG.warn(ex.getMessage());
             LOG.debug(ex.getMessage(), ex);

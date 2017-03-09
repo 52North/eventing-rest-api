@@ -31,15 +31,11 @@ package org.n52.eventing.rest.binding.publications;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.RequestContext;
-import org.n52.eventing.rest.binding.RequestUtils;
-import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.security.NotAuthenticatedException;
@@ -87,13 +83,20 @@ public class PublicationsController {
     }
 
     private List<Publication> createPublications(String fullUrl, Map<String, String[]> query, Pagination page) throws NotAuthenticatedException {
-        List<Publication> result = query == null ? this.dao.getPublications(page, context) : this.dao.getPublications(query, page, context);
+        RequestContext.storeInThreadLocal(context);
 
-        result.stream().forEach((Publication p) -> {
-            p.setHref(String.format("%s/%s", fullUrl, p.getId()));
-        });
+        try {
+            List<Publication> result = query == null ? this.dao.getPublications(page) : this.dao.getPublications(query, page);
 
-        return result;
+            result.stream().forEach((Publication p) -> {
+                p.setHref(String.format("%s/%s", fullUrl, p.getId()));
+            });
+
+            return result;
+        }
+        finally {
+            RequestContext.removeThreadLocal();
+        }
     }
 
     @RequestMapping(value = "/{item}", method = GET)
@@ -105,12 +108,17 @@ public class PublicationsController {
             throw new ResourceNotAvailableException("The publication is not available: "+id);
         }
 
+        RequestContext.storeInThreadLocal(context);
+
         try {
-            Publication pub = this.dao.getPublication(id, context);
+            Publication pub = this.dao.getPublication(id);
 
             return new ModelAndView().addObject(pub);
         } catch (UnknownPublicationsException ex) {
             throw new ResourceNotAvailableException(ex.getMessage(), ex);
+        }
+        finally {
+            RequestContext.removeThreadLocal();
         }
     }
 

@@ -121,9 +121,11 @@ public class PublicationsServiceImpl extends BaseService implements Publications
     }
 
     @Override
-    public List<Publication> getPublications(Map<String, String[]> filter, Pagination page, RequestContext context) {
+    public List<Publication> getPublications(Map<String, String[]> filter, Pagination page) {
+        RequestContext context = RequestContext.retrieveFromThreadLocal();
+        
         if (filter == null || filter.isEmpty() || !filter.containsKey("feature")) {
-            return getPublications(page, context);
+            return getPublications(page);
         }
 
         return internalGet((Session session) -> {
@@ -137,7 +139,9 @@ public class PublicationsServiceImpl extends BaseService implements Publications
     }
 
     @Override
-    public List<Publication> getPublications(Pagination page, RequestContext context) {
+    public List<Publication> getPublications(Pagination page) {
+        RequestContext context = RequestContext.retrieveFromThreadLocal();
+        
         return internalGet((Session session) -> {
             SeriesDao dao = new HibernateSeriesDao(session);
             return dao.retrieve(null);
@@ -161,7 +165,9 @@ public class PublicationsServiceImpl extends BaseService implements Publications
     }
 
     @Override
-    public Publication getPublication(String id, RequestContext context) throws UnknownPublicationsException {
+    public Publication getPublication(String id) throws UnknownPublicationsException {
+        RequestContext context = RequestContext.retrieveFromThreadLocal();
+        
         int idInt = super.parseId(id);
 
         Session session = hdc.createSession();
@@ -226,7 +232,7 @@ public class PublicationsServiceImpl extends BaseService implements Publications
     private void injectTemplates(WvPublication pub, RequestContext context) {
         Map<String, String[]> params = context.getParameters();
         if (params.containsKey("expanded") && Boolean.parseBoolean(params.get("expanded")[0])) {
-            List<TemplateDefinition> templates = templatesDaoFactory.newDao(context, true)
+            List<TemplateDefinition> templates = templatesDaoFactory.newDao(false)
                     .getTemplates(Collections.singletonMap("publication", new String[] {pub.getId()}));
             pub.setTemplates(templates);
         }

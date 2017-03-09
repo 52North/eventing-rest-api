@@ -82,13 +82,20 @@ public class EventLogController {
         Map<String, String[]> query = context.getParameters();
         Pagination page = Pagination.fromQuery(query);
 
-        return store.getAllEvents(page).stream()
+        RequestContext.storeInThreadLocal(context);
+
+        try {
+            return store.getAllEvents(page).stream()
                 .map((EventHolder t) -> {
                     String id = t.getId();
                     t.setHref(String.format("%s/%s", fullUrl, id));
                     return t;
                 })
                 .collect(Collectors.toList());
+        }
+        finally {
+            RequestContext.removeThreadLocal();
+        }
     }
 
     public Collection<EventHolder> getEventsForSubscription(String subId)

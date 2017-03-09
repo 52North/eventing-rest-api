@@ -218,7 +218,12 @@ public class TemplatesServiceImpl implements TemplatesDao {
                 r.getSeries().getFeature().getIdentifier(),
                 trendcodeLabel,
                 r.getThreshold());
-        TemplateDefinition result = new TemplateDefinition(Integer.toString(r.getId()), label, null, null);
+        WvTemplateDefinition result = new WvTemplateDefinition(Integer.toString(r.getId()), label, null,
+                new WvSubscriptionTemplateFactory(i18n).createDefinition(r));
+        result.setHref(String.format("%s/%s/%s",
+                context.getBaseApiUrl(),
+                UrlSettings.TEMPLATES_RESOURCE,
+                r.getId()));
         return result;
     }
 

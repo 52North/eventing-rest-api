@@ -144,7 +144,7 @@ public class DummySubscriptionsDao implements SubscriptionsService, Initializing
         try {
             SubscriptionInstance sub = new SubscriptionInstance("dummy-sub", "dummy-sub yeah", "this subscription is set up!");
             sub.setUser(this.usersDao.getUser("dummy-user"));
-            sub.setPublicationId(this.publicationsDao.getPublication("dummy-pub", null).getId());
+            sub.setPublicationId(this.publicationsDao.getPublication("dummy-pub").getId());
             sub.addDeliveryMethod(createDeliveryInstance(this.deliveryMethodsDao.getDeliveryMethod("email"), "peterchen@paulchen.de"));
             sub.setEndOfLife(new DateTime().plusMonths(2));
             sub.setEnabled(true);

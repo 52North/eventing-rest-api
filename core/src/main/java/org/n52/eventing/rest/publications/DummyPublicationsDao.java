@@ -68,12 +68,12 @@ public class DummyPublicationsDao implements PublicationsService, InitializingBe
     }
 
     @Override
-    public synchronized List<Publication> getPublications(Pagination p, RequestContext context) {
+    public synchronized List<Publication> getPublications(Pagination p) {
         return Collections.unmodifiableList(new ArrayList<>(publications.values()));
     }
 
     @Override
-    public synchronized Publication getPublication(String id, RequestContext context) throws UnknownPublicationsException {
+    public synchronized Publication getPublication(String id) throws UnknownPublicationsException {
         if (!hasPublication(id)) {
             throw new UnknownPublicationsException("Publication does not exist: "+id);
         }

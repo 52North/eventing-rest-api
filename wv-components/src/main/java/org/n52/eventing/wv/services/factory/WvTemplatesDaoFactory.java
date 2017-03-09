@@ -49,12 +49,14 @@ public class WvTemplatesDaoFactory implements TemplatesDaoFactory {
     private HibernateDatabaseConnection hdc;
 
     @Override
-    public TemplatesDao newDao(RequestContext context) {
+    public TemplatesDao newDao() {
+        RequestContext context = RequestContext.retrieveFromThreadLocal();
         return new TemplatesServiceImpl(i18n, hdc, context, false);
     }
 
     @Override
-    public TemplatesDao newDao(RequestContext context, boolean expanded) {
+    public TemplatesDao newDao(boolean expanded) {
+        RequestContext context = RequestContext.retrieveFromThreadLocal();
         return new TemplatesServiceImpl(i18n, hdc, context, expanded);
     }
 

@@ -35,6 +35,20 @@ import java.util.Map;
  */
 public interface RequestContext {
 
+    static ThreadLocal<RequestContext> THREAD_LOCAL = new ThreadLocal<>();
+
+    public static RequestContext retrieveFromThreadLocal() {
+        return THREAD_LOCAL.get();
+    };
+
+    public static void storeInThreadLocal(RequestContext r) {
+        THREAD_LOCAL.set(r);
+    };
+
+    public static void removeThreadLocal() {
+        THREAD_LOCAL.remove();
+    };
+
     String getBaseApiUrl();
 
     String getFullUrl();

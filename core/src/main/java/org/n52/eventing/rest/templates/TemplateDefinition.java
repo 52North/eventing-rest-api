@@ -28,8 +28,8 @@
 
 package org.n52.eventing.rest.templates;
 
-import org.n52.eventing.rest.parameters.ParameterDefinition;
 import java.util.HashMap;
+import org.n52.eventing.rest.parameters.ParameterDefinition;
 import java.util.Map;
 
 /**
@@ -42,7 +42,7 @@ public class TemplateDefinition {
     private String label;
     private String description;
     private Definition definition;
-    private Map<String, ParameterDefinition> parameters = new HashMap<>();
+    private Map<String, ParameterDefinition> parameters;
 
     public TemplateDefinition() {
     }
@@ -95,6 +95,11 @@ public class TemplateDefinition {
     }
 
     public void addParameter(String name, ParameterDefinition param) {
+        synchronized (this) {
+            if (this.parameters == null) {
+                this.parameters = new HashMap<>();
+            }
+        }
         this.parameters.put(name, param);
     }
 

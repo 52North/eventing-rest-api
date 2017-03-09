@@ -30,7 +30,6 @@ package org.n52.eventing.rest.publications;
 import java.util.List;
 import java.util.Map;
 import org.n52.eventing.rest.Pagination;
-import org.n52.eventing.rest.RequestContext;
 
 /**
  *
@@ -40,12 +39,12 @@ public interface PublicationsService {
 
     boolean hasPublication(String id);
 
-    default List<Publication> getPublications(Map<String, String[]>  filter, Pagination p, RequestContext context) {
-        return getPublications(p, context);
+    default List<Publication> getPublications(Map<String, String[]>  filter, Pagination p) {
+        return getPublications(p);
     };
 
-    List<Publication> getPublications( Pagination p, RequestContext context);
+    List<Publication> getPublications( Pagination p);
 
-    Publication getPublication(String id, RequestContext context) throws UnknownPublicationsException;
+    Publication getPublication(String id) throws UnknownPublicationsException;
 
 }

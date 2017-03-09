@@ -39,6 +39,7 @@ import org.n52.eventing.rest.templates.TemplateDefinition;
 public class WvTemplateDefinition extends TemplateDefinition {
 
     private Map<String, String> publication;
+    private String href;
 
     public WvTemplateDefinition(String id, String label, String description, Definition definition) {
         super(id, label, description, definition);
@@ -56,4 +57,12 @@ public class WvTemplateDefinition extends TemplateDefinition {
         this.publication = publication;
     }
 
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
+    
 }

@@ -27,7 +27,6 @@
  */
 package org.n52.eventing.rest.factory;
 
-import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.templates.TemplatesDao;
 
 /**
@@ -36,10 +35,10 @@ import org.n52.eventing.rest.templates.TemplatesDao;
  */
 public interface TemplatesDaoFactory {
 
-    TemplatesDao newDao(RequestContext context);
+    TemplatesDao newDao();
 
-    default TemplatesDao newDao(RequestContext context, boolean expanded) {
-        return newDao(context);
+    default TemplatesDao newDao(boolean expanded) {
+        return newDao();
     };
 
 }

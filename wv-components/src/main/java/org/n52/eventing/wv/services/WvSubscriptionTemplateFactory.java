@@ -30,10 +30,8 @@ package org.n52.eventing.wv.services;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.parameters.ParameterDefinition;
 import org.n52.eventing.rest.templates.Definition;
-import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.WvTemplateDefinition;
@@ -60,15 +58,20 @@ public class WvSubscriptionTemplateFactory {
                 trendcodeLabel,
                 r.getThreshold());
         WvTemplateDefinition result = new WvTemplateDefinition(Integer.toString(r.getId()), label, null, null);
-        Map<String, Object> props = new HashMap<>();
-        props.put("trend", r.getTrendCode().getId());
-        props.put("threshold", r.getThreshold());
-        result.setDefinition(new Definition(props, null));
+
+        result.setDefinition(createDefinition(r));
 
         result.addParameter(USER_PARAMETER, new ParameterDefinition("number", i18n.getString("rule.parameter.userId"), true));
         result.addParameter(GROUP_PARAMETER, new ParameterDefinition("number", i18n.getString("rule.parameter.groupId"), true));
 
         return result;
+    }
+    
+    public Definition createDefinition(Rule r) {
+        Map<String, Object> props = new HashMap<>();
+        props.put("trend", r.getTrendCode().getId());
+        props.put("threshold", r.getThreshold());
+        return new Definition(props, null);
     }
 
 }

@@ -47,7 +47,6 @@ import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
 import org.n52.eventing.wv.dao.hibernate.HibernateEventDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.i18n.I18nProvider;
-import org.n52.eventing.wv.model.Series;
 import org.n52.eventing.wv.model.WvEvent;
 import org.n52.eventing.wv.model.WvEventHolder;
 import org.slf4j.Logger;
@@ -80,6 +79,8 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
 
     @Override
     public Collection<EventHolder> getAllEvents(Pagination pagination) {
+        RequestContext context = RequestContext.retrieveFromThreadLocal();
+        
         try (Session session = hdc.createSession()) {
             HibernateEventDao dao = new HibernateEventDao(session);
             List<WvEvent> result = dao.retrieve(pagination);

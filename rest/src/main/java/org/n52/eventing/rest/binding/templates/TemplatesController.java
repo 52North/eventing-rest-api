@@ -68,36 +68,39 @@ public class TemplatesController {
 
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ModelAndView getTemplates() throws IOException, URISyntaxException, NotAuthenticatedException {
-        List<ResourceCollection> list = new ArrayList<>();
+    public List<TemplateDefinition> getTemplates() throws IOException, URISyntaxException, NotAuthenticatedException {
+        RequestContext.storeInThreadLocal(context);
+
         Map<String, String[]> query = context.getParameters();
 
-        List<TemplateDefinition> result = query == null ? this.daoFactory.newDao(context).getTemplates() : this.daoFactory.newDao(context).getTemplates(query);
+        try {
+            List<TemplateDefinition> result = query == null ? this.daoFactory.newDao().getTemplates() : this.daoFactory.newDao().getTemplates(query);
 
-        result.stream().forEach(t -> {
-            list.add(ResourceCollection.createResource(t.getId())
-                    .withLabel(t.getLabel())
-                    .withDescription(t.getDescription())
-                    .withHref(String.format("%s/%s", context.getFullUrl(), t.getId())));
-        });
-
-        if (list.isEmpty()) {
-            return EmptyArrayModel.create();
+            return result;
+        }
+        finally {
+            RequestContext.removeThreadLocal();
         }
 
-        return new ModelAndView().addObject(list);
     }
 
     @RequestMapping(value = "/{item}", method = RequestMethod.GET)
     public TemplateDefinition getTemplate(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException, IOException, URISyntaxException {
-        TemplatesDao dao = this.daoFactory.newDao(context);
-        if (dao.hasTemplate(id)) {
-            try {
-                TemplateDefinition temp = dao.getTemplate(id);
-                return temp;
-            } catch (UnknownTemplateException ex) {
-                throw new ResourceNotAvailableException(ex.getMessage(), ex);
+        RequestContext.storeInThreadLocal(context);
+
+        try {
+            TemplatesDao dao = this.daoFactory.newDao();
+            if (dao.hasTemplate(id)) {
+                try {
+                    TemplateDefinition temp = dao.getTemplate(id);
+                    return temp;
+                } catch (UnknownTemplateException ex) {
+                    throw new ResourceNotAvailableException(ex.getMessage(), ex);
+                }
             }
+        }
+        finally {
+            RequestContext.removeThreadLocal();
         }
 
         throw new ResourceNotAvailableException("not there: "+ id);
@@ -105,11 +108,19 @@ public class TemplatesController {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ModelAndView create(@RequestBody TemplateDefinition def) throws IOException, URISyntaxException {
-        TemplatesDao dao = this.daoFactory.newDao(context);
-        String id = dao.createTemplate(def);
-        ModelAndView result = new ModelAndView();
-        result.addObject(Collections.singletonMap("id", id));
-        return result;
+        RequestContext.storeInThreadLocal(context);
+
+        try {
+            TemplatesDao dao = this.daoFactory.newDao();
+            String id = dao.createTemplate(def);
+            ModelAndView result = new ModelAndView();
+            result.addObject(Collections.singletonMap("id", id));
+            return result;
+        }
+        finally {
+            RequestContext.removeThreadLocal();
+        }
+
     }
 
 }
