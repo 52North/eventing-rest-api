@@ -136,7 +136,7 @@ public class GroupController {
             @PathVariable("item") String id)
             throws IOException, URISyntaxException, NotAuthenticatedException {
         try (Session session = hdc.createSession()) {
-            HibernateUserDao dao = new HibernateUserDao(session);
+            HibernateUserDao dao = new HibernateUserDao(session, groupPolicies);
             HibernateGroupDao groupDao = new HibernateGroupDao(session, groupPolicies);
             Optional<WvUser> u = userService.resolveCurrentWvUser();
 

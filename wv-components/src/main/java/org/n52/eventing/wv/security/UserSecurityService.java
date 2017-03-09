@@ -107,7 +107,7 @@ public class UserSecurityService implements AuthenticationProvider, Serializable
             }
 
             Session session = hdc.createSession();
-            UserDao userDao = new HibernateUserDao(session);
+            UserDao userDao = new HibernateUserDao(session, groupPolicies);
 
             try {
                 Optional<WvUser> result = userDao.retrieveByName(username);
@@ -135,7 +135,7 @@ public class UserSecurityService implements AuthenticationProvider, Serializable
         }
 
         Session session = hdc.createSession();
-        UserDao userDao = new HibernateUserDao(session);
+        UserDao userDao = new HibernateUserDao(session, groupPolicies);
 
         Optional<WvUser> user;
         try {

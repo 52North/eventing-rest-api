@@ -126,7 +126,7 @@ public class HibernateSubscriptionRulesDaoIT {
         WvUser u2 = new WvUser();
         u2.setName("another more tester");
         u2.setPassword("wurzl");
-        HibernateUserDao userDao = new HibernateUserDao(session);
+        HibernateUserDao userDao = new HibernateUserDao(session, gp);
         userDao.store(u1);
         userDao.store(u2);
         trans.commit();

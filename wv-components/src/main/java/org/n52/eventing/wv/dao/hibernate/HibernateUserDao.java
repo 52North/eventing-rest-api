@@ -30,6 +30,8 @@ package org.n52.eventing.wv.dao.hibernate;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -37,6 +39,7 @@ import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.wv.model.WvUser;
 import org.n52.eventing.wv.dao.UserDao;
 import org.n52.eventing.wv.model.Group;
+import org.n52.eventing.wv.security.GroupPolicies;
 
 /**
  *
@@ -44,14 +47,18 @@ import org.n52.eventing.wv.model.Group;
  */
 public class HibernateUserDao extends BaseHibernateDao<WvUser> implements UserDao {
 
-    public HibernateUserDao(Session session) {
+    private final GroupPolicies policies;
+    
+    public HibernateUserDao(Session session, GroupPolicies policies) {
         super(session);
+        this.policies = policies;
     }
 
     @Override
     public Optional<WvUser> retrieveByName(String name) {
         Optional<WvUser> result = super.retrieveByName(name);
         WvUser user = initializeProxies(result.isPresent() ? result.get() : null);
+        user.setGroups(filterGroups(user.getGroups()));
         return Optional.ofNullable(user);
     }
 
@@ -68,7 +75,42 @@ public class HibernateUserDao extends BaseHibernateDao<WvUser> implements UserDa
         }
 
         q.setParameter(param, g.getId());
-        return q.list();
+        List<WvUser> result = q.list();
+        return result.stream().map(u -> {
+            u.setGroups(filterGroups(u.getGroups()));
+            return u;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<WvUser> retrieve(Pagination pagination) {
+        List<WvUser> result = super.retrieve(pagination);
+        return result.stream().map(u -> {
+            u.setGroups(filterGroups(u.getGroups()));
+            return u;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<WvUser> retrieveById(int id) {
+        Optional<WvUser> user = super.retrieveById(id);
+        if (!user.isPresent()) {
+            return user;
+        }
+        WvUser userInstance = user.get();
+        userInstance.setGroups(filterGroups(userInstance.getGroups()));
+        return Optional.ofNullable(userInstance);
+    }
+
+    @Override
+    protected Optional<WvUser> retrieveByKey(String key, String value) {
+        Optional<WvUser> user = super.retrieveByKey(key, value);
+        if (!user.isPresent()) {
+            return user;
+        }
+        WvUser userInstance = user.get();
+        userInstance.setGroups(filterGroups(userInstance.getGroups()));
+        return Optional.ofNullable(userInstance);
     }
 
     @Override
@@ -82,6 +124,14 @@ public class HibernateUserDao extends BaseHibernateDao<WvUser> implements UserDa
         }
         Hibernate.initialize(o.getGroups());
         return o;
+    }
+
+    private Set<Group> filterGroups(Set<Group> groups) {
+        return groups.stream()
+                .filter(g -> {
+                    return g.getName().startsWith(policies.getGroupPrefix());
+                })
+                .collect(Collectors.toSet());
     }
 
 

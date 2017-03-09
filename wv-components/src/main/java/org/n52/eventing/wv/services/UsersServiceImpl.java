@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.n52.eventing.wv.dao.UserDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
+import org.n52.eventing.wv.security.GroupPolicies;
 
 /**
  *
@@ -52,11 +53,14 @@ public class UsersServiceImpl implements UsersService {
 
     @Autowired
     private HibernateDatabaseConnection hdc;
+    
+    @Autowired
+    private GroupPolicies groupPolicies;
 
     @Override
     public User getUser(String id) throws UnknownUserException {
         Session session = hdc.createSession();
-        UserDao delegate = new HibernateUserDao(session);
+        UserDao delegate = new HibernateUserDao(session, groupPolicies);
         try {
             Optional<WvUser> result = delegate.retrieveByName(id);
             if (result.isPresent()) {
@@ -73,7 +77,7 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public boolean hasUser(String id) {
         Session session = hdc.createSession();
-        UserDao delegate = new HibernateUserDao(session);
+        UserDao delegate = new HibernateUserDao(session, groupPolicies);
         try {
             return delegate.retrieveByName(id).isPresent();
         }

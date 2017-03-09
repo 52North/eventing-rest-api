@@ -97,7 +97,7 @@ public class FilterLogicImpl extends BaseService implements FilterLogic {
             if (params.containsKey(WvSubscriptionTemplateFactory.USER_PARAMETER)) {
                 Integer intVal = (Integer) params.get(WvSubscriptionTemplateFactory.USER_PARAMETER).getValue();
                 if (intVal != null) {
-                    Optional<WvUser> targetUser = new HibernateUserDao(session).retrieveById(intVal);
+                    Optional<WvUser> targetUser = new HibernateUserDao(session, groupPolicies).retrieveById(intVal);
 
                     if (!targetUser.isPresent() || !accessRights.canManageSubscriptionsForUser(user, targetUser.get())) {
                         throw new InvalidSubscriptionException("Not allowed to set the subscription for the targeted user");

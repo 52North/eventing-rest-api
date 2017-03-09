@@ -64,7 +64,7 @@ public class UserSecurityServiceIT {
         hdc.afterPropertiesSet();
         this.session = hdc.createSession();
 
-        this.userDao = new HibernateUserDao(session);
+        this.userDao = new HibernateUserDao(session, new GroupPolicies());
 
         this.encoder = new BCryptPasswordEncoder();
 

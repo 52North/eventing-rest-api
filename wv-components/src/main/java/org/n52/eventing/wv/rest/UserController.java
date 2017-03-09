@@ -50,6 +50,7 @@ import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Group;
 import org.n52.eventing.wv.model.WvUser;
 import org.n52.eventing.wv.security.AccessRights;
+import org.n52.eventing.wv.security.GroupPolicies;
 import org.n52.eventing.wv.security.UserSecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,13 +74,16 @@ public class UserController {
 
     @Autowired
     private UserSecurityService userService;
+    
+    @Autowired
+    private GroupPolicies groupPolicies;
 
 
     @RequestMapping("")
     public List<UserView> getUsers(@RequestParam(required = false) MultiValueMap<String, String> query)
             throws IOException, URISyntaxException, NotAuthenticatedException {
         try (Session session = hdc.createSession()) {
-            HibernateUserDao dao = new HibernateUserDao(session);
+            HibernateUserDao dao = new HibernateUserDao(session, groupPolicies);
             Optional<WvUser> u = userService.resolveCurrentWvUser();
 
             if (!u.isPresent()) {
@@ -108,7 +112,7 @@ public class UserController {
             @PathVariable("item") String id)
             throws IOException, URISyntaxException, NotAuthenticatedException {
         try (Session session = hdc.createSession()) {
-            HibernateUserDao dao = new HibernateUserDao(session);
+            HibernateUserDao dao = new HibernateUserDao(session, groupPolicies);
             Optional<WvUser> u = userService.resolveCurrentWvUser();
 
             if (!u.isPresent()) {
@@ -154,6 +158,43 @@ public class UserController {
 
         return getUser(null, Integer.toString(u.get().getId()));
     }
+    
+    public static class GroupView {
+        
+        private final int id;
+        private final String name;
+        private final String label;
+        private final boolean groupAdmin;
+        
+        public static GroupView from(Group g) {
+            return new GroupView(g.getId(), g.getName(), g.getLabel(), g.isGroupAdmin());
+        }
+
+        private GroupView(int id, String name, String label, boolean groupAdmin) {
+            this.id = id;
+            this.name = name;
+            this.label = label;
+            this.groupAdmin = groupAdmin;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public boolean isGroupAdmin() {
+            return groupAdmin;
+        }
+        
+        
+    }
 
     public static class UserView {
 
@@ -162,7 +203,7 @@ public class UserController {
         private final String firstName;
         private final String lastName;
         private final String email;
-        private final Set<Group> groups;
+        private final Set<GroupView> groups;
         private final boolean admin;
 
         public static UserView from(WvUser wu) {
@@ -177,7 +218,9 @@ public class UserController {
             this.firstName = firstName;
             this.lastName = lastName;
             this.email = email;
-            this.groups = groups;
+            this.groups = groups.stream()
+                    .map(g -> GroupView.from(g))
+                    .collect(Collectors.toSet());
             this.admin = admin;
         }
 
@@ -201,7 +244,7 @@ public class UserController {
             return email;
         }
 
-        public Set<Group> getGroups() {
+        public Set<GroupView> getGroups() {
             return groups;
         }
 

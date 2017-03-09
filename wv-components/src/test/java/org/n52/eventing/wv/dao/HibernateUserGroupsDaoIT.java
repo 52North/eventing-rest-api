@@ -96,7 +96,7 @@ public class HibernateUserGroupsDaoIT {
     @Test
     public void roundtrip() throws ImmutableException, DatabaseException  {
         HibernateGroupDao groupDao = new HibernateGroupDao(session, gp);
-        HibernateUserDao userDao = new HibernateUserDao(session);
+        HibernateUserDao userDao = new HibernateUserDao(session, gp);
         Transaction trans = session.beginTransaction();
 
         Optional<Group> gopt = groupDao.retrieveByName("publisher");
@@ -143,7 +143,7 @@ public class HibernateUserGroupsDaoIT {
     @Test
     public void retrieveByGroupTest() throws DatabaseException {
         HibernateGroupDao groupDao = new HibernateGroupDao(session, gp);
-        HibernateUserDao userDao = new HibernateUserDao(session);
+        HibernateUserDao userDao = new HibernateUserDao(session, gp);
         Transaction trans = session.beginTransaction();
 
         String uuid = UUID.randomUUID().toString().substring(0, 12);

@@ -92,7 +92,7 @@ public class CreateDummyDataDisabled {
 
     private void feed() throws DatabaseException {
         HibernateGroupDao groupDao = new HibernateGroupDao(session, gp);
-        HibernateUserDao userDao = new HibernateUserDao(session);
+        HibernateUserDao userDao = new HibernateUserDao(session, gp);
         HibernateSubscriptionDao subDao = new HibernateSubscriptionDao(session);
         HibernateSeriesDao seriesDao = new HibernateSeriesDao(session);
         HibernateRuleDao ruleDao = new HibernateRuleDao(session);

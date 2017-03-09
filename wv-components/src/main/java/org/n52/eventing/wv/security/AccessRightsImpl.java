@@ -44,8 +44,6 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
     @Autowired
     private GroupPolicies policies;
     private Set<String> adminGroups;
-    private Set<String> editorsGroups;
-    private Set<Integer> restrictedSeries;
 
     public void setPolicies(GroupPolicies policies) {
         this.policies = policies;
@@ -54,8 +52,6 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         this.adminGroups = this.policies.getAdminGroupNames();
-        this.editorsGroups = this.policies.getEditorGroupNames();
-        this.restrictedSeries = this.policies.getRestrictedSeriesIds();
     }
 
     @Override
@@ -77,7 +73,19 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
 
     @Override
     public boolean canManageSubscription(WvUser u, WvSubscription sub) {
-        return canSeeSubscription(u, sub);
+        if (isInAdminGroup(u)) {
+            return true;
+        }
+
+        if (sub.getUser() != null) {
+            return canManageSubscriptionsForUser(u, sub.getUser());
+        }
+
+        if (sub.getGroup() != null) {
+            return canManageSubscriptionsForGroup(u, sub.getGroup());
+        }
+        
+        return false;
     }
 
     @Override
@@ -115,11 +123,12 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
 
     @Override
     public boolean canSeeSeries(WvUser u, int seriesId) {
-        if (isInAdminGroup(u)) {
-            return true;
-        }
+//        if (isInAdminGroup(u)) {
+//            return true;
+//        }
 
-        return !(this.restrictedSeries.contains(seriesId));
+        //currently no restrictions defined
+        return true;
     }
 
     @Override
