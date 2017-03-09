@@ -84,7 +84,7 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
         if (sub.getGroup() != null) {
             return canManageSubscriptionsForGroup(u, sub.getGroup());
         }
-        
+
         return false;
     }
 

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
@@ -59,22 +60,32 @@ public class DeliveryMethodsController {
     @Autowired
     private DeliveryMethodsService dao;
 
+    @Autowired
+    private RequestContext context;
 
     @RequestMapping("")
     public ModelAndView getDeliveryMethods() throws IOException, URISyntaxException, NotAuthenticatedException {
         String fullUrl = RequestUtils.resolveFullRequestUrl();
         List<ResourceCollection> list = new ArrayList<>();
 
-        this.dao.getDeliveryMethods().stream().forEach(dm -> {
-            list.add(ResourceCollection.createResource(dm.getId())
-                .withLabel(dm.getLabel())
-                .withDescription(dm.getDescription())
-                .withHref(String.format("%s/%s", fullUrl, dm.getId())));
-        });
+        RequestContext.storeInThreadLocal(context);
 
-        if (list.isEmpty()) {
-            return EmptyArrayModel.create();
+        try {
+            this.dao.getDeliveryMethods().stream().forEach(dm -> {
+                list.add(ResourceCollection.createResource(dm.getId())
+                    .withLabel(dm.getLabel())
+                    .withDescription(dm.getDescription())
+                    .withHref(String.format("%s/%s", fullUrl, dm.getId())));
+            });
+
+            if (list.isEmpty()) {
+                return EmptyArrayModel.create();
+            }
         }
+        finally {
+            RequestContext.removeThreadLocal();
+        }
+
 
         return new ModelAndView().addObject(list);
     }
@@ -82,11 +93,15 @@ public class DeliveryMethodsController {
     @RequestMapping("/{item}")
     public DeliveryMethodDefinition getDeliveryMethod(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException {
         if (this.dao.hasDeliveryMethod(id)) {
+            RequestContext.storeInThreadLocal(context);
+
             try {
                 DeliveryMethodDefinition method = this.dao.getDeliveryMethod(id);
                 return method;
             } catch (UnknownDeliveryMethodException ex) {
                 throw new ResourceNotAvailableException(ex.getMessage(), ex);
+            } finally {
+                RequestContext.removeThreadLocal();
             }
         }
 

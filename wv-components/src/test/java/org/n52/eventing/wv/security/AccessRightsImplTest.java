@@ -47,7 +47,9 @@ public class AccessRightsImplTest {
         g1.setName("admins-test");
 
         WvUser admin1 = new WvUser("a1", "asdf", null, null, null, 1, Collections.singleton(g1));
+        admin1.setId(0);
         WvUser user1 = new WvUser("u1", "asdf", null, null, null, 1, null);
+        user1.setId(1);
 
         AccessRightsImpl ar = new AccessRightsImpl();
         ar.setPolicies(new GroupPolicies());

@@ -29,15 +29,12 @@ package org.n52.eventing.rest.binding.templates;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.n52.eventing.rest.RequestContext;
-import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
-import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.rest.factory.TemplatesDaoFactory;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.templates.TemplateDefinition;

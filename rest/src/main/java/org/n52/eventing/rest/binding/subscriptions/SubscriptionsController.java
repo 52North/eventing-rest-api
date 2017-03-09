@@ -160,9 +160,15 @@ public class SubscriptionsController {
     public ModelAndView subscribe(@RequestBody SubscriptionInstance subDef) throws InvalidSubscriptionException, NotAuthenticatedException {
         final User user = securityService.resolveCurrentUser();
 
-        String subId = this.manager.subscribe(subDef, user);
+        RequestContext.storeInThreadLocal(context);
 
-        return new ModelAndView().addObject(Collections.singletonMap("id", subId));
+        try {
+            String subId = this.manager.subscribe(subDef, user);
+            return new ModelAndView().addObject(Collections.singletonMap("id", subId));
+        }
+        finally {
+            RequestContext.removeThreadLocal();
+        }
     }
 
     @RequestMapping(value = "/{item}", method = PUT)

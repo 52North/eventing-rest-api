@@ -75,10 +75,10 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
 
     @Autowired
     private HibernateDatabaseConnection hdc;
-    
+
     @Autowired
     private SubscriptionsServiceImpl subscriptionService;
-    
+
     @Override
     public void addEvent(SubscriptionInstance sub, EventHolder eh, int maximumCapacity) {
         LOG.debug("NoOp addEvent()");
@@ -104,7 +104,7 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
                 LOG.debug(ex.getMessage(), ex);
                 return Collections.emptyList();
             }
-            
+
             String[] latest = context.getParameters().get("latest");
             boolean latestBool = false;
             if (latest != null && latest.length > 0) {
@@ -124,7 +124,7 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
             else {
                 result = filter.isEmpty() ? dao.retrieve(pagination) : dao.retrieveWithFilter(filter, pagination);
             }
-            
+
             return result.stream()
                     .map((WvEvent e) -> wrapEventBrief(e, null))
                     .collect(Collectors.toList());
@@ -219,13 +219,13 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
             List<SubscriptionInstance> userSubscriptions = subscriptionService.getSubscriptions(null);
             if (subscriptions != null && subscriptions.length > 0) {
                 List<String> candidates = Arrays.asList(subscriptions[0].split(","));
-                
+
                 WvUser u = super.resolveUser();
                 List<String> filtered = userSubscriptions.stream()
                         .map(s -> s.getId())
                         .filter(s -> candidates.contains(s))
                         .collect(Collectors.toList());
-                
+
                 filter.put("subscription", filtered.toArray(new String[filtered.size()]));
             }
             else {

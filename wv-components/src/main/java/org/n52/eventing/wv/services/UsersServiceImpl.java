@@ -53,7 +53,7 @@ public class UsersServiceImpl implements UsersService {
 
     @Autowired
     private HibernateDatabaseConnection hdc;
-    
+
     @Autowired
     private GroupPolicies groupPolicies;
 

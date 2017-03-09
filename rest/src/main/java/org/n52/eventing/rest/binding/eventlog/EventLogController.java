@@ -118,15 +118,22 @@ public class EventLogController {
     @RequestMapping(value = "/{eventId}", method = GET)
     public EventHolder getSingleEvent(@PathVariable("eventId") String eventId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
-        Optional<EventHolder> result = retrieveSingleEvent(eventId);
+        RequestContext.storeInThreadLocal(context);
 
-        if (result.isPresent()) {
-            final String fullUrl = RequestUtils.resolveFullRequestUrl();
-            EventHolder event = result.get();
-            if (event.streamableObject().isPresent()) {
-                event.setContent(String.format("%s/content", fullUrl));
+        try {
+            Optional<EventHolder> result = retrieveSingleEvent(eventId);
+
+            if (result.isPresent()) {
+                final String fullUrl = RequestUtils.resolveFullRequestUrl();
+                EventHolder event = result.get();
+                if (event.streamableObject().isPresent()) {
+                    event.setContent(String.format("%s/content", fullUrl));
+                }
+                return event;
             }
-            return event;
+        }
+        finally {
+            RequestContext.removeThreadLocal();
         }
 
         throw new ResourceNotAvailableException("Could not find event");

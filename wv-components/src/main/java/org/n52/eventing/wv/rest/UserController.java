@@ -74,7 +74,7 @@ public class UserController {
 
     @Autowired
     private UserSecurityService userService;
-    
+
     @Autowired
     private GroupPolicies groupPolicies;
 
@@ -158,14 +158,14 @@ public class UserController {
 
         return getUser(null, Integer.toString(u.get().getId()));
     }
-    
+
     public static class GroupView {
-        
+
         private final int id;
         private final String name;
         private final String label;
         private final boolean groupAdmin;
-        
+
         public static GroupView from(Group g) {
             return new GroupView(g.getId(), g.getName(), g.getLabel(), g.isGroupAdmin());
         }
@@ -192,8 +192,8 @@ public class UserController {
         public boolean isGroupAdmin() {
             return groupAdmin;
         }
-        
-        
+
+
     }
 
     public static class UserView {

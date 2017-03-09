@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.joda.time.DateTime;
+import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.factory.TemplatesDaoFactory;
 import org.n52.eventing.rest.templates.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;

@@ -48,7 +48,7 @@ import org.n52.eventing.wv.security.GroupPolicies;
 public class HibernateUserDao extends BaseHibernateDao<WvUser> implements UserDao {
 
     private final GroupPolicies policies;
-    
+
     public HibernateUserDao(Session session, GroupPolicies policies) {
         super(session);
         this.policies = policies;
