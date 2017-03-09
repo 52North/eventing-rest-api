@@ -43,6 +43,7 @@ public class WvEventHolder extends EventHolder {
 
     private Map<String, String> series;
     private Map<String, String> rule;
+    private DateTime created;
 
     public WvEventHolder(String id, DateTime time, SubscriptionInstance subscription, String label, Optional<Streamable> streamable) {
         super(id, time, subscription, label, streamable);
@@ -62,6 +63,14 @@ public class WvEventHolder extends EventHolder {
 
     public void setRule(Map<String, String> rule) {
         this.rule = rule;
+    }
+
+    public DateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(DateTime created) {
+        this.created = created;
     }
 
 }

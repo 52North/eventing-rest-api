@@ -66,7 +66,7 @@ public class WvSubscriptionTemplateFactory {
 
         return result;
     }
-    
+
     public Definition createDefinition(Rule r) {
         Map<String, Object> props = new HashMap<>();
         props.put("trend", r.getTrendCode().getId());

@@ -67,7 +67,7 @@ public class BaseHibernateDao<T extends BaseEntity> {
         Root<T> root = criteriaQuery.from(this.genericType);
         criteriaQuery.select(root);
         criteriaQuery.orderBy(criteriaBuilder.asc(root.get("id")));
-        
+
         List<Predicate> criteria = customCriteria(criteriaBuilder, root);
         if (criteria != null && criteria.size() > 0) {
             Predicate[] arr = new Predicate[criteria.size()];
@@ -100,7 +100,7 @@ public class BaseHibernateDao<T extends BaseEntity> {
         CriteriaBuilder builder = getSession().getCriteriaBuilder();
         CriteriaQuery<T> query = builder.createQuery(this.genericType);
         Root<T> root = query.from(this.genericType);
-        
+
         List<Predicate> criteria = customCriteria(builder, root);
         if (criteria != null && criteria.size() > 0) {
             Predicate[] finalCriteria = new Predicate[criteria.size()+1];

@@ -64,5 +64,5 @@ public class WvTemplateDefinition extends TemplateDefinition {
     public void setHref(String href) {
         this.href = href;
     }
-    
+
 }

@@ -80,10 +80,13 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
     @Override
     public Collection<EventHolder> getAllEvents(Pagination pagination) {
         RequestContext context = RequestContext.retrieveFromThreadLocal();
-        
+
         try (Session session = hdc.createSession()) {
             HibernateEventDao dao = new HibernateEventDao(session);
-            List<WvEvent> result = dao.retrieve(pagination);
+
+            Map<String, String[]> filter = createFilter(context);
+
+            List<WvEvent> result = filter.isEmpty() ? dao.retrieve(pagination) : dao.retrieveWithFilter(filter, pagination);
             return result.stream()
                     .map((WvEvent e) -> wrapEventBrief(e, null))
                     .collect(Collectors.toList());
@@ -148,6 +151,7 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
         props.put("previousTimestamp", new DateTime(e.getPreviousTimestamp()));
         props.put("template", e.getRule().getId());
         holder.setData(props);
+        holder.setCreated(new DateTime(e.getCreated().getTime()));
 
         if (context != null) {
             holder.setSeries(createIdHrefMap(context.getBaseApiUrl(), e.getRule().getSeries().getId(), UrlSettings.PUBLICATIONS_RESOURCE));
@@ -162,6 +166,32 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
         result.put("id", Integer.toString(resourceId));
         result.put("href", String.format("%s/%s/%s", baseApiUrl, targetResource, resourceId));
         return result;
+    }
+
+    private Map<String, String[]> createFilter(RequestContext context) {
+        Map<String, String[]> params = context.getParameters();
+        Map<String, String[]> filter = new HashMap<>();
+        if (params != null && !params.isEmpty()) {
+//            String[] latest = params.get("latest");
+//            if (latest != null && latest.length > 0) {
+//                boolean latestBool = Boolean.parseBoolean(latest[0]);
+//                if (latestBool) {
+//                    filter.put("latest", new String[]{ Boolean.TRUE.toString() });
+//                }
+//            }
+
+            String[] publications = params.get("publication");
+            if (publications != null && publications.length > 0) {
+                filter.put("publication", publications[0].split(","));
+            }
+
+            String[] subscriptions = params.get("subscription");
+            if (subscriptions != null && subscriptions.length > 0) {
+                filter.put("subscription", subscriptions[0].split(","));
+            }
+        }
+
+        return filter;
     }
 
 

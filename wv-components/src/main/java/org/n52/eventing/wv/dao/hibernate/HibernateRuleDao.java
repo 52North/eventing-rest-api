@@ -77,8 +77,8 @@ public class HibernateRuleDao extends BaseHibernateDao<Rule> implements RuleDao 
     protected List<Predicate> customCriteria(CriteriaBuilder criteriaBuilder, Root<Rule> from) {
         return Collections.singletonList(criteriaBuilder.equal(from.join("series").get("activeForEventing"), 1));
     }
-    
-    
+
+
 
     @Override
     public List<Rule> retrieveBySeries(Pagination pagination, String... seriesIdentifier) throws DatabaseException {
