@@ -20,11 +20,11 @@
         "en": "The measured value '%s' of series '%s' %s '%s'"
     },
     "rule.parameter.userId": {
-        "de": "Die ID des Nutzers für den das Abonnement angelegt werden soll",
+        "de": "Die ID des Nutzers, für den das Abonnement angelegt werden soll",
         "en": "The target user ID for the new subscription"
     },
     "rule.parameter.groupId": {
-        "de": "Die ID der Gruppe für die das Abonnement angelegt werden soll",
+        "de": "Die ID der Gruppe, für die das Abonnement angelegt werden soll",
         "en": "The target group ID for the new subscription"
     },
     "rule.alreadyPresent": {
