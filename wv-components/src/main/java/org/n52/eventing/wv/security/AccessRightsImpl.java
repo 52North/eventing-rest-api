@@ -91,7 +91,7 @@ public class AccessRightsImpl implements AccessRights, InitializingBean {
 
     @Override
     public boolean canSeeSubscriptionsOfUser(WvUser u1, WvUser u2) {
-        if (u1.equals(u2)) {
+        if (u1.getId() == u2.getId()) {
             return true;
         }
 

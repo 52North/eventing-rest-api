@@ -28,6 +28,8 @@
 
 package org.n52.eventing.wv.services;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.joda.time.DateTime;
@@ -44,11 +48,16 @@ import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.eventlog.EventHolder;
 import org.n52.eventing.rest.eventlog.EventLogStore;
 import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
+import org.n52.eventing.rest.users.User;
+import org.n52.eventing.security.NotAuthenticatedException;
+import org.n52.eventing.security.SecurityService;
 import org.n52.eventing.wv.dao.hibernate.HibernateEventDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.i18n.I18nProvider;
 import org.n52.eventing.wv.model.WvEvent;
 import org.n52.eventing.wv.model.WvEventHolder;
+import org.n52.eventing.wv.model.WvUser;
+import org.n52.eventing.wv.security.AccessRights;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +75,10 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
 
     @Autowired
     private HibernateDatabaseConnection hdc;
-
+    
+    @Autowired
+    private SubscriptionsServiceImpl subscriptionService;
+    
     @Override
     public void addEvent(SubscriptionInstance sub, EventHolder eh, int maximumCapacity) {
         LOG.debug("NoOp addEvent()");
@@ -84,9 +96,35 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
         try (Session session = hdc.createSession()) {
             HibernateEventDao dao = new HibernateEventDao(session);
 
-            Map<String, String[]> filter = createFilter(context);
+            Map<String, String[]> filter;
+            try {
+                filter = createFilter(context);
+            } catch (NotAuthenticatedException ex) {
+                LOG.warn("Not logged in", ex.getMessage());
+                LOG.debug(ex.getMessage(), ex);
+                return Collections.emptyList();
+            }
+            
+            String[] latest = context.getParameters().get("latest");
+            boolean latestBool = false;
+            if (latest != null && latest.length > 0) {
+                latestBool = Boolean.parseBoolean(latest[0]);
+            }
 
-            List<WvEvent> result = filter.isEmpty() ? dao.retrieve(pagination) : dao.retrieveWithFilter(filter, pagination);
+            final List<WvEvent> result;
+            if (latestBool) {
+                Pagination latestPagination = new Pagination(0, 1);
+                result = new ArrayList<>();
+                String[] subs = filter.get("subscription");
+                Stream.of(subs).forEach(sub -> {
+                    Map<String, String[]> singleSub = Collections.singletonMap("subscription", new String[] {sub});
+                    result.addAll(dao.retrieveWithFilter(singleSub, latestPagination));
+                });
+            }
+            else {
+                result = filter.isEmpty() ? dao.retrieve(pagination) : dao.retrieveWithFilter(filter, pagination);
+            }
+            
             return result.stream()
                     .map((WvEvent e) -> wrapEventBrief(e, null))
                     .collect(Collectors.toList());
@@ -168,26 +206,33 @@ public class EventLogServiceImpl extends BaseService implements EventLogStore {
         return result;
     }
 
-    private Map<String, String[]> createFilter(RequestContext context) {
+    private Map<String, String[]> createFilter(RequestContext context) throws NotAuthenticatedException {
         Map<String, String[]> params = context.getParameters();
         Map<String, String[]> filter = new HashMap<>();
         if (params != null && !params.isEmpty()) {
-//            String[] latest = params.get("latest");
-//            if (latest != null && latest.length > 0) {
-//                boolean latestBool = Boolean.parseBoolean(latest[0]);
-//                if (latestBool) {
-//                    filter.put("latest", new String[]{ Boolean.TRUE.toString() });
-//                }
-//            }
-
             String[] publications = params.get("publication");
             if (publications != null && publications.length > 0) {
                 filter.put("publication", publications[0].split(","));
             }
 
             String[] subscriptions = params.get("subscription");
+            List<SubscriptionInstance> userSubscriptions = subscriptionService.getSubscriptions(null);
             if (subscriptions != null && subscriptions.length > 0) {
-                filter.put("subscription", subscriptions[0].split(","));
+                List<String> candidates = Arrays.asList(subscriptions[0].split(","));
+                
+                WvUser u = super.resolveUser();
+                List<String> filtered = userSubscriptions.stream()
+                        .map(s -> s.getId())
+                        .filter(s -> candidates.contains(s))
+                        .collect(Collectors.toList());
+                
+                filter.put("subscription", filtered.toArray(new String[filtered.size()]));
+            }
+            else {
+                List<String> mapped = userSubscriptions.stream()
+                        .map(s -> s.getId())
+                        .collect(Collectors.toList());
+                filter.put("subscription", mapped.toArray(new String[mapped.size()]));
             }
         }
 

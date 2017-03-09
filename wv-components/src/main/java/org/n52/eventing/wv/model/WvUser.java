@@ -163,9 +163,6 @@ public class WvUser implements BaseEntity, Serializable {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
         final WvUser other = (WvUser) obj;
         if (this.id != other.id) {
             return false;
