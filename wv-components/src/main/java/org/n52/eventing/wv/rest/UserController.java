@@ -142,6 +142,18 @@ public class UserController {
             throw new NumberFormatException("invalid ID provided. IDs must be an integer");
         }
     }
+    
+    @RequestMapping(value = "/me", method = GET)
+    public UserView getCurrentUser()
+            throws IOException, URISyntaxException, NotAuthenticatedException {
+        Optional<WvUser> u = userService.resolveCurrentWvUser();
+
+        if (!u.isPresent()) {
+            throw new NotAuthenticatedException("No user present");
+        }
+        
+        return getUser(null, Integer.toString(u.get().getId()));
+    }
 
     public static class UserView {
 
