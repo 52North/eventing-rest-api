@@ -379,7 +379,10 @@
     <repositories>
         <repository>
             <id>52n-snapshots</id>
-            <url>https://52north.org/maven/repo/snapshots</url>
+            <url>http://52north.org/maven/repo/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>52n-releases</id>

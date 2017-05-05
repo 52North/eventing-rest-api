@@ -8,7 +8,7 @@
             This class contains the rule details.
         </meta>
         <id name="id" type="int" column="pkid">
-            <generator class="sequence"/>
+            <generator class="identity"/>
         </id>
         <property name="threshold" column="threshold" type="double"/>
         <many-to-one name="series" class="org.n52.eventing.wv.model.Series" foreign-key="series_pkid">

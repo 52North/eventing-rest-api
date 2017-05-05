@@ -8,7 +8,7 @@
             This class contains the series details.
         </meta>
         <id name="id" type="int" column="pkid">
-            <generator class="sequence"/>
+            <generator class="identity"/>
         </id>
         <property name="activeForEventing" access="field" column="eventing_flag" type="int" insert="false" update="false"/>
         <many-to-one name="category" class="org.n52.eventing.wv.model.Category" foreign-key="category_pkid">

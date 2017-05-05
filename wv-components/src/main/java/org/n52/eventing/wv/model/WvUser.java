@@ -163,7 +163,15 @@ public class WvUser implements BaseEntity, Serializable {
         if (obj == null) {
             return false;
         }
-        final WvUser other = (WvUser) obj;
+
+        final WvUser other;
+        try {
+            other = (WvUser) obj;
+        }
+        catch (ClassCastException e) {
+            return false;
+        }
+
         if (this.id != other.id) {
             return false;
         }
@@ -193,7 +201,6 @@ public class WvUser implements BaseEntity, Serializable {
         }
         return true;
     }
-
 
 
 

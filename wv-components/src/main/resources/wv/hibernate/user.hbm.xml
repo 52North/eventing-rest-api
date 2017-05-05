@@ -8,7 +8,7 @@
             This class contains the user details.
         </meta>
         <id name="id" type="int" column="userid">
-            <generator class="sequence"/>
+            <generator class="identity"/>
         </id>
         <property name="name" column="screenname" type="string" unique="true"/>
         <property name="password" column="password_" type="string"/>
@@ -16,7 +16,7 @@
         <property name="lastName" column="lastname" type="string"/>
         <property name="email" column="emailaddress" type="string" unique="true"/>
         <property name="status" column="status" type="int"/>
-        <set name="groups" table="users_usergroups" cascade="all">
+        <set name="groups" table="users_usergroups" inverse="false">
             <key column="userid"/>
             <many-to-many column="usergroupid" class="org.n52.eventing.wv.model.Group" />
         </set>

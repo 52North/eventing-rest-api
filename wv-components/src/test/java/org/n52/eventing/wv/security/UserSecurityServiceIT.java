@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.n52.eventing.wv.dao.DatabaseException;
 import org.n52.eventing.wv.dao.ImmutableException;
+import org.n52.eventing.wv.dao.hibernate.HibernateGroupDao;
 import org.n52.eventing.wv.dao.hibernate.HibernateUserDao;
 import org.n52.eventing.wv.database.HibernateDatabaseConnection;
 import org.n52.eventing.wv.model.Group;
@@ -57,6 +58,7 @@ public class UserSecurityServiceIT {
     private UserSecurityService userSecurityService;
     private BCryptPasswordEncoder encoder;
     private Session session;
+    private HibernateGroupDao groupDao;
 
     @Before
     public void setup() throws Exception {
@@ -65,6 +67,7 @@ public class UserSecurityServiceIT {
         this.session = hdc.createSession();
 
         this.userDao = new HibernateUserDao(session, new GroupPolicies());
+        this.groupDao = new HibernateGroupDao(session, new GroupPolicies());
 
         this.encoder = new BCryptPasswordEncoder();
 
@@ -82,6 +85,13 @@ public class UserSecurityServiceIT {
         u.setName(UUID.randomUUID().toString().substring(0, 8));
         u.setPassword(encoder.encode(password));
         u.setGroups(Collections.singleton(new Group("admins-test", "admin users")));
+        u.getGroups().forEach(g -> {
+            try {
+                groupDao.store(g);
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+            }
+        });
 
         if (!userDao.retrieveByName(u.getName()).isPresent()) {
             userDao.store(u);

@@ -8,7 +8,7 @@
             This class contains the group details.
         </meta>
         <id name="id" type="int" column="pkid">
-            <generator class="sequence"/>
+            <generator class="identity"/>
         </id>
         <property name="identifier" column="feature_of_interest_id" type="string" unique="true"/>
         <property name="name" column="feature_of_interest_name" type="string"/>

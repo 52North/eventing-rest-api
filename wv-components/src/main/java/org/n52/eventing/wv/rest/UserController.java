@@ -95,10 +95,11 @@ public class UserController {
                     .map((WvUser wu) -> {
                         Hibernate.initialize(wu.getGroups());
                         wu.setGroups(wu.getGroups().stream()
-                            .map(g -> {
-                                g.setGroupAdmin(accessRights.isGroupAdmin(wu, g));
-                                return g;
-                            }).collect(Collectors.toSet()));
+                                .filter(g -> groupPolicies.isSensorWebGroup(g))
+                                .map(g -> {
+                                    g.setGroupAdmin(accessRights.isGroupAdmin(wu, g));
+                                    return g;
+                                }).collect(Collectors.toSet()));
 
                         wu.setAdmin(accessRights.isInAdminGroup(wu));
                         return UserView.from(wu);
@@ -129,10 +130,11 @@ public class UserController {
 
                 Hibernate.initialize(resultUser.getGroups());
                 resultUser.setGroups(resultUser.getGroups().stream()
-                    .map(g -> {
-                        g.setGroupAdmin(accessRights.isGroupAdmin(resultUser, g));
-                        return g;
-                    }).collect(Collectors.toSet()));
+                        .filter(g -> groupPolicies.isSensorWebGroup(g))
+                        .map(g -> {
+                            g.setGroupAdmin(accessRights.isGroupAdmin(resultUser, g));
+                            return g;
+                        }).collect(Collectors.toSet()));
 
                 resultUser.setAdmin(accessRights.isInAdminGroup(resultUser));
                 return UserView.from(resultUser);

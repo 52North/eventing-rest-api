@@ -25,32 +25,21 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.wv.dao;
 
-import java.util.List;
-import java.util.Optional;
-import org.n52.eventing.rest.Pagination;
-import org.n52.eventing.wv.model.BaseEntity;
+package org.n52.eventing.wv.rest;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
- * @param <T> the generic entity implement BaseEntity
  */
-public interface BaseDao<T extends BaseEntity> {
+public class ResourceNotAvailableException extends Exception {
 
-    Optional<T> retrieveById(int id);
+    public ResourceNotAvailableException(String message) {
+        super(message);
+    }
 
-    List<T> retrieve(Pagination pagination) throws DatabaseException;
-
-    void store(T r) throws DatabaseException;
-
-    void update(T r) throws DatabaseException;
-
-    void remove(T r) throws DatabaseException;
-
-    boolean exists(String name);
-
-    Optional<T> retrieveByName(String name);
+    public ResourceNotAvailableException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

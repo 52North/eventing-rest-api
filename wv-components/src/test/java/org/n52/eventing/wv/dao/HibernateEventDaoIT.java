@@ -55,7 +55,6 @@ import org.n52.eventing.wv.model.Phenomenon;
 import org.n52.eventing.wv.model.Procedure;
 import org.n52.eventing.wv.model.Rule;
 import org.n52.eventing.wv.model.Series;
-import org.n52.eventing.wv.model.Trend;
 import org.n52.eventing.wv.model.WvEvent;
 import org.n52.eventing.wv.model.WvSubscription;
 

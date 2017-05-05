@@ -8,7 +8,7 @@
             This class contains the trend (i18n) details.
         </meta>
         <id name="id" type="int" column="pkid">
-            <generator class="sequence"/>
+            <generator class="identity"/>
         </id>
         <many-to-one name="trendCode" class="org.n52.eventing.wv.model.Trend" foreign-key="trend_code">
             <column name="trend_code">

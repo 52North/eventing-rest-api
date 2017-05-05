@@ -120,7 +120,11 @@ public class BaseHibernateDao<T extends BaseEntity> {
     }
 
     public void store(T o) throws DatabaseException {
-        session.persist(o);
+        session.save(o);
+    }
+
+    public void update(T o) throws DatabaseException {
+        session.update(o);
     }
 
     public void remove(T r) throws DatabaseException {

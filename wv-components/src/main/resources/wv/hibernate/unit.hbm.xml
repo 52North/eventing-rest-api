@@ -8,7 +8,7 @@
             This class contains the unit details.
         </meta>
         <id name="id" type="int" column="pkid">
-            <generator class="sequence"/>
+            <generator class="identity"/>
         </id>
         <property name="code" column="unit" type="string" />
     </class>

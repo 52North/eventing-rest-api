@@ -30,6 +30,8 @@ package org.n52.eventing.wv.security;
 
 import org.n52.eventing.wv.JsonConfigured;
 import java.util.Set;
+import java.util.stream.Collectors;
+import org.n52.eventing.wv.model.Group;
 
 /**
  *
@@ -72,4 +74,15 @@ public class GroupPolicies extends JsonConfigured {
     public String getGroupPrefix() {
         return readStringProperty("groupPrefix").orElse("sensorweb-");
     }
+
+    public Set<Group> filterGroups(Set<Group> groups) {
+        return groups.stream()
+                .filter(g -> isSensorWebGroup(g))
+                .collect(Collectors.toSet());
+    }
+
+    public boolean isSensorWebGroup(Group g) {
+        return g.getName().startsWith(this.getGroupPrefix());
+    }
+
 }

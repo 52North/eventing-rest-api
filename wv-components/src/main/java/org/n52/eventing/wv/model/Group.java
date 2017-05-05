@@ -84,7 +84,6 @@ public class Group implements BaseEntity, Serializable {
         this.groupAdmin = groupAdmin;
     }
 
-
     @Override
     public int hashCode() {
         int hash = 7;
@@ -102,10 +101,15 @@ public class Group implements BaseEntity, Serializable {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+
+        final Group other;
+        try {
+            other = (Group) obj;
+        }
+        catch (ClassCastException e) {
             return false;
         }
-        final Group other = (Group) obj;
+
         if (this.id != other.id) {
             return false;
         }
@@ -115,6 +119,7 @@ public class Group implements BaseEntity, Serializable {
         if (!Objects.equals(this.label, other.label)) {
             return false;
         }
+
         return true;
     }
 

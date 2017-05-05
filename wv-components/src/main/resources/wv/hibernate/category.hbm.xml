@@ -8,7 +8,7 @@
             This class contains the category details.
         </meta>
         <id name="id" type="int" column="pkid">
-            <generator class="sequence"/>
+            <generator class="identity"/>
         </id>
         <property name="categoryId" column="category_id" type="string"/>
     </class>

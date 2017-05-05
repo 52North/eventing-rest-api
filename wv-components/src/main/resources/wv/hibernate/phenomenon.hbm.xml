@@ -8,7 +8,7 @@
             This class contains the phenomenon details.
         </meta>
         <id name="id" type="int" column="pkid">
-            <generator class="sequence"/>
+            <generator class="identity"/>
         </id>
         <property name="phenomenonId" column="phenomenon_id" type="string"/>
         <property name="name" column="phenomenon_name" type="string"/>

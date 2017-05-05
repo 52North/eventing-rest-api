@@ -91,6 +91,7 @@ public class GroupController {
             }
 
             return dao.retrieve(null).stream()
+                    .filter(g -> groupPolicies.isSensorWebGroup(g))
                     .map(g -> {
                         g.setGroupAdmin(accessRights.isGroupAdmin(u.get(), g));
                         return g;
@@ -102,7 +103,7 @@ public class GroupController {
     @RequestMapping(value = "/{item}", method = GET)
     public Group getGroup(@RequestParam(required = false) MultiValueMap<String, String> query,
             @PathVariable("item") String id)
-            throws IOException, URISyntaxException, NotAuthenticatedException {
+            throws IOException, URISyntaxException, NotAuthenticatedException, ResourceNotAvailableException {
         try (Session session = hdc.createSession()) {
             HibernateGroupDao dao = new HibernateGroupDao(session, groupPolicies);
             Optional<WvUser> u = userService.resolveCurrentWvUser();
@@ -117,6 +118,11 @@ public class GroupController {
                     throw new NotAuthenticatedException("Access denied");
                 }
                 Group g = result.get();
+
+                if (!groupPolicies.isSensorWebGroup(g)) {
+                    throw new ResourceNotAvailableException("Group not available: "+g.getId());
+                }
+
                 g.setGroupAdmin(accessRights.isGroupAdmin(u.get(), g));
 
                 return g;
@@ -134,7 +140,7 @@ public class GroupController {
     @RequestMapping("/{item}/users")
     public List<UserController.UserView> getGroupUsers(@RequestParam(required = false) MultiValueMap<String, String> query,
             @PathVariable("item") String id)
-            throws IOException, URISyntaxException, NotAuthenticatedException {
+            throws IOException, URISyntaxException, NotAuthenticatedException, ResourceNotAvailableException {
         try (Session session = hdc.createSession()) {
             HibernateUserDao dao = new HibernateUserDao(session, groupPolicies);
             HibernateGroupDao groupDao = new HibernateGroupDao(session, groupPolicies);
@@ -149,6 +155,11 @@ public class GroupController {
             if (!g.isPresent()) {
                 throw new IOException("Unknown group");
             }
+
+            if (!groupPolicies.isSensorWebGroup(g.get())) {
+                throw new ResourceNotAvailableException("Group not available: "+g.get().getId());
+            }
+
 
             return dao.retrieveByGroup(g.get()).stream()
                     .filter(gr -> accessRights.canSeeSubscriptionsOfUser(u.get(), gr))

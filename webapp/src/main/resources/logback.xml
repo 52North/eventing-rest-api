@@ -26,6 +26,8 @@
         </encoder>
     </appender>
     <logger name="org.n52" level="DEBUG" />
+    <logger name="org.hibernate.SQL" level="WARN" />
+    <logger name="org.hibernate.type" level="WARN" />
     <root level="WARN">
         <appender-ref ref="eventing-rest-file" />
         <appender-ref ref="eventing-rest-console" />

@@ -8,7 +8,7 @@
             This class contains the event details.
         </meta>
         <id name="id" type="int" column="pkid">
-            <generator class="sequence"/>
+            <generator class="identity"/>
         </id>
         <many-to-one name="rule" class="org.n52.eventing.wv.model.Rule" foreign-key="rule_pkid">
             <column name="rule_pkid">

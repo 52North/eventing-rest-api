@@ -8,7 +8,7 @@
             This class contains the group details.
         </meta>
         <id name="id" type="int" column="usergroupid">
-            <generator class="sequence"/>
+            <generator class="identity"/>
         </id>
         <property name="name" column="name" type="string" unique="true"/>
         <property name="label" column="description" type="string"/>
