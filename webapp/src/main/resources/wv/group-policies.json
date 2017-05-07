@@ -1,8 +1,0 @@
-{
-    "adminGroupNames": [
-        "sensorweb-admins",
-        "sensorweb-administrators"
-    ],
-    "groupPrefix": "sensorweb-",
-    "adminSuffix": "_admin"
-}

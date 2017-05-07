@@ -14,9 +14,9 @@
     <mvc:annotation-driven />
     <ctx:annotation-config />
 
-    <import resource="security.xml" />
-    <!--<import resource="security-permitAll.xml" />-->
-    <import resource="wv.xml" />
+    <!--<import resource="security.xml" />-->
+    <import resource="security-permitAll.xml" />
+    <import resource="components.xml" />
 
     <!-- dummy DAOs -->
     <!--<bean class="org.n52.eventing.rest.publications.DummyPublicationsDao" name="publicationsDao" />-->

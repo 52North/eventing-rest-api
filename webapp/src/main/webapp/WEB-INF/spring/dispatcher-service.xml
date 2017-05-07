@@ -71,8 +71,4 @@
         <aop:scoped-proxy proxy-target-class="false" />
     </bean>
 
-    <!-- WV extensions -->
-    <bean class="org.n52.eventing.wv.rest.GroupController" />
-    <bean class="org.n52.eventing.wv.rest.UserController" />
-    <bean class="org.n52.eventing.wv.rest.TrendController" />
 </beans>
