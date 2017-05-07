@@ -72,7 +72,6 @@ import org.n52.eventing.rest.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -82,11 +81,10 @@ public class ConfigurationTemplatesDao implements TemplatesDao, InitializingBean
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationTemplatesDao.class);
     private final Map<String, TemplateDefinition> templates = new ConcurrentHashMap<>();
+    private final Configuration config;
 
-    @Autowired
-    private Configuration config;
-
-    public ConfigurationTemplatesDao() {
+    public ConfigurationTemplatesDao(Configuration config) {
+        this.config = config;
     }
 
     @Override

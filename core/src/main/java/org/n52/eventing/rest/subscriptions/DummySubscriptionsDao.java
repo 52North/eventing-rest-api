@@ -54,6 +54,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.n52.eventing.rest.users.UsersService;
 import org.n52.eventing.rest.publications.PublicationsService;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsService;
+import org.n52.eventing.rest.factory.TemplatesDaoFactory;
 
 /**
  *
@@ -75,7 +76,7 @@ public class DummySubscriptionsDao implements SubscriptionsService, Initializing
     private DeliveryMethodsService deliveryMethodsDao;
 
     @Autowired
-    private TemplatesDao templatesDao;
+    private TemplatesDaoFactory templatesDaoFactory;
 
     @Override
     public synchronized boolean hasSubscription(String id) {
@@ -153,7 +154,7 @@ public class DummySubscriptionsDao implements SubscriptionsService, Initializing
             params.add(new ParameterInstance("observedProperty", "Wasserstand", "text"));
             params.add(new ParameterInstance("sensorID", "Wasserstand_Opladen", "text"));
             params.add(new ParameterInstance("thresholdValue", 55.2, "number"));
-            sub.setTemplate(createTemplateInstance(this.templatesDao.getTemplate("overshootUndershoot"), params));
+            sub.setTemplate(createTemplateInstance(this.templatesDaoFactory.newDao().getTemplate("overshootUndershoot"), params));
 
             subscriptions.put("dummy-sub", sub);
         } catch (UnknownPublicationsException | UnknownUserException

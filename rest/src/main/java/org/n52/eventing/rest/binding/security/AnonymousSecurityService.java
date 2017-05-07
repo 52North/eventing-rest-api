@@ -26,37 +26,24 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package org.n52.eventing.rest.templates;
+package org.n52.eventing.rest.binding.security;
 
-import org.n52.eventing.rest.parameters.ParameterDefinition;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.n52.eventing.rest.users.UnknownUserException;
+import org.n52.eventing.rest.users.User;
+import org.n52.eventing.rest.users.UserImpl;
+import org.n52.eventing.security.NotAuthenticatedException;
+import org.n52.eventing.security.SecurityService;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class ConfigurationTemplatesDaoTest {
+public class AnonymousSecurityService implements SecurityService {
 
-    @Test
-    public void testTemplateLoading() throws IOException, URISyntaxException {
-        ConfigurationTemplatesDao dao = new ConfigurationTemplatesDao(null);
-
-        TemplateDefinition t = dao.loadTemplate(Paths.get(getClass().getResource("/templates-test/overshootUndershoot.json").toURI()));
-
-        Assert.assertThat(t.getId(), CoreMatchers.is("overshootUndershoot"));
-        Assert.assertThat(t.getLabel(), CoreMatchers.is("Generic overshoot/undershoot pattern"));
-        Assert.assertThat(t.getParameters().size(), CoreMatchers.is(2));
-        Assert.assertThat(t.getParameters().get("observedProperty").getType(), CoreMatchers.is("text"));
-
-        ParameterDefinition thresholdValue = t.getParameters().get("thresholdValue");
-        Assert.assertThat(thresholdValue.getMin(), CoreMatchers.is(1.3));
-        Assert.assertThat(thresholdValue.getMax(), CoreMatchers.is(2.2));
-        Assert.assertThat(thresholdValue.getPattern(), CoreMatchers.is("regex"));
+    @Override
+    public User resolveCurrentUser() throws NotAuthenticatedException {
+        return new UserImpl("0", "anonymous", "anonymous", "anonymous@dev.null");
     }
+
 
 }

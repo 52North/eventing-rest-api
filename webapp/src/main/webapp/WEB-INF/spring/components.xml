@@ -11,22 +11,15 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <bean class="org.n52.eventing.wv.database.HibernateDatabaseConnection" />
-
     <!-- eventing services impls -->
-    <bean class="org.n52.eventing.wv.services.PublicationsServiceImpl" name="publicationsDao" />
-    <bean class="org.n52.eventing.wv.services.UsersServiceImpl" name="usersDao" />
-    <bean class="org.n52.eventing.wv.services.SubscriptionsServiceImpl" />
-    <bean class="org.n52.eventing.wv.services.EmailDeliveryProviderImpl" />
-    <bean class="org.n52.eventing.wv.services.factory.WvTemplatesDaoFactory" />
-    <bean class="org.n52.eventing.wv.services.FilterLogicImpl" />
-    <bean class="org.n52.eventing.wv.services.EventLogServiceImpl" />
-
-    <!-- access rights and groups config -->
-    <bean class="org.n52.eventing.wv.security.GroupPolicies" />
-    <bean class="org.n52.eventing.wv.security.AccessRightsImpl" />
-
-    <!-- others -->
-    <bean class="org.n52.eventing.wv.i18n.I18nProvider" />
+    <bean class="org.n52.eventing.rest.publications.DummyPublicationsDao" name="publicationsDao" />
+    <bean class="org.n52.eventing.rest.users.DummyUsersDao" name="usersDao" />
+    <bean class="org.n52.eventing.rest.subscriptions.DummySubscriptionsDao" />
+    <bean class="org.n52.eventing.rest.deliverymethods.email.EmailDeliveryProvider" />
+    <bean class="org.n52.eventing.rest.subscriptions.SubverseFilterLogic" />
+    <bean class="org.n52.eventing.rest.templates.ConfigurationTemplatesDaoFactory" />
+    <bean class="org.n52.eventing.rest.eventlog.EventLogStoreImpl" />
+    <bean class="org.n52.subverse.engine.EposFilterEngine" />
+    <bean class="org.n52.eventing.rest.binding.security.AnonymousSecurityService" />
 
 </beans>
