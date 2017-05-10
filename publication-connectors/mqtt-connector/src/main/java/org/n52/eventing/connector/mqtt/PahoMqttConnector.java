@@ -75,7 +75,6 @@ public class PahoMqttConnector implements PublicationProvider, InitializingBean,
     private String mimeType;
     private String publicationIdentifer;
 
-
     /**
      * the MQTT QoS as enum. use #ordinal() to get the int
      */
@@ -115,23 +114,8 @@ public class PahoMqttConnector implements PublicationProvider, InitializingBean,
         }
         this.publicationIdentifer = publicationIdentiferOpt.get();
 
-        Optional<Integer> portOpt = this.config.getParameterAsInt("connector.mqtt.port");
-        int p = 1883;
-        if (!portOpt.isPresent()) {
-            LOG.info("No connector.mqtt.port specified, using default 1883 port");
-        }
-        else {
-            p = portOpt.get();
-        }
-
-        Optional<String> protoOpt = this.config.getParameter("connector.mqtt.protocol");
-        String proto;
-        if (!protoOpt.isPresent()) {
-            proto = "tcp";
-        }
-        else {
-            proto = protoOpt.get();
-        }
+        Integer p = this.config.getParameterAsInt("connector.mqtt.port").orElse(1883);
+        String proto = this.config.getParameter("connector.mqtt.protocol").orElse("tcp");
 
         Optional<String> mimeOpt = this.config.getParameter("connector.mqtt.mimeType");
         if (mimeOpt.isPresent() && STRING_MIME_TYPES.contains(mimeOpt.get())) {
@@ -150,12 +134,11 @@ public class PahoMqttConnector implements PublicationProvider, InitializingBean,
                     else {
                         dataIngestor.ingestData(msg, this.publicationIdentifer);
                     }
-
                 });
 
         try {
             connect();
-            subscribe("spiddal-fluorometer", QualityOfService.EXACTLY_ONCE);
+            subscribe(config.getParameter("connector.mqtt.topic").orElse("#"), QualityOfService.EXACTLY_ONCE);
         }
         catch (MqttException e) {
             LOG.warn("Could not connect to MQTT host: {}", e.getMessage());

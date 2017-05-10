@@ -27,25 +27,13 @@
  */
 package org.n52.eventing.rest.subscriptions;
 
-import org.n52.eventing.rest.parameters.ParameterInstance;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.Pagination;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
-import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
-import org.n52.eventing.rest.publications.UnknownPublicationsException;
-import org.n52.eventing.rest.templates.TemplateDefinition;
-import org.n52.eventing.rest.templates.TemplateInstance;
-import org.n52.eventing.rest.templates.TemplatesDao;
-import org.n52.eventing.rest.templates.UnknownTemplateException;
-import org.n52.eventing.rest.users.UnknownUserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -139,40 +127,39 @@ public class DummySubscriptionsDao implements SubscriptionsService, Initializing
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        LOG.info("initializing subscriptions...");
-
-        try {
-            SubscriptionInstance sub = new SubscriptionInstance("dummy-sub", "dummy-sub yeah", "this subscription is set up!");
-            sub.setUser(this.usersDao.getUser("dummy-user"));
-            sub.setPublicationId(this.publicationsDao.getPublication("dummy-pub").getId());
-            sub.addDeliveryMethod(createDeliveryInstance(this.deliveryMethodsDao.getDeliveryMethod("email"), "peterchen@paulchen.de"));
-            sub.setEndOfLife(new DateTime().plusMonths(2));
-            sub.setEnabled(true);
-
-            List<ParameterInstance> params = new ArrayList<>();
-            params.add(new ParameterInstance("observedProperty", "Wasserstand", "text"));
-            params.add(new ParameterInstance("sensorID", "Wasserstand_Opladen", "text"));
-            params.add(new ParameterInstance("thresholdValue", 55.2, "number"));
-            sub.setTemplate(createTemplateInstance(this.templatesDaoFactory.newDao().getTemplate("overshootUndershoot"), params));
-
-            subscriptions.put("dummy-sub", sub);
-        } catch (UnknownPublicationsException | UnknownUserException
-                | UnknownTemplateException | UnknownDeliveryMethodException ex) {
-            LOG.warn(ex.getMessage(), ex);
-        }
-
+//        LOG.info("initializing subscriptions...");
+//
+//        try {
+//            SubscriptionInstance sub = new SubscriptionInstance("dummy-sub", "dummy-sub yeah", "this subscription is set up!");
+//            sub.setUser(this.usersDao.getUser("dummy-user"));
+//            sub.setPublicationId(this.publicationsDao.getPublication("dummy-pub").getId());
+//            sub.addDeliveryMethod(createDeliveryInstance(this.deliveryMethodsDao.getDeliveryMethod("email"), "peterchen@paulchen.de"));
+//            sub.setEndOfLife(new DateTime().plusMonths(2));
+//            sub.setEnabled(true);
+//
+//            List<ParameterInstance> params = new ArrayList<>();
+//            params.add(new ParameterInstance("observedProperty", "Wasserstand", "text"));
+//            params.add(new ParameterInstance("sensorID", "Wasserstand_Opladen", "text"));
+//            params.add(new ParameterInstance("thresholdValue", 55.2, "number"));
+//            sub.setTemplate(createTemplateInstance(this.templatesDaoFactory.newDao().getTemplate("overshootUndershoot"), params));
+//
+//            subscriptions.put("dummy-sub", sub);
+//        } catch (UnknownPublicationsException | UnknownUserException
+//                | UnknownTemplateException | UnknownDeliveryMethodException ex) {
+//            LOG.warn(ex.getMessage(), ex);
+//        }
     }
 
-    private DeliveryMethodInstance createDeliveryInstance(DeliveryMethodDefinition deliveryMethod, String to) {
-        DeliveryMethodInstance instance = new DeliveryMethodInstance(deliveryMethod.getId(),
-                Collections.singletonMap("to", new ParameterInstance("to", to, "text")));
-        return instance;
-    }
-
-    private TemplateInstance createTemplateInstance(TemplateDefinition template, List<ParameterInstance> params) {
-        TemplateInstance instance = new TemplateInstance(template.getId(),
-                params.stream().collect(Collectors.toMap(ParameterInstance::getName, Function.identity())));
-        return instance;
-    }
+//    private DeliveryMethodInstance createDeliveryInstance(DeliveryMethodDefinition deliveryMethod, String to) {
+//        DeliveryMethodInstance instance = new DeliveryMethodInstance(deliveryMethod.getId(),
+//                Collections.singletonMap("to", new ParameterInstance("to", to, "text")));
+//        return instance;
+//    }
+//
+//    private TemplateInstance createTemplateInstance(TemplateDefinition template, List<ParameterInstance> params) {
+//        TemplateInstance instance = new TemplateInstance(template.getId(),
+//                params.stream().collect(Collectors.toMap(ParameterInstance::getName, Function.identity())));
+//        return instance;
+//    }
 
 }
