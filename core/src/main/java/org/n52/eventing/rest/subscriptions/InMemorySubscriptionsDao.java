@@ -47,9 +47,9 @@ import org.n52.eventing.rest.factory.TemplatesDaoFactory;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DummySubscriptionsDao implements SubscriptionsService, InitializingBean {
+public class InMemorySubscriptionsDao implements SubscriptionsService, InitializingBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DummySubscriptionsDao.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InMemorySubscriptionsDao.class);
 
     private final Map<String, SubscriptionInstance> subscriptions = new HashMap<>();
 

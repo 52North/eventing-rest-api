@@ -34,13 +34,11 @@ import java.util.Map;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DummyUsersDao implements UsersService {
+public class InMemoryUsersDao implements UsersService {
 
     private final Map<String, User> users = new HashMap<>();
 
-    public DummyUsersDao() {
-        users.put("dummy-user", new UserImpl("dummy-user", "Peter", "Paul", "peter@paul.de"));
-        users.put("dummy-user2", new UserImpl("dummy-user2", "Peter", "Paul", "peter@paul.de"));
+    public InMemoryUsersDao() {
     }
 
     @Override

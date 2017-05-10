@@ -13,8 +13,8 @@
 
     <!-- eventing services impls -->
     <bean class="org.n52.eventing.rest.publications.InjectablePublicationsDao" name="publicationsDao" />
-    <bean class="org.n52.eventing.rest.users.DummyUsersDao" name="usersDao" />
-    <bean class="org.n52.eventing.rest.subscriptions.DummySubscriptionsDao" />
+    <bean class="org.n52.eventing.rest.users.InMemoryUsersDao" name="usersDao" />
+    <bean class="org.n52.eventing.rest.subscriptions.InMemorySubscriptionsDao" />
     <bean class="org.n52.eventing.rest.deliverymethods.email.EmailDeliveryProvider" />
     <bean class="org.n52.eventing.rest.subscriptions.SubverseFilterLogic" />
     <bean class="org.n52.eventing.rest.templates.ConfigurationTemplatesDaoFactory" />
