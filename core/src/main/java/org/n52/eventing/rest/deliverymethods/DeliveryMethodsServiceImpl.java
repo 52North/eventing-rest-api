@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.n52.eventing.rest.parameters.ParameterDefinition;
+import org.n52.eventing.rest.parameters.ParameterInstance;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.n52.subverse.delivery.DeliveryDefinition;
 import org.n52.subverse.delivery.DeliveryEndpoint;
@@ -91,7 +92,18 @@ public class DeliveryMethodsServiceImpl implements DeliveryMethodsService, Initi
     public DeliveryEndpoint createDeliveryEndpoint(DeliveryMethodInstance deliveryMethod, String pubId) throws InvalidSubscriptionException {
         try {
             DeliveryDefinition definition = new DeliveryDefinition(deliveryMethod.getId(), null, pubId, false);
+
             DeliveryProvider provider = deliveryProviderRepository.getProvider(Optional.of(definition));
+            DeliveryParameter[] providerParams = provider.getParameters();
+
+            deliveryMethod.getParameters().forEach((String s, ParameterInstance pi) -> {
+                for (DeliveryParameter providerParam : providerParams) {
+                    if (providerParam.getElementName().equals(s)) {
+                        definition.addParameter(new DeliveryParameter(pi.getDataType(), null, s, pi.getValue().toString()));
+                        return;
+                    }
+                }
+            });
 
             if (provider == null) {
                 throw new InvalidSubscriptionException("No delivery provider found for delivery: "+deliveryMethod.getId());

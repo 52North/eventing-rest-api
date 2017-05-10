@@ -5,5 +5,6 @@
     "connector.mqtt.port": 1883,
     "connector.mqtt.mimeType": "text/csv",
     "connector.mqtt.publicationIdentifer": "mqtt-marine",
-    "connector.mqtt.topic": "spiddal-fluorometer"
+    "connector.mqtt.topic": "spiddal-fluorometer",
+    "delivery.mqtt.host": "localhost"
 }

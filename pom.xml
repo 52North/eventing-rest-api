@@ -21,6 +21,7 @@
         <module>webapp</module>
         <module>subverse-engine</module>
         <module>publication-connectors</module>
+        <module>delivery-connectors</module>
     </modules>
 
     <organization>
@@ -94,6 +95,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>mqtt-connector</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>mqtt-delivery</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

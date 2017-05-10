@@ -151,7 +151,7 @@ public class PahoMqttConnector implements PublicationProvider, InitializingBean,
      * @param clientId a client id
      * @param cb the callback for reception of messages
      */
-    private void init(String protocol, String host, int port, String clientId, MessageCallback cb) {
+    protected void init(String protocol, String host, int port, String clientId, MessageCallback cb) {
         this.protocol = protocol;
         this.host = host;
         this.port = port;

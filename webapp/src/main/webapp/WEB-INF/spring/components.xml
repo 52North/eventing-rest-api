@@ -25,5 +25,6 @@
     <!-- connectors -->
     <bean class="org.n52.eventing.rest.subscriptions.SubversePublicationDataIngestor" />
     <bean class="org.n52.eventing.connector.mqtt.PahoMqttConnector" />
+    <bean class="org.n52.eventing.delivery.mqtt.MqttDeliveryProvider" />
 
 </beans>
