@@ -27,37 +27,33 @@
  */
 package org.n52.eventing.rest.subscriptions;
 
-import java.util.List;
-import java.util.Optional;
-import org.n52.subverse.delivery.DeliveryEndpoint;
-import org.n52.subverse.delivery.Streamable;
+import org.n52.eventing.rest.publications.PublicationDataIngestor;
+import org.n52.subverse.engine.FilterEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-class BrokeringDeliveryEndpoint implements DeliveryEndpoint {
+public class SubversePublicationDataIngestor implements PublicationDataIngestor<Object> {
 
-    private final List<DeliveryEndpoint> endpoints;
+    private static final Logger LOG = LoggerFactory.getLogger(SubversePublicationDataIngestor.class);
 
-    public BrokeringDeliveryEndpoint(List<DeliveryEndpoint> endpoints) {
-        this.endpoints = endpoints;
+    @Autowired
+    private FilterEngine engine;
+
+    @Override
+    public void ingestData(Object data, String publicationId) {
+        LOG.info("Ingest data: {}", data.toString());
+        engine.filterMessage(data, publicationId);
     }
 
     @Override
-    public void deliver(Optional<Streamable> o, boolean asRaw) {
-        this.endpoints.stream().parallel().forEach(e -> {
-            e.deliver(o, asRaw);
-        });
-    }
-
-    @Override
-    public String getEffectiveLocation() {
-        return "/dev/null";
-    }
-
-    @Override
-    public void destroy() {
+    public void ingestData(Object data, String publicationId, String mimeType) {
+        LOG.info("Ingest data with mimeType {}: {}", mimeType, data.toString());
+        engine.filterMessage(data, publicationId, mimeType);
     }
 
 }

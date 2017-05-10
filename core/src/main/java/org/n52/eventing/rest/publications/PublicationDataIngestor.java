@@ -25,39 +25,17 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.subscriptions;
-
-import java.util.List;
-import java.util.Optional;
-import org.n52.subverse.delivery.DeliveryEndpoint;
-import org.n52.subverse.delivery.Streamable;
+package org.n52.eventing.rest.publications;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
+ * @param <T> the type of the data
  */
-class BrokeringDeliveryEndpoint implements DeliveryEndpoint {
+public interface PublicationDataIngestor<T> {
 
-    private final List<DeliveryEndpoint> endpoints;
+    void ingestData(T data, String publicationId);
 
-    public BrokeringDeliveryEndpoint(List<DeliveryEndpoint> endpoints) {
-        this.endpoints = endpoints;
-    }
-
-    @Override
-    public void deliver(Optional<Streamable> o, boolean asRaw) {
-        this.endpoints.stream().parallel().forEach(e -> {
-            e.deliver(o, asRaw);
-        });
-    }
-
-    @Override
-    public String getEffectiveLocation() {
-        return "/dev/null";
-    }
-
-    @Override
-    public void destroy() {
-    }
+    void ingestData(T data, String publicationId, String mimeType);
 
 }

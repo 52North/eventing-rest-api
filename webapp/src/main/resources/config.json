@@ -1,0 +1,8 @@
+{
+    "templateDirectory": "/templates",
+    "connector.mqtt.protocol": "tcp",
+    "connector.mqtt.host": "mqtt.marine.ie",
+    "connector.mqtt.port": 1883,
+    "connector.mqtt.mimeType": "text/csv",
+    "connector.mqtt.publicationIdentifer": "mqtt-marine"
+}

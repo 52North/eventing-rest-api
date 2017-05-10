@@ -33,6 +33,12 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mqtt-connector</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <scope>runtime</scope>
@@ -85,13 +91,14 @@
                     <scanIntervalSeconds>3</scanIntervalSeconds>
                     <webAppConfig>
                         <contextPath>/${project.build.finalName}</contextPath>
-                        <extraClasspath>target/classes;../core/target/classes;../rest/target/classes;../subverse-engine/target/classes</extraClasspath>
+                        <extraClasspath>target/classes;../core/target/classes;../rest/target/classes;../subverse-engine/target/classes;../publication-connectors/mqtt-connector/target/classes</extraClasspath>
                     </webAppConfig>
                     <scanTargets>
                         <scanTarget>target/classes</scanTarget>
                         <scanTarget>../core/target/classes</scanTarget>
                         <scanTarget>../rest/target/classes</scanTarget>
                         <scanTarget>../subverse-engine/target/classes</scanTarget>
+                        <scanTarget>../publication-connectors/mqtt-connector/target/classes</scanTarget>
                     </scanTargets>
                 </configuration>
             </plugin>

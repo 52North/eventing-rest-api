@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2016 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2017 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -25,7 +25,6 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-
 package org.n52.eventing.rest.subscriptions;
 
 import java.util.Collections;
@@ -86,19 +85,24 @@ public class SubverseFilterLogic implements FilterLogic {
                 throw new RuntimeException(ex);
             }
         }).collect(Collectors.toList());
-        endpoints.add(new EventLogEndpoint(20, subscription, eventLogStore, String.format("Rule match for Template '%s' with Parameters: %s",
-                template.getId(), subscription.getTemplate().getParameters())));
+        endpoints.add(new EventLogEndpoint(20, subscription, eventLogStore));
         BrokeringDeliveryEndpoint brokeringEndpoint = new BrokeringDeliveryEndpoint(endpoints);
 
         /*
         * register at engine
         */
-        Map<String, ParameterInstance> params = subscription.getTemplate().getParameters();
-        params.forEach((String t, ParameterInstance u) -> {
-            u.setName(t);
-        });
-        String filterInstance = this.filterInstanceGenerator.generateFilterInstance(
+
+        String filterInstance = null;
+        Map<String, ParameterInstance> params = null;
+        if (template != null) {
+            params = subscription.getTemplate().getParameters();
+            params.forEach((String t, ParameterInstance u) -> {
+                u.setName(t);
+            });
+            filterInstance = this.filterInstanceGenerator.generateFilterInstance(
                 template, params.values());
+        }
+
         try {
             Subscription subverseSub = wrapToSubverseSubscription(subscription,
                     filterInstance, subscription.getPublicationId());
@@ -121,7 +125,11 @@ public class SubverseFilterLogic implements FilterLogic {
     private Subscription wrapToSubverseSubscription(SubscriptionInstance subscription,
             String filterInstance, String pubId) throws InvalidSubscriptionException {
         try {
-            XmlObject filterXml = XmlObject.Factory.parse(filterInstance);
+            XmlObject filterXml = null;
+            if (filterInstance != null) {
+                filterXml = XmlObject.Factory.parse(filterInstance);
+            }
+
             Subscription result = new Subscription(
                     subscription.getId(), new SubscribeOptions(pubId,
                             null,

@@ -12,7 +12,7 @@
         http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- eventing services impls -->
-    <bean class="org.n52.eventing.rest.publications.DummyPublicationsDao" name="publicationsDao" />
+    <bean class="org.n52.eventing.rest.publications.InjectablePublicationsDao" name="publicationsDao" />
     <bean class="org.n52.eventing.rest.users.DummyUsersDao" name="usersDao" />
     <bean class="org.n52.eventing.rest.subscriptions.DummySubscriptionsDao" />
     <bean class="org.n52.eventing.rest.deliverymethods.email.EmailDeliveryProvider" />
@@ -21,5 +21,9 @@
     <bean class="org.n52.eventing.rest.eventlog.EventLogStoreImpl" />
     <bean class="org.n52.subverse.engine.EposFilterEngine" />
     <bean class="org.n52.eventing.rest.binding.security.AnonymousSecurityService" />
+
+    <!-- connectors -->
+    <bean class="org.n52.eventing.rest.subscriptions.SubversePublicationDataIngestor" />
+    <bean class="org.n52.eventing.connector.mqtt.PahoMqttConnector" />
 
 </beans>
