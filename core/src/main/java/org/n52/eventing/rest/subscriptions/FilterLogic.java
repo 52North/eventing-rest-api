@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2016 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2017 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -25,7 +25,6 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-
 package org.n52.eventing.rest.subscriptions;
 
 import org.n52.eventing.rest.templates.TemplateDefinition;
@@ -45,6 +44,11 @@ public interface FilterLogic {
      */
     public String internalSubscribe(SubscriptionInstance s, TemplateDefinition template) throws InvalidSubscriptionException;
 
+    /**
+     * an implementation shall remove the subscription with the given ID
+     *
+     * @param id the subscription id
+     */
     public void remove(String id);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2016 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2017 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -111,18 +111,24 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
             throw new InvalidSubscriptionException("Publication unknown: "+pubId);
         }
 
-        TemplateDefinition template;
-        try {
-            template = this.templatesDaoFactory.newDao().getTemplate(subDef.getTemplate().getId());
-        } catch (UnknownTemplateException ex) {
-            LOG.warn(ex.getMessage());
-            LOG.debug(ex.getMessage(), ex);
-            throw new InvalidSubscriptionException("Template unknown: "+pubId);
+        TemplateDefinition template = null;
+        String desc;
+        if (subDef.getTemplate() != null) {
+            try {
+                template = this.templatesDaoFactory.newDao().getTemplate(subDef.getTemplate().getId());
+            } catch (UnknownTemplateException ex) {
+                LOG.warn(ex.getMessage());
+                LOG.debug(ex.getMessage(), ex);
+                throw new InvalidSubscriptionException("Template unknown: "+pubId);
+            }
+             desc = String.format("Subscription using template %s. Parameters: %s", template.getId(), subDef.getTemplate().getParameters());
+        }
+        else {
+            desc = String.format("Subscription for publication: %s", pubId);
         }
 
         DateTime now = new DateTime();
 
-        String desc = String.format("Subscription using template %s. Parameters: %s", template.getId(), subDef.getTemplate().getParameters());
         String label = Optional.ofNullable(subDef.getLabel()).orElse(desc);
 
         subDef.setLabel(label);

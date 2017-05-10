@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2016 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2017 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -25,7 +25,6 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-
 package org.n52.eventing.rest.publications;
 
 import java.util.ArrayList;
@@ -45,19 +44,19 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DummyPublicationsDao implements PublicationsService, InitializingBean, DisposableBean {
+public class InjectablePublicationsDao implements PublicationsService, InitializingBean, DisposableBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DummyPublicationsDao.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InjectablePublicationsDao.class);
 
     private final Map<String, Publication> publications = new HashMap<>();
 
     @Autowired
     private Configuration config;
 
-    private boolean running = true;
+    @Autowired
+    private List<PublicationProvider> publicationProviders;
 
-    public DummyPublicationsDao() {
-        publications.put("dummy-pub", new Publication("dummy-pub", "dummy-pub ftw", "this publication provides niiiice data"));
+    public InjectablePublicationsDao() {
     }
 
 
@@ -82,11 +81,20 @@ public class DummyPublicationsDao implements PublicationsService, InitializingBe
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        this.publicationProviders.stream()
+                .forEach(pp -> {
+                    if (this.publications.containsKey(pp.getIdentifier())) {
+                        LOG.warn("Duplicate publication id: "+pp.getIdentifier());
+                        return;
+                    }
+
+                    Publication pub = new Publication(pp.getIdentifier(), pp.getDescription(), null);
+                    this.publications.put(pp.getIdentifier(), pub);
+                });
     }
 
     @Override
     public void destroy() {
-        this.running = false;
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2016 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2017 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -25,7 +25,6 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-
 package org.n52.eventing.rest.eventlog;
 
 import java.util.Optional;
@@ -44,21 +43,19 @@ public class EventLogEndpoint implements DeliveryEndpoint {
     private final int maximumCapacity;
     private final SubscriptionInstance subscription;
     private final EventLogStore store;
-    private final String holderLabel;
     private final AtomicInteger count = new AtomicInteger(1);
 
-    public EventLogEndpoint(int maximumCapacity, SubscriptionInstance subscription, EventLogStore store, String holderLabel) {
+    public EventLogEndpoint(int maximumCapacity, SubscriptionInstance subscription, EventLogStore store) {
         this.maximumCapacity = maximumCapacity;
         this.subscription = subscription;
         this.store = store;
-        this.holderLabel = holderLabel;
     }
 
 
     @Override
     public void deliver(Optional<Streamable> o, boolean asRaw) {
         EventHolder eh = new EventHolder(String.format("%s_match_%s", subscription.getId(), count.getAndIncrement()),
-                new DateTime(), subscription, holderLabel, o);
+                new DateTime(), subscription, null, o);
         this.store.addEvent(subscription, eh, maximumCapacity);
     }
 
