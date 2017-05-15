@@ -1,10 +1,12 @@
 {
     "templateDirectory": "/templates",
     "connector.mqtt.protocol": "tcp",
-    "connector.mqtt.host": "mqtt.marine.ie",
+    "connector.mqtt.host": "test.mosquitto.org",
     "connector.mqtt.port": 1883,
-    "connector.mqtt.mimeType": "text/csv",
-    "connector.mqtt.publicationIdentifer": "mqtt-marine",
-    "connector.mqtt.topic": "spiddal-fluorometer",
-    "delivery.mqtt.host": "localhost"
+    "connector.mqtt.mimeType": "application/json",
+    "connector.mqtt.publicationIdentifer": "test-mqtt-data",
+    "connector.mqtt.topic": "n52/eventing",
+    "delivery.mqtt.host": "test.mosquitto.org",
+    "delivery.mqtt.protocol": "tcp",
+    "delivery.mqtt.port": 1883
 }
