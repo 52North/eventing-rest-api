@@ -38,6 +38,7 @@ public class DeliveryMethodInstance {
 
     private final String id;
     private final Map<String, ParameterInstance> parameters;
+    private Object details;
 
     public DeliveryMethodInstance() {
         this.id = null;
@@ -55,6 +56,14 @@ public class DeliveryMethodInstance {
 
     public Map<String, ParameterInstance> getParameters() {
         return parameters;
+    }
+
+    public Object getDetails() {
+        return details;
+    }
+
+    public void setDetails(Object details) {
+        this.details = details;
     }
 
 }

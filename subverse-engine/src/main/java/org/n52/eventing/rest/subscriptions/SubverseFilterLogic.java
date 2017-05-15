@@ -79,8 +79,13 @@ public class SubverseFilterLogic implements FilterLogic {
         */
         List<DeliveryEndpoint> endpoints = subscription.getDeliveryMethods().stream().map((DeliveryMethodInstance dm) -> {
             try {
-                return this.deliveryMethodsDao.createDeliveryEndpoint(dm,
+                DeliveryEndpoint result = this.deliveryMethodsDao.createDeliveryEndpoint(dm,
                         subscription.getPublicationId());
+                String effLoc = result.getEffectiveLocation();
+                if (effLoc != null) {
+                    dm.setDetails(Collections.singletonMap("effectiveLocation", result.getEffectiveLocation()));
+                }
+                return result;
             } catch (InvalidSubscriptionException ex) {
                 throw new RuntimeException(ex);
             }
