@@ -34,6 +34,14 @@ After successful execution, a `war` file is available in the `webapp/target`
 directory: `eventing-rest-api.war`. This file can be deployed to the
 Application Server of your choice via the corresponding methods.
 
+### Ad-hoc Jetty Instance
+
+After the above Maven execution, you can start an ad-hoc Jetty server with
+the default configuration:
+
+1. `cd webapp`
+1.  `mvn jetty:run`
+
 ## Configuration
 
 By default, you are not required to adjust the configuration. Still, there
@@ -42,7 +50,7 @@ some configuration.
 
 The configuration file can be found at the following location:
 
-`<application-server-webapps>eventing-rest-api/WEB-INF/classes/config.json`
+`<application-server-webapps>/eventing-rest-api/WEB-INF/classes/config.json`
 
 The webapp has to be restarted to reflect configuration changes.
 
