@@ -27,13 +27,16 @@
  */
 package org.n52.eventing.rest.binding;
 
+import org.n52.eventing.rest.CustomResourceDefinitions;
 import org.n52.eventing.rest.UrlSettings;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,6 +52,9 @@ import org.springframework.web.servlet.ModelAndView;
 public class ResourcesController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourcesController.class);
+
+    @Autowired
+    private Optional<CustomResourceDefinitions> customResourceDefinitions;
 
     @RequestMapping("")
     public ModelAndView getResources(@RequestParam(required = false) MultiValueMap<String, String> query) throws IOException, URISyntaxException {
@@ -70,6 +76,14 @@ public class ResourcesController {
                 String.format("%s/%s", fullUrl, UrlSettings.TEMPLATES_RESOURCE));
         resources.put(UrlSettings.EVENTLOG_RESOURCE,
                 String.format("%s/%s", fullUrl, UrlSettings.EVENTLOG_RESOURCE));
+
+        if (customResourceDefinitions.isPresent()) {
+            customResourceDefinitions.get().getCustomResources().stream()
+                    .forEach(entry -> {
+                        resources.put(entry,
+                String.format("%s/%s", fullUrl, entry));
+                    });
+        }
 
         return resources;
     }

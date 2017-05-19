@@ -125,9 +125,9 @@ public class SubscriptionsController {
         finally {
             RequestContext.removeThreadLocal();
         }
-        
+
     }
-    
+
     @RequestMapping(value = "/{item}", method = GET)
     public SubscriptionInstance getSubscription(@PathVariable("item") String id)
             throws IOException, URISyntaxException, ResourceNotAvailableException, NotAuthenticatedException {
