@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.RequestContext;
@@ -101,7 +102,7 @@ public class SubscriptionsController {
 
         String fullUrl = RequestUtils.resolveFullRequestUrl();
 
-        List<ResourceCollection> subs = retrieveSubscriptions(fullUrl, p);
+        List<SubscriptionInstance> subs = retrieveSubscriptions(fullUrl, p);
 
         if (subs.isEmpty()) {
             return EmptyArrayModel.create();
@@ -110,21 +111,23 @@ public class SubscriptionsController {
         return new ModelAndView().addObject(subs);
     }
 
-    private List<ResourceCollection> retrieveSubscriptions(String fullUrl, Pagination p) throws NotAuthenticatedException {
-        List<ResourceCollection> pubs = new ArrayList<>();
+    private List<SubscriptionInstance> retrieveSubscriptions(String fullUrl, Pagination p) throws NotAuthenticatedException {
+        RequestContext.storeInThreadLocal(context);
 
-        this.dao.getSubscriptions(p).stream().forEach(s -> {
-            String pubId = s.getId();
-            pubs.add(ResourceCollection.createResource(pubId)
-                    .withLabel(s.getLabel())
-                    .withDescription(s.getDescription())
-                    .withUserId(s.getUser() != null ? s.getUser().getId() : null)
-                    .withHref(String.format("%s/%s", fullUrl, pubId)));
-        });
-
-        return pubs;
+        try {
+            return this.dao.getSubscriptions(p).stream()
+                .map((SubscriptionInstance si) -> {
+                    si.setHref(String.format("%s/%s", fullUrl, si.getId()));
+                    return si;
+                })
+                .collect(Collectors.toList());
+        }
+        finally {
+            RequestContext.removeThreadLocal();
+        }
+        
     }
-
+    
     @RequestMapping(value = "/{item}", method = GET)
     public SubscriptionInstance getSubscription(@PathVariable("item") String id)
             throws IOException, URISyntaxException, ResourceNotAvailableException, NotAuthenticatedException {

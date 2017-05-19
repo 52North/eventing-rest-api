@@ -52,8 +52,9 @@ public class SubscriptionInstance {
     private List<DeliveryMethodInstance> deliveryMethods = new ArrayList<>();
     private Boolean enabled;
     private DateTime endOfLife;
-    private Boolean expired = false;
+    private Boolean expired;
     private Object details;
+    private String href;
 
     public SubscriptionInstance() {
     }
@@ -171,6 +172,14 @@ public class SubscriptionInstance {
 
     public void setDetails(Object details) {
         this.details = details;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
     }
 
 }
