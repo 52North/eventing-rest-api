@@ -12,19 +12,18 @@
         http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- eventing services impls -->
-    <bean class="org.n52.eventing.rest.publications.InjectablePublicationsDao" name="publicationsDao" />
+    <bean class="org.n52.eventing.rest.kafka.KafkaStreamProcessor" name="publicationsDao" />
+    <bean class="org.n52.eventing.rest.kafka.KafkaFilterLogic" />
+    <bean class="org.n52.eventing.rest.kafka.KafkaSosConsumerWrapper" />
     <bean class="org.n52.eventing.rest.users.InMemoryUsersDao" name="usersDao" />
     <bean class="org.n52.eventing.rest.subscriptions.InMemorySubscriptionsDao" />
     <bean class="org.n52.eventing.rest.deliverymethods.email.EmailDeliveryProvider" />
-    <bean class="org.n52.eventing.rest.subscriptions.SubverseFilterLogic" />
     <bean class="org.n52.eventing.rest.templates.ConfigurationTemplatesDaoFactory" />
     <bean class="org.n52.eventing.rest.eventlog.EventLogStoreImpl" />
-    <bean class="org.n52.subverse.engine.EposFilterEngine" />
     <bean class="org.n52.eventing.rest.binding.security.AnonymousSecurityService" />
 
     <!-- connectors -->
-    <bean class="org.n52.eventing.rest.subscriptions.SubversePublicationDataIngestor" />
-    <bean class="org.n52.eventing.connector.mqtt.PahoMqttConnector" />
-    <bean class="org.n52.eventing.delivery.mqtt.MqttDeliveryProvider" />
+<!--    <bean class="org.n52.eventing.connector.mqtt.PahoMqttConnector" />
+    <bean class="org.n52.eventing.delivery.mqtt.MqttDeliveryProvider" />-->
 
 </beans>

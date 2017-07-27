@@ -20,6 +20,7 @@
         <module>rest</module>
         <module>webapp</module>
         <module>subverse-engine</module>
+        <module>kafka-sos</module>
         <module>publication-connectors</module>
         <module>delivery-connectors</module>
     </modules>
@@ -90,6 +91,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>subverse-engine</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>kafka-sos</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
