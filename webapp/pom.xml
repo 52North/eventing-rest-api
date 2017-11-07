@@ -91,6 +91,9 @@
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <configuration>
+                    <httpConnector>
+                        <port>8081</port>
+                    </httpConnector>
                     <stopKey>C</stopKey>
                     <stopPort>34343</stopPort>
                     <scanIntervalSeconds>3</scanIntervalSeconds>
