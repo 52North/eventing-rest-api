@@ -32,7 +32,6 @@ import org.n52.eventing.rest.subscriptions.SubscriptionUpdateInstance;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +41,6 @@ import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.RequestUtils;
-import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.binding.eventlog.EventLogController;
 import org.n52.eventing.rest.eventlog.EventHolder;
@@ -131,7 +129,8 @@ public class SubscriptionsController {
     @RequestMapping(value = "/{item}", method = GET)
     public SubscriptionInstance getSubscription(@PathVariable("item") String id)
             throws IOException, URISyntaxException, ResourceNotAvailableException, NotAuthenticatedException {
-
+        RequestContext.storeInThreadLocal(context);
+        
         if (!this.dao.hasSubscription(id)) {
             throw new ResourceNotAvailableException("The subscription is not available: "+id);
         }
@@ -141,6 +140,9 @@ public class SubscriptionsController {
             return sub;
         } catch (UnknownSubscriptionException ex) {
             throw new ResourceNotAvailableException(ex.getMessage(), ex);
+        }
+        finally {
+            RequestContext.removeThreadLocal();
         }
     }
 
