@@ -39,15 +39,20 @@ public class DeliveryMethodInstance {
     private final String id;
     private final Map<String, ParameterInstance> parameters;
     private Object details;
+    private String href;
 
     public DeliveryMethodInstance() {
-        this.id = null;
-        this.parameters = null;
+        this(null, null);
     }
 
     public DeliveryMethodInstance(String id, Map<String, ParameterInstance> parameters) {
+        this(id, parameters, null);
+    }
+
+    public DeliveryMethodInstance(String id, Map<String, ParameterInstance> parameters,  String href) {
         this.id = id;
         this.parameters = parameters;
+        this.href = href;
     }
 
     public String getId() {
@@ -64,6 +69,14 @@ public class DeliveryMethodInstance {
 
     public void setDetails(Object details) {
         this.details = details;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
     }
 
 }

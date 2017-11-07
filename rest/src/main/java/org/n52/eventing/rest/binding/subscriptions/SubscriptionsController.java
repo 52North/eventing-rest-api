@@ -130,7 +130,7 @@ public class SubscriptionsController {
     public SubscriptionInstance getSubscription(@PathVariable("item") String id)
             throws IOException, URISyntaxException, ResourceNotAvailableException, NotAuthenticatedException {
         RequestContext.storeInThreadLocal(context);
-        
+
         if (!this.dao.hasSubscription(id)) {
             throw new ResourceNotAvailableException("The subscription is not available: "+id);
         }

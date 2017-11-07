@@ -37,6 +37,7 @@ import org.n52.eventing.rest.parameters.ParameterInstance;
 public class TemplateInstance {
 
     private final String id;
+    private String href;
     private final Map<String, ParameterInstance> parameters;
 
     public TemplateInstance() {
@@ -55,6 +56,14 @@ public class TemplateInstance {
 
     public Map<String, ParameterInstance> getParameters() {
         return parameters;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
     }
 
 }
