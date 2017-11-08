@@ -28,6 +28,7 @@
 package org.n52.eventing.rest.binding;
 
 import javax.servlet.http.HttpServletRequest;
+import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.slf4j.Logger;
@@ -66,6 +67,12 @@ public class ExceptionHandlerImpl {
     @ExceptionHandler(value = InvalidSubscriptionException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ModelAndView invalidSubscriptionHandler(HttpServletRequest req, Exception e) throws Exception {
+        return createModelAndView(e, req);
+    }
+
+    @ExceptionHandler(value = InvalidPaginationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ModelAndView invalidPaginationHandler(HttpServletRequest req, Exception e) throws Exception {
         return createModelAndView(e, req);
     }
 

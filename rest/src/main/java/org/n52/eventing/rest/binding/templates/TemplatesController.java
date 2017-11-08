@@ -32,6 +32,7 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
@@ -65,7 +66,7 @@ public class TemplatesController {
 
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public List<TemplateDefinition> getTemplates() throws IOException, URISyntaxException, NotAuthenticatedException {
+    public List<TemplateDefinition> getTemplates() throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
         RequestContext.storeInThreadLocal(context);
 
         Map<String, String[]> query = context.getParameters();

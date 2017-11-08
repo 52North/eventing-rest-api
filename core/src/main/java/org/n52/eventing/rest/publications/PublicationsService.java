@@ -29,6 +29,7 @@ package org.n52.eventing.rest.publications;
 
 import java.util.List;
 import java.util.Map;
+import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
 
 /**
@@ -39,11 +40,11 @@ public interface PublicationsService {
 
     boolean hasPublication(String id);
 
-    default List<Publication> getPublications(Map<String, String[]>  filter, Pagination p) {
+    default List<Publication> getPublications(Map<String, String[]>  filter, Pagination p) throws InvalidPaginationException {
         return getPublications(p);
     };
 
-    List<Publication> getPublications( Pagination p);
+    List<Publication> getPublications( Pagination p) throws InvalidPaginationException;
 
     Publication getPublication(String id) throws UnknownPublicationsException;
 

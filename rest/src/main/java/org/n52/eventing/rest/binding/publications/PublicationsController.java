@@ -81,7 +81,7 @@ public class PublicationsController {
         return new ModelAndView().addObject(pubs);
     }
 
-    private List<Publication> createPublications(String fullUrl, Map<String, String[]> query, Pagination page) throws NotAuthenticatedException {
+    private List<Publication> createPublications(String fullUrl, Map<String, String[]> query, Pagination page) throws NotAuthenticatedException, InvalidPaginationException {
         RequestContext.storeInThreadLocal(context);
 
         try {
