@@ -32,7 +32,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import org.n52.eventing.rest.RequestContext;
-import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
@@ -64,7 +63,7 @@ public class DeliveryMethodsController {
 
     @RequestMapping("")
     public ModelAndView getDeliveryMethods() throws IOException, URISyntaxException, NotAuthenticatedException {
-        String fullUrl = RequestUtils.resolveFullRequestUrl();
+        String fullUrl = context.getFullUrl();
         List<ResourceCollection> list = new ArrayList<>();
 
         RequestContext.storeInThreadLocal(context);

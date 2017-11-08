@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.UrlSettings;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -43,13 +44,16 @@ public class SpringRequestContext implements RequestContext, InitializingBean {
     private String fullUrl;
     private Map<String, String[]> parameters;
 
+    @Autowired
+    private RequestUtils requestUtils;
+
     public SpringRequestContext() {
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        HttpServletRequest request = RequestUtils.resolveRequestObject();
-        String resolved = RequestUtils.resolveFullRequestUrl(request);
+        HttpServletRequest request = requestUtils.resolveRequestObject();
+        String resolved = requestUtils.resolveFullRequestUrl(request);
         setFullUrl(resolved);
         setBaseApiUrl(resolved.substring(0, resolved.indexOf(UrlSettings.API_V1_BASE) + UrlSettings.API_V1_BASE.length()));
         setParameters(request.getParameterMap());

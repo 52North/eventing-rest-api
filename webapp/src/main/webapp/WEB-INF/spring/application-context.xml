@@ -29,6 +29,7 @@
     <!-- utility beans -->
     <!--<bean class="org.n52.eventing.rest.binding.security.SecurityServiceImpl" />-->
     <!--<bean class="org.n52.eventing.rest.security.SecurityRightsImpl" />-->
+    <bean class="org.n52.eventing.rest.binding.RequestUtils" />
 
     <!-- core beans -->
     <bean class="org.n52.eventing.rest.ConfigurationImpl" name="config" />

@@ -73,6 +73,9 @@ public class EventLogController {
     @Autowired
     private RequestContext context;
 
+    @Autowired
+    private RequestUtils requestUtils;
+
 
     @RequestMapping("")
     public Collection<EventHolder> getAllEvents()
@@ -123,7 +126,7 @@ public class EventLogController {
             Optional<EventHolder> result = retrieveSingleEvent(eventId);
 
             if (result.isPresent()) {
-                final String fullUrl = RequestUtils.resolveFullRequestUrl();
+                final String fullUrl = context.getFullUrl();
                 EventHolder event = result.get();
                 if (event.streamableObject().isPresent()) {
                     event.setContent(String.format("%s/content", fullUrl));
@@ -161,7 +164,7 @@ public class EventLogController {
         Optional<Streamable> streamable = holder.get().streamableObject();
         if (streamable.isPresent()) {
             Streamable obj = streamable.get();
-            HttpServletResponse resp = RequestUtils.resolveResponseObject();
+            HttpServletResponse resp = requestUtils.resolveResponseObject();
             String ct = obj.getContentType();
             resp.setContentType(ct);
             resp.setStatus(200);

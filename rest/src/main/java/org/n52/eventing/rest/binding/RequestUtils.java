@@ -34,6 +34,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.n52.eventing.rest.Configuration;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -41,26 +44,56 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class RequestUtils {
+public class RequestUtils implements InitializingBean {
 
-    public static String resolveFullRequestUrl() throws IOException, URISyntaxException {
+    @Autowired
+    private Configuration configuration;
+
+    private String xForwardedForHeader;
+    private String xForwardedForContextHeader;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.xForwardedForHeader = configuration.getParameter("xForwardedForHeader").orElse("X-Forwarded-For");
+        this.xForwardedForContextHeader = configuration.getParameter("xForwardedForContextHeader").orElse("X-Forwarded-For-Context");
+    }
+
+    public String getXForwardedForHeader() {
+        return xForwardedForHeader;
+    }
+
+    public String getXForwardedForContextHeader() {
+        return xForwardedForContextHeader;
+    }
+
+    public String resolveFullRequestUrl() throws IOException, URISyntaxException {
         HttpServletRequest request = resolveRequestObject();
 
         return resolveFullRequestUrl(request);
     }
 
-    public static String resolveFullRequestUrl(HttpServletRequest request) throws MalformedURLException, URISyntaxException {
+    public String resolveFullRequestUrl(HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         URL url = new URL(request.getRequestURL().toString());
 
         String scheme = url.getProtocol();
         String userInfo = url.getUserInfo();
         String host  = url.getHost();
 
+        String xForwardedForContext = request.getHeader(xForwardedForContextHeader);
+        String actualContext = request.getContextPath();
+
         int port = url.getPort();
 
         String path = request.getRequestURI();
         if (path != null && path.endsWith("/")) {
             path = path.substring(0, path.length() - 1);
+            if (xForwardedForContext != null) {
+                path = path.replace(actualContext, xForwardedForContext);
+            }
+        }
+
+        if (xForwardedForContext != null && path != null) {
+            path = path.replace(actualContext, xForwardedForContext);
         }
 //        String query = request.getQueryString();
 
@@ -68,12 +101,12 @@ public class RequestUtils {
         return uri.toString();
     }
 
-    public static HttpServletRequest resolveRequestObject() {
+    public HttpServletRequest resolveRequestObject() {
         return ((ServletRequestAttributes)
                 RequestContextHolder.currentRequestAttributes()).getRequest();
     }
 
-    public static HttpServletResponse resolveResponseObject() {
+    public HttpServletResponse resolveResponseObject() {
         return ((ServletRequestAttributes)
                 RequestContextHolder.currentRequestAttributes()).getResponse();
     }

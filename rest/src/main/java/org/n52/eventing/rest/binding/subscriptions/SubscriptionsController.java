@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.RequestContext;
-import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.binding.eventlog.EventLogController;
 import org.n52.eventing.rest.eventlog.EventHolder;
@@ -98,7 +97,7 @@ public class SubscriptionsController {
         Map<String, String[]> query = context.getParameters();
         Pagination p = Pagination.fromQuery(query);
 
-        String fullUrl = RequestUtils.resolveFullRequestUrl();
+        String fullUrl = context.getFullUrl();
 
         List<SubscriptionInstance> subs = retrieveSubscriptions(fullUrl, p);
 

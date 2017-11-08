@@ -1,5 +1,7 @@
 {
     "templateDirectory": "/templates",
+    "xForwardedForContextHeader": "X-Forwarded-For-Context",
+    "xForwardedForHeader": "X-Forwarded-For",
     "connector.mqtt.protocol": "tcp",
     "connector.mqtt.host": "test.mosquitto.org",
     "connector.mqtt.port": 1883,

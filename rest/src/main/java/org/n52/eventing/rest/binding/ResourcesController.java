@@ -34,6 +34,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.n52.eventing.rest.RequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +57,12 @@ public class ResourcesController {
     @Autowired
     private Optional<CustomResourceDefinitions> customResourceDefinitions;
 
+    @Autowired
+    private RequestContext context;
+
     @RequestMapping("")
     public ModelAndView getResources(@RequestParam(required = false) MultiValueMap<String, String> query) throws IOException, URISyntaxException {
-        String fullUrl = RequestUtils.resolveFullRequestUrl();
+        String fullUrl = context.getFullUrl();
         return new ModelAndView().addObject(createResources(fullUrl));
     }
 
