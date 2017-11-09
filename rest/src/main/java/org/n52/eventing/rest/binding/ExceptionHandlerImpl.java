@@ -27,12 +27,16 @@
  */
 package org.n52.eventing.rest.binding;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,6 +54,9 @@ public class ExceptionHandlerImpl {
 
     public static final String DEFAULT_ERROR_VIEW = "error";
     private static final String BACKLINK = "href";
+
+    @Autowired
+    private RequestUtils utils;
 
     @ExceptionHandler(value = Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -82,11 +89,11 @@ public class ExceptionHandlerImpl {
         return createModelAndView(e, req);
     }
 
-    private ModelAndView createModelAndView(Exception e, HttpServletRequest req) {
+    private ModelAndView createModelAndView(Exception e, HttpServletRequest req) throws IOException, MalformedURLException, URISyntaxException {
         LOG.debug("Returning exception", e);
         ModelAndView mav = new ModelAndView();
         mav.addObject(DEFAULT_ERROR_VIEW, e.getMessage());
-        mav.addObject(BACKLINK, req.getRequestURL());
+        mav.addObject(BACKLINK, utils.resolveFullRequestUrl(req));
         mav.setViewName(DEFAULT_ERROR_VIEW);
         return mav;
     }

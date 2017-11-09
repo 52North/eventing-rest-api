@@ -50,20 +50,26 @@ public class RequestUtils implements InitializingBean {
     private Configuration configuration;
 
     private String xForwardedForHeader;
-    private String xForwardedForContextHeader;
+    private String xForwardedContextPathHeader;
+    private String xForwardedHostHeader;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         this.xForwardedForHeader = configuration.getParameter("xForwardedForHeader").orElse("X-Forwarded-For");
-        this.xForwardedForContextHeader = configuration.getParameter("xForwardedForContextHeader").orElse("X-Forwarded-For-Context");
+        this.xForwardedHostHeader = configuration.getParameter("xForwardedHostHeader").orElse("X-Forwarded-Host");
+        this.xForwardedContextPathHeader = configuration.getParameter("xForwardedContextPathHeader").orElse("X-Forwarded-ContextPath");
     }
 
     public String getXForwardedForHeader() {
         return xForwardedForHeader;
     }
 
-    public String getXForwardedForContextHeader() {
-        return xForwardedForContextHeader;
+    public String getXForwardedContextPathHeader() {
+        return xForwardedContextPathHeader;
+    }
+
+    public String getXForwardedHostHeader() {
+        return xForwardedHostHeader;
     }
 
     public String resolveFullRequestUrl() throws IOException, URISyntaxException {
@@ -77,25 +83,26 @@ public class RequestUtils implements InitializingBean {
 
         String scheme = url.getProtocol();
         String userInfo = url.getUserInfo();
-        String host  = url.getHost();
+        String host = url.getHost();
 
-        String xForwardedForContext = request.getHeader(xForwardedForContextHeader);
-        String actualContext = request.getContextPath();
+        String xForwardedForContext = request.getHeader(xForwardedContextPathHeader);
+        String xForwardedHost = request.getHeader(xForwardedHostHeader);
+
+        if (xForwardedHost != null && !xForwardedHost.isEmpty()) {
+            host = xForwardedHost;
+        }
 
         int port = url.getPort();
 
         String path = request.getRequestURI();
         if (path != null && path.endsWith("/")) {
             path = path.substring(0, path.length() - 1);
-            if (xForwardedForContext != null) {
-                path = path.replace(actualContext, xForwardedForContext);
-            }
         }
 
+        String actualContext = request.getContextPath();
         if (xForwardedForContext != null && path != null) {
             path = path.replace(actualContext, xForwardedForContext);
         }
-//        String query = request.getQueryString();
 
         URI uri = new URI(scheme, userInfo, host, port, path, null, null);
         return uri.toString();

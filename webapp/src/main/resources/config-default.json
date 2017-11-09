@@ -1,5 +1,6 @@
 {
     "templateDirectory": "/templates",
-    "xForwardedForContextHeader": "X-Forwarded-For-Context",
-    "xForwardedForHeader": "X-Forwarded-For"
+    "xForwardedContextPathHeader": "X-Forwarded-ContextPath",
+    "xForwardedForHeader": "X-Forwarded-For",
+    "xForwardedHostHeader": "X-Forwarded-Host"
 }

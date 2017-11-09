@@ -29,7 +29,7 @@ package org.n52.eventing.rest.binding.templates;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.n52.eventing.rest.InvalidPaginationException;
@@ -112,7 +112,13 @@ public class TemplatesController {
             TemplatesDao dao = this.daoFactory.newDao();
             String id = dao.createTemplate(def);
             ModelAndView result = new ModelAndView();
-            result.addObject(Collections.singletonMap("id", id));
+
+            Map<String, String> map = new HashMap<>();
+            map.put("id", id);
+            map.put("href", String.format("%s/%s",
+                    context.getFullUrl(),
+                    id));
+            result.addObject(map);
             return result;
         }
         finally {

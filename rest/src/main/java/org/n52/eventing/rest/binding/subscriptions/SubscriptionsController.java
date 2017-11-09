@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -167,7 +168,15 @@ public class SubscriptionsController {
 
         try {
             String subId = this.manager.subscribe(subDef, user);
-            return new ModelAndView().addObject(Collections.singletonMap("id", subId));
+            ModelAndView result = new ModelAndView();
+
+            Map<String, String> map = new HashMap<>();
+            map.put("id", subId);
+            map.put("href", String.format("%s/%s",
+                    context.getFullUrl(),
+                    subId));
+            result.addObject(map);
+            return result;
         }
         finally {
             RequestContext.removeThreadLocal();
