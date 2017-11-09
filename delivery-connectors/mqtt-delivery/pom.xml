@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.n52.eventing-api</groupId>
         <artifactId>delivery-connectors</artifactId>
-        <version>1-SNAPSHOT</version>
+        <version>1.0.0-rc0</version>
     </parent>
     
     <artifactId>mqtt-delivery</artifactId>
