@@ -20,7 +20,7 @@
         <module>rest</module>
         <module>webapp</module>
         <module>subverse-engine</module>
-        <module>kafka-sos</module>
+        <!--<module>kafka-sos</module>-->
         <module>publication-connectors</module>
         <module>delivery-connectors</module>
     </modules>
