@@ -137,11 +137,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <dependency>
+<!--            <dependency>
                 <groupId>org.n52.epos</groupId>
                 <artifactId>epos-api</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-            </dependency>
+                <version>1.0.0-rc0</version>
+            </dependency>-->
 
             <dependency>
                 <groupId>com.mchange</groupId>
