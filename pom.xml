@@ -9,7 +9,7 @@
 
     <groupId>org.n52.eventing-api</groupId>
     <artifactId>eventing-rest-api</artifactId>
-    <version>1.0.0-rc1-SNAPSHOT</version>
+    <version>1.0.0-rc1</version>
     <packaging>pom</packaging>
     <name>Eventing REST API</name>
     <url>http://52north.org/communities/sensorweb/</url>
@@ -49,7 +49,7 @@
         <connection>scm:git:git://github.com/52North/eventing-rest-api.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/52North/eventing-rest-api.git</developerConnection>
         <url>https://github.com/52North/eventing-rest-api</url>
-        <tag>v1.0.0-rc0</tag>
+        <tag>v1.0.0-rc1</tag>
     </scm>
 
     <properties>
