@@ -52,11 +52,13 @@ public class RequestUtils implements InitializingBean {
     private String xForwardedForHeader;
     private String xForwardedContextPathHeader;
     private String xForwardedHostHeader;
+    private String xForwardedProtoHeader;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         this.xForwardedForHeader = configuration.getParameter("xForwardedForHeader").orElse("X-Forwarded-For");
         this.xForwardedHostHeader = configuration.getParameter("xForwardedHostHeader").orElse("X-Forwarded-Host");
+        this.xForwardedProtoHeader = configuration.getParameter("xForwardedProtoHeader").orElse("X-Forwarded-Proto");
         this.xForwardedContextPathHeader = configuration.getParameter("xForwardedContextPathHeader").orElse("X-Forwarded-ContextPath");
     }
 
@@ -66,6 +68,10 @@ public class RequestUtils implements InitializingBean {
 
     public String getXForwardedContextPathHeader() {
         return xForwardedContextPathHeader;
+    }
+
+    public String getXForwardedProtoHeader() {
+        return xForwardedProtoHeader;
     }
 
     public String getXForwardedHostHeader() {
@@ -87,9 +93,14 @@ public class RequestUtils implements InitializingBean {
 
         String xForwardedForContext = request.getHeader(xForwardedContextPathHeader);
         String xForwardedHost = request.getHeader(xForwardedHostHeader);
+        String xForwardedScheme = request.getHeader(xForwardedProtoHeader);
 
         if (xForwardedHost != null && !xForwardedHost.isEmpty()) {
-            host = xForwardedHost;
+            host = xForwardedHost.trim();
+        }
+
+        if (xForwardedScheme != null && !xForwardedScheme.isEmpty()) {
+            scheme = xForwardedScheme.trim();
         }
 
         int port = url.getPort();
@@ -101,7 +112,7 @@ public class RequestUtils implements InitializingBean {
 
         String actualContext = request.getContextPath();
         if (xForwardedForContext != null && path != null) {
-            path = path.replace(actualContext, xForwardedForContext);
+            path = path.replace(actualContext, xForwardedForContext.trim());
         }
 
         URI uri = new URI(scheme, userInfo, host, port, path, null, null);
