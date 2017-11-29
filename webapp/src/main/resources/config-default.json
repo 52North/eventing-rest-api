@@ -2,5 +2,6 @@
     "templateDirectory": "/templates",
     "xForwardedContextPathHeader": "X-Forwarded-ContextPath",
     "xForwardedForHeader": "X-Forwarded-For",
-    "xForwardedHostHeader": "X-Forwarded-Host"
+    "xForwardedHostHeader": "X-Forwarded-Host",
+    "xForwardedProtoHeader": "X-Forwarded-Proto"
 }

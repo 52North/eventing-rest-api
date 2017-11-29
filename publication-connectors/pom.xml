@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.n52.eventing-api</groupId>
         <artifactId>eventing-rest-api</artifactId>
-        <version>1.0.0-rc0</version>
+        <version>1.0.0-rc1</version>
     </parent>
 
     <artifactId>publication-connectors</artifactId>
