@@ -27,6 +27,8 @@
  */
 package org.n52.eventing.rest.subscriptions;
 
+import org.n52.eventing.rest.model.impl.SubscriptionImpl;
+import org.n52.eventing.rest.model.Subscription;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,7 +53,7 @@ public class InMemorySubscriptionsDao implements SubscriptionsService, Initializ
 
     private static final Logger LOG = LoggerFactory.getLogger(InMemorySubscriptionsDao.class);
 
-    private final Map<String, SubscriptionInstance> subscriptions = new HashMap<>();
+    private final Map<String, SubscriptionImpl> subscriptions = new HashMap<>();
 
     @Autowired
     private PublicationsService publicationsDao;
@@ -71,12 +73,12 @@ public class InMemorySubscriptionsDao implements SubscriptionsService, Initializ
     }
 
     @Override
-    public synchronized List<SubscriptionInstance> getSubscriptions(Pagination p) {
+    public synchronized List<Subscription> getSubscriptions(Pagination p) {
         return Collections.unmodifiableList(new ArrayList<>(subscriptions.values()));
     }
 
     @Override
-    public synchronized SubscriptionInstance getSubscription(String id) throws UnknownSubscriptionException {
+    public synchronized Subscription getSubscription(String id) throws UnknownSubscriptionException {
         if (!hasSubscription(id)) {
             throw new UnknownSubscriptionException("Subscription does not exist: "+id);
         }
@@ -85,14 +87,17 @@ public class InMemorySubscriptionsDao implements SubscriptionsService, Initializ
     }
 
     @Override
-    public synchronized void addSubscription(String subId, SubscriptionInstance subscription) {
-        this.subscriptions.put(subId, subscription);
+    public synchronized void addSubscription(String subId, Subscription subscription) {
+        if (subscription instanceof SubscriptionImpl) {
+            this.subscriptions.put(subId, (SubscriptionImpl) subscription);
+        }
+
     }
 
     @Override
-    public synchronized SubscriptionInstance updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException {
+    public synchronized Subscription updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException {
         if (hasSubscription(id)) {
-            SubscriptionInstance sub = this.subscriptions.get(id);
+            Subscription sub = this.subscriptions.get(id);
             sub.setModified(new DateTime());
             sub.setEndOfLife(eol);
             return sub;
@@ -103,9 +108,9 @@ public class InMemorySubscriptionsDao implements SubscriptionsService, Initializ
     }
 
     @Override
-    public synchronized SubscriptionInstance updateStatus(String id, boolean enabled) throws UnknownSubscriptionException {
+    public synchronized Subscription updateStatus(String id, boolean enabled) throws UnknownSubscriptionException {
         if (hasSubscription(id)) {
-            SubscriptionInstance sub = this.subscriptions.get(id);
+            SubscriptionImpl sub = this.subscriptions.get(id);
             sub.setModified(new DateTime());
             sub.setEnabled(enabled);
             return sub;
@@ -130,7 +135,7 @@ public class InMemorySubscriptionsDao implements SubscriptionsService, Initializ
 //        LOG.info("initializing subscriptions...");
 //
 //        try {
-//            SubscriptionInstance sub = new SubscriptionInstance("dummy-sub", "dummy-sub yeah", "this subscription is set up!");
+//            SubscriptionImpl sub = new SubscriptionImpl("dummy-sub", "dummy-sub yeah", "this subscription is set up!");
 //            sub.setUser(this.usersDao.getUser("dummy-user"));
 //            sub.setPublicationId(this.publicationsDao.getPublication("dummy-pub").getId());
 //            sub.addDeliveryMethod(createDeliveryInstance(this.deliveryMethodsDao.getDeliveryMethod("email"), "peterchen@paulchen.de"));

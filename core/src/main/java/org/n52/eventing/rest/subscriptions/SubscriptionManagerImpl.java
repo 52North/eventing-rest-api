@@ -27,15 +27,14 @@
  */
 package org.n52.eventing.rest.subscriptions;
 
+import org.n52.eventing.rest.model.Subscription;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.joda.time.DateTime;
-import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.factory.TemplatesDaoFactory;
-import org.n52.eventing.rest.templates.TemplateDefinition;
-import org.n52.eventing.rest.templates.TemplatesDao;
+import org.n52.eventing.rest.model.TemplateDefinition;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.n52.eventing.rest.users.User;
 import org.n52.subverse.termination.Terminatable;
@@ -71,7 +70,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
 
     private TerminationScheduler terminator;
 
-    private final Map<SubscriptionInstance, SubscriptionManagerImpl.SubscriptionTerminatable> subscriptionToTerminatableMap = new HashMap<>();
+    private final Map<Subscription, SubscriptionManagerImpl.SubscriptionTerminatable> subscriptionToTerminatableMap = new HashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -82,8 +81,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         this.dao.getSubscriptions(null).stream().forEach(s -> {
             LOG.info("Registering subscription {}", s.getId());
             try {
-                if (s.getTemplate() != null) {
-                    filterLogic.internalSubscribe(s, templatesDaoFactory.newDao().getTemplate(s.getTemplate().getId()));
+                if (s.getTemplateInstance() != null) {
+                    filterLogic.internalSubscribe(s, templatesDaoFactory.newDao().getTemplate(s.getTemplateInstance().getId()));
                     count.getAndIncrement();
                 }
             } catch (UnknownTemplateException ex) {
@@ -103,7 +102,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
 
 
     @Override
-    public String subscribe(SubscriptionInstance subDef, User user) throws InvalidSubscriptionException {
+    public String subscribe(Subscription subDef, User user) throws InvalidSubscriptionException {
         throwExceptionOnNullOrEmpty(subDef.getPublicationId(), "publicationId");
 
         String pubId = subDef.getPublicationId();
@@ -113,15 +112,15 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
 
         TemplateDefinition template = null;
         String desc;
-        if (subDef.getTemplate() != null) {
+        if (subDef.getTemplateInstance() != null) {
             try {
-                template = this.templatesDaoFactory.newDao().getTemplate(subDef.getTemplate().getId());
+                template = this.templatesDaoFactory.newDao().getTemplate(subDef.getTemplateInstance().getId());
             } catch (UnknownTemplateException ex) {
                 LOG.warn(ex.getMessage());
                 LOG.debug(ex.getMessage(), ex);
                 throw new InvalidSubscriptionException("Template unknown: "+pubId);
             }
-             desc = String.format("Subscription using template %s. Parameters: %s", template.getId(), subDef.getTemplate().getParameters());
+             desc = String.format("Subscription using template %s. Parameters: %s", template.getId(), subDef.getTemplateInstance().getParameters());
         }
         else {
             desc = String.format("Subscription for publication: %s", pubId);
@@ -158,12 +157,12 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
 
 
     @Override
-    public void updateSubscription(SubscriptionUpdateInstance subDef, User user) throws InvalidSubscriptionException {
+    public void updateSubscription(SubscriptionUpdate subDef, User user) throws InvalidSubscriptionException {
         String eolString = subDef.getEndOfLife();
         if (eolString != null && !eolString.isEmpty()) {
             DateTime eol = parseEndOfLife(eolString);
             try {
-                SubscriptionInstance subInstance = this.dao.updateEndOfLife(subDef.getId(), eol);
+                Subscription subInstance = this.dao.updateEndOfLife(subDef.getId(), eol);
                 changeEndOfLife(subInstance, eol);
             } catch (UnknownSubscriptionException ex) {
                 throw new InvalidSubscriptionException(ex.getMessage(), ex);
@@ -213,7 +212,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         LOG.debug("TODO: Implement pause");
     }
 
-    private void changeEndOfLife(SubscriptionInstance subscription, DateTime eol) {
+    private void changeEndOfLife(Subscription subscription, DateTime eol) {
         if (subscriptionToTerminatableMap.containsKey(subscription)) {
             try {
                 terminator.cancelTermination(subscriptionToTerminatableMap.get(subscription));
@@ -245,13 +244,13 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
 
     public class SubscriptionTerminatable implements Terminatable {
 
-        private final SubscriptionInstance subscription;
+        private final Subscription subscription;
 
-        public SubscriptionTerminatable(SubscriptionInstance subscription) {
+        public SubscriptionTerminatable(Subscription subscription) {
             this.subscription = subscription;
         }
 
-        public SubscriptionInstance getSubscription() {
+        public Subscription getSubscription() {
             return subscription;
         }
 

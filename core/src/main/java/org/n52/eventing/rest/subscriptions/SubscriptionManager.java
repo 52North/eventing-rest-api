@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.rest.subscriptions;
 
+import org.n52.eventing.rest.model.Subscription;
 import org.n52.eventing.rest.users.User;
 
 /**
@@ -35,9 +36,9 @@ import org.n52.eventing.rest.users.User;
  */
 public interface SubscriptionManager {
 
-    String subscribe(SubscriptionInstance subDef, User user) throws InvalidSubscriptionException;
+    String subscribe(Subscription subDef, User user) throws InvalidSubscriptionException;
 
-    void updateSubscription(SubscriptionUpdateInstance subDef, User user) throws InvalidSubscriptionException;
+    void updateSubscription(SubscriptionUpdate subDef, User user) throws InvalidSubscriptionException;
 
     void removeSubscription(String id, User user) throws InvalidSubscriptionException;
 

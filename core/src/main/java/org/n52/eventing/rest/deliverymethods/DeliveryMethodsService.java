@@ -28,6 +28,7 @@
 package org.n52.eventing.rest.deliverymethods;
 
 
+import org.n52.eventing.rest.model.DeliveryMethodDefinition;
 import java.util.List;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.n52.subverse.delivery.DeliveryEndpoint;

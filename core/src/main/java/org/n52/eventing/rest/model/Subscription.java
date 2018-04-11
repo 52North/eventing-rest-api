@@ -25,28 +25,51 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.publications;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.n52.eventing.rest.model;
 
-import org.n52.eventing.rest.model.Publication;
-import java.util.List;
-import java.util.Map;
-import org.n52.eventing.rest.InvalidPaginationException;
-import org.n52.eventing.rest.Pagination;
+import org.joda.time.DateTime;
+import org.n52.eventing.rest.templates.TemplateInstance;
+import org.n52.eventing.rest.users.User;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface PublicationsService {
+public interface Subscription {
 
-    boolean hasPublication(String id);
+    String getId();
 
-    default List<Publication> getPublications(Map<String, String[]>  filter, Pagination p) throws InvalidPaginationException {
-        return getPublications(p);
-    };
+    void setId(String id);
 
-    List<Publication> getPublications( Pagination p) throws InvalidPaginationException;
+    void setHref(String h);
 
-    Publication getPublication(String id) throws UnknownPublicationsException;
+    String getPublicationId();
+
+    TemplateInstance getTemplateInstance();
+
+    String getLabel();
+
+    void setLabel(String label);
+
+    void setDescription(String desc);
+
+    void setPublicationId(String pubId);
+
+    void setUser(User u);
+
+    User getUser();
+
+    void setCreated(DateTime c);
+
+    void setModified(DateTime m);
+
+    DateTime getEndOfLife();
+
+    void setEndOfLife(DateTime eol);
 
 }

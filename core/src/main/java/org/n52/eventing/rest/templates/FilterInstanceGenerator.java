@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.rest.templates;
 
+import org.n52.eventing.rest.model.impl.TemplateDefinitionImpl;
 import java.util.Collection;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.n52.eventing.rest.parameters.ParameterInstance;
@@ -37,7 +38,7 @@ import org.n52.eventing.rest.parameters.ParameterInstance;
  */
 public class FilterInstanceGenerator {
 
-    public String generateFilterInstance(TemplateDefinition t, Collection<ParameterInstance> values) {
+    public String generateFilterInstance(TemplateDefinitionImpl t, Collection<ParameterInstance> values) {
         Object o = t.getDefinition().getContent();
 
         String content;

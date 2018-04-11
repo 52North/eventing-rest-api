@@ -25,90 +25,72 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.eventlog;
+package org.n52.eventing.rest.model.impl;
 
-import java.util.Optional;
-import org.joda.time.DateTime;
-import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
-import org.n52.subverse.delivery.Streamable;
+import org.n52.eventing.rest.model.Publication;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class EventHolder implements Comparable<EventHolder> {
+public class PublicationImpl implements Publication {
 
-    private final String id;
-    private final DateTime timestamp;
-    private final SubscriptionInstance subscription;
-    private final String label;
-    private transient final Optional<Streamable> streamable;
-    private Object data;
+    private String id;
+    private String label;
+    private String description;
+    private Object details;
     private String href;
-    private String content;
 
-    public EventHolder(String id, DateTime time, SubscriptionInstance subscription, String label, Optional<Streamable> streamable) {
-        this.id = id;
-        this.timestamp = time;
-        this.subscription = subscription;
-        this.label = label;
-        this.streamable = streamable;
+    public PublicationImpl() {
     }
 
+    public PublicationImpl(String id, String label, String description) {
+        this.id = id;
+        this.label = label;
+        this.description = description;
+    }
+
+    @Override
     public String getId() {
         return id;
     }
 
-    public DateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public SubscriptionInstance subscription() {
-        return subscription;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public Optional<Streamable> streamableObject() {
-        return streamable;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
-    public void setData(Object data) {
-        this.data = data;
+    public String getDescription() {
+        return description;
     }
 
-    public Object getData() {
-        return data;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
+    public Object getDetails() {
+        return details;
+    }
+
+    public void setDetails(Object details) {
+        this.details = details;
+    }
+
+    @Override
     public String getHref() {
         return href;
     }
 
+    @Override
     public void setHref(String href) {
         this.href = href;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    @Override
-    public int compareTo(EventHolder o) {
-        if (this.timestamp == null) {
-            return -1;
-        }
-        if (o.timestamp == null) {
-            return 1;
-        }
-
-        return this.timestamp.compareTo(o.timestamp);
     }
 
 }

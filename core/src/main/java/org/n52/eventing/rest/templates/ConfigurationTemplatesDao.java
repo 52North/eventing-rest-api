@@ -55,6 +55,8 @@
 
 package org.n52.eventing.rest.templates;
 
+import org.n52.eventing.rest.model.TemplateDefinition;
+import org.n52.eventing.rest.model.impl.TemplateDefinitionImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -144,9 +146,9 @@ public class ConfigurationTemplatesDao implements TemplatesDao, InitializingBean
 
     }
 
-    protected TemplateDefinition loadTemplate(Path p) throws IOException {
+    protected TemplateDefinitionImpl loadTemplate(Path p) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        TemplateDefinition t = mapper.readValue(p.toFile(), TemplateDefinition.class);
+        TemplateDefinitionImpl t = mapper.readValue(p.toFile(), TemplateDefinitionImpl.class);
         return t;
     }
 

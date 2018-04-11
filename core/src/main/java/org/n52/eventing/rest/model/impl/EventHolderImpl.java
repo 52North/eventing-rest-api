@@ -25,59 +25,64 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.publications;
+package org.n52.eventing.rest.model.impl;
+
+import java.util.Optional;
+import org.joda.time.DateTime;
+import org.n52.eventing.rest.model.EventHolder;
+import org.n52.subverse.delivery.Streamable;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class Publication {
+public class EventHolderImpl implements EventHolder, Comparable<EventHolderImpl> {
 
-    private String id;
-    private String label;
-    private String description;
-    private Object details;
+    private final String id;
+    private final DateTime timestamp;
+    private final SubscriptionImpl subscription;
+    private final String label;
+    private transient final Optional<Streamable> streamable;
+    private Object data;
     private String href;
+    private String content;
 
-    public Publication() {
-    }
-
-    public Publication(String id, String label, String description) {
+    public EventHolderImpl(String id, DateTime time, SubscriptionImpl subscription, String label, Optional<Streamable> streamable) {
         this.id = id;
+        this.timestamp = time;
+        this.subscription = subscription;
         this.label = label;
-        this.description = description;
+        this.streamable = streamable;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public DateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public SubscriptionImpl subscription() {
+        return subscription;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    @Override
+    public Optional<Streamable> streamableObject() {
+        return streamable;
     }
 
-    public String getDescription() {
-        return description;
+    public void setData(Object data) {
+        this.data = data;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Object getDetails() {
-        return details;
-    }
-
-    public void setDetails(Object details) {
-        this.details = details;
+    public Object getData() {
+        return data;
     }
 
     public String getHref() {
@@ -86,6 +91,26 @@ public class Publication {
 
     public void setHref(String href) {
         this.href = href;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    @Override
+    public int compareTo(EventHolderImpl o) {
+        if (this.timestamp == null) {
+            return -1;
+        }
+        if (o.timestamp == null) {
+            return 1;
+        }
+
+        return this.timestamp.compareTo(o.timestamp);
     }
 
 }

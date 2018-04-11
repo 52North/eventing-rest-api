@@ -27,6 +27,8 @@
  */
 package org.n52.eventing.rest.publications;
 
+import org.n52.eventing.rest.model.Publication;
+import org.n52.eventing.rest.model.impl.PublicationImpl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -88,7 +90,7 @@ public class InjectablePublicationsDao implements PublicationsService, Initializ
                         return;
                     }
 
-                    Publication pub = new Publication(pp.getIdentifier(), pp.getDescription(), null);
+                    Publication pub = new PublicationImpl(pp.getIdentifier(), pp.getDescription(), null);
                     this.publications.put(pp.getIdentifier(), pub);
                 });
     }

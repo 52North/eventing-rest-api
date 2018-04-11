@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.rest.templates;
 
+import org.n52.eventing.rest.model.TemplateDefinition;
 import java.util.List;
 import java.util.Map;
 import org.n52.eventing.rest.InvalidPaginationException;

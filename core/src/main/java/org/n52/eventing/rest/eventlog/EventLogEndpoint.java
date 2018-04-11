@@ -27,10 +27,11 @@
  */
 package org.n52.eventing.rest.eventlog;
 
+import org.n52.eventing.rest.model.impl.EventHolderImpl;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.joda.time.DateTime;
-import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
+import org.n52.eventing.rest.model.impl.SubscriptionImpl;
 import org.n52.subverse.delivery.DeliveryEndpoint;
 import org.n52.subverse.delivery.Streamable;
 
@@ -41,11 +42,11 @@ import org.n52.subverse.delivery.Streamable;
 public class EventLogEndpoint implements DeliveryEndpoint {
 
     private final int maximumCapacity;
-    private final SubscriptionInstance subscription;
+    private final SubscriptionImpl subscription;
     private final EventLogStore store;
     private final AtomicInteger count = new AtomicInteger(1);
 
-    public EventLogEndpoint(int maximumCapacity, SubscriptionInstance subscription, EventLogStore store) {
+    public EventLogEndpoint(int maximumCapacity, SubscriptionImpl subscription, EventLogStore store) {
         this.maximumCapacity = maximumCapacity;
         this.subscription = subscription;
         this.store = store;
@@ -54,7 +55,7 @@ public class EventLogEndpoint implements DeliveryEndpoint {
 
     @Override
     public void deliver(Optional<Streamable> o, boolean asRaw) {
-        EventHolder eh = new EventHolder(String.format("%s_match_%s", subscription.getId(), count.getAndIncrement()),
+        EventHolderImpl eh = new EventHolderImpl(String.format("%s_match_%s", subscription.getId(), count.getAndIncrement()),
                 new DateTime(), subscription, null, o);
         this.store.addEvent(subscription, eh, maximumCapacity);
     }

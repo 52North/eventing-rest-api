@@ -43,9 +43,9 @@ import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.security.NotAuthenticatedException;
-import org.n52.eventing.rest.eventlog.EventHolder;
+import org.n52.eventing.rest.model.EventHolder;
 import org.n52.eventing.rest.eventlog.EventLogStore;
-import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
+import org.n52.eventing.rest.model.Subscription;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
 import org.n52.subverse.delivery.Streamable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +106,7 @@ public class EventLogController {
         Map<String, String[]> query = context.getParameters();
         Pagination page = Pagination.fromQuery(query);
 
-        SubscriptionInstance subscription = subDao.getSubscription(subId);
+        Subscription subscription = subDao.getSubscription(subId);
 
         return store.getEventsForSubscription(subscription, page).stream()
                 .map((EventHolder t) -> {

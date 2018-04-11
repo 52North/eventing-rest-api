@@ -27,15 +27,13 @@
  */
 package org.n52.eventing.rest.templates;
 
+import org.n52.eventing.rest.model.impl.TemplateDefinitionImpl;
 import java.util.ArrayList;
 import java.util.List;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.n52.eventing.rest.parameters.ParameterInstance;
-import org.n52.eventing.rest.templates.Definition;
-import org.n52.eventing.rest.templates.FilterInstanceGenerator;
-import org.n52.eventing.rest.templates.TemplateDefinition;
 
 /**
  *
@@ -54,8 +52,8 @@ public class AbstractInstanceGeneratorTest {
         ));
     }
 
-    private TemplateDefinition createTemplate() {
-        TemplateDefinition t = new TemplateDefinition();
+    private TemplateDefinitionImpl createTemplate() {
+        TemplateDefinitionImpl t = new TemplateDefinitionImpl();
         t.setDefinition(new Definition("<greaterThan><prop>${parama}</prop><val>${paramb}</val></greaterThan>", ""));
         return t;
     }

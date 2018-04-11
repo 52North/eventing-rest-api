@@ -27,11 +27,12 @@
  */
 package org.n52.eventing.rest.eventlog;
 
+import org.n52.eventing.rest.model.EventHolder;
 import java.util.Collection;
 import java.util.Optional;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.RequestContext;
-import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
+import org.n52.eventing.rest.model.Subscription;
 
 /**
  *
@@ -46,7 +47,7 @@ public interface EventLogStore {
      * @param eh the event holder instance
      * @param maximumCapacity the maximum capacity to store for this subscription ID
      */
-    void addEvent(SubscriptionInstance sub, EventHolder eh, int maximumCapacity);
+    void addEvent(Subscription sub, EventHolder eh, int maximumCapacity);
 
     Collection<EventHolder> getAllEvents();
 
@@ -54,9 +55,9 @@ public interface EventLogStore {
         return getAllEvents();
     };
 
-    Collection<EventHolder> getEventsForSubscription(SubscriptionInstance subscription);
+    Collection<EventHolder> getEventsForSubscription(Subscription subscription);
 
-    default Collection<EventHolder> getEventsForSubscription(SubscriptionInstance subscription, Pagination pagination) {
+    default Collection<EventHolder> getEventsForSubscription(Subscription subscription, Pagination pagination) {
         return getEventsForSubscription(subscription);
     }
 

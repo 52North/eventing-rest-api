@@ -28,12 +28,11 @@
 package org.n52.eventing.rest.binding.subscriptions;
 
 import org.n52.eventing.rest.binding.EmptyArrayModel;
-import org.n52.eventing.rest.subscriptions.SubscriptionUpdateInstance;
+import org.n52.eventing.rest.subscriptions.SubscriptionUpdate;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,12 +42,12 @@ import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.binding.eventlog.EventLogController;
-import org.n52.eventing.rest.eventlog.EventHolder;
+import org.n52.eventing.rest.model.EventHolder;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.security.SecurityService;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.n52.eventing.rest.subscriptions.SubscriptionManager;
-import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
+import org.n52.eventing.rest.model.Subscription;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
 import org.n52.eventing.rest.users.User;
 import org.slf4j.Logger;
@@ -100,7 +99,7 @@ public class SubscriptionsController {
 
         String fullUrl = context.getFullUrl();
 
-        List<SubscriptionInstance> subs = retrieveSubscriptions(fullUrl, p);
+        List<Subscription> subs = retrieveSubscriptions(fullUrl, p);
 
         if (subs.isEmpty()) {
             return EmptyArrayModel.create();
@@ -109,12 +108,12 @@ public class SubscriptionsController {
         return new ModelAndView().addObject(subs);
     }
 
-    private List<SubscriptionInstance> retrieveSubscriptions(String fullUrl, Pagination p) throws NotAuthenticatedException {
+    private List<Subscription> retrieveSubscriptions(String fullUrl, Pagination p) throws NotAuthenticatedException {
         RequestContext.storeInThreadLocal(context);
 
         try {
             return this.dao.getSubscriptions(p).stream()
-                .map((SubscriptionInstance si) -> {
+                .map((Subscription si) -> {
                     si.setHref(String.format("%s/%s", fullUrl, si.getId()));
                     return si;
                 })
@@ -127,7 +126,7 @@ public class SubscriptionsController {
     }
 
     @RequestMapping(value = "/{item}", method = GET)
-    public SubscriptionInstance getSubscription(@PathVariable("item") String id)
+    public Subscription getSubscription(@PathVariable("item") String id)
             throws IOException, URISyntaxException, ResourceNotAvailableException, NotAuthenticatedException {
         RequestContext.storeInThreadLocal(context);
 
@@ -136,7 +135,7 @@ public class SubscriptionsController {
         }
 
         try {
-            SubscriptionInstance sub = this.dao.getSubscription(id);
+            Subscription sub = this.dao.getSubscription(id);
             return sub;
         } catch (UnknownSubscriptionException ex) {
             throw new ResourceNotAvailableException(ex.getMessage(), ex);
@@ -161,7 +160,7 @@ public class SubscriptionsController {
 
 
     @RequestMapping(value = "", method = POST)
-    public ModelAndView subscribe(@RequestBody SubscriptionInstance subDef) throws InvalidSubscriptionException, NotAuthenticatedException {
+    public ModelAndView subscribe(@RequestBody Subscription subDef) throws InvalidSubscriptionException, NotAuthenticatedException {
         final User user = securityService.resolveCurrentUser();
 
         RequestContext.storeInThreadLocal(context);
@@ -184,7 +183,7 @@ public class SubscriptionsController {
     }
 
     @RequestMapping(value = "/{item}", method = PUT)
-    public ResponseEntity<?> updateSubscription(@RequestBody SubscriptionUpdateInstance subDef,
+    public ResponseEntity<?> updateSubscription(@RequestBody SubscriptionUpdate subDef,
             @PathVariable("item") String id) throws InvalidSubscriptionException, NotAuthenticatedException {
         subDef.setId(id);
         final User user = securityService.resolveCurrentUser();

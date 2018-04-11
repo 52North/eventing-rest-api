@@ -25,28 +25,25 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.publications;
-
-import org.n52.eventing.rest.model.Publication;
-import java.util.List;
-import java.util.Map;
-import org.n52.eventing.rest.InvalidPaginationException;
-import org.n52.eventing.rest.Pagination;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.n52.eventing.rest.subscriptions;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface PublicationsService {
+public interface SubscriptionUpdate {
 
-    boolean hasPublication(String id);
+    String getId();
 
-    default List<Publication> getPublications(Map<String, String[]>  filter, Pagination p) throws InvalidPaginationException {
-        return getPublications(p);
-    };
+    void setId(String id);
 
-    List<Publication> getPublications( Pagination p) throws InvalidPaginationException;
+    String getEndOfLife();
 
-    Publication getPublication(String id) throws UnknownPublicationsException;
+    boolean getEnabled();
 
 }

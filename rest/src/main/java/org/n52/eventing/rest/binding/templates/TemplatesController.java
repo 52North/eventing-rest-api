@@ -38,7 +38,7 @@ import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.factory.TemplatesDaoFactory;
 import org.n52.eventing.security.NotAuthenticatedException;
-import org.n52.eventing.rest.templates.TemplateDefinition;
+import org.n52.eventing.rest.model.TemplateDefinition;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.springframework.beans.factory.annotation.Autowired;

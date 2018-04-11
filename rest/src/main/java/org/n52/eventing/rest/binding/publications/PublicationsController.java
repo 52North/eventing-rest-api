@@ -38,7 +38,7 @@ import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.security.NotAuthenticatedException;
-import org.n52.eventing.rest.publications.Publication;
+import org.n52.eventing.rest.model.Publication;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;

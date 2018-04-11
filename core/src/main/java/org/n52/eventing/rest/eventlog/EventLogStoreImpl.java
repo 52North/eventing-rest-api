@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.rest.eventlog;
 
+import org.n52.eventing.rest.model.EventHolder;
 import com.google.common.collect.EvictingQueue;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.n52.eventing.rest.RequestContext;
-import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
+import org.n52.eventing.rest.model.Subscription;
 
 /**
  *
@@ -43,11 +44,11 @@ import org.n52.eventing.rest.subscriptions.SubscriptionInstance;
  */
 public class EventLogStoreImpl implements EventLogStore {
 
-    private final Map<SubscriptionInstance, Collection<EventHolder>> internalStore = new HashMap<>();
-    private final Map<SubscriptionInstance, Object> mutexes = new HashMap<>();
+    private final Map<Subscription, Collection<EventHolder>> internalStore = new HashMap<>();
+    private final Map<Subscription, Object> mutexes = new HashMap<>();
 
     @Override
-    public void addEvent(SubscriptionInstance subscription, EventHolder eh, int maxCapacity) {
+    public void addEvent(Subscription subscription, EventHolder eh, int maxCapacity) {
         Collection<EventHolder> targetList;
         synchronized (this) {
             if (!this.internalStore.containsKey(subscription)) {
@@ -79,7 +80,7 @@ public class EventLogStoreImpl implements EventLogStore {
     }
 
     @Override
-    public Collection<EventHolder> getEventsForSubscription(SubscriptionInstance sub) {
+    public Collection<EventHolder> getEventsForSubscription(Subscription sub) {
         synchronized (this) {
             if (!this.internalStore.containsKey(sub)) {
                 return Collections.emptyList();

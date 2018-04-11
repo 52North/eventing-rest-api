@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.rest.subscriptions;
 
+import org.n52.eventing.rest.model.Subscription;
 import java.util.List;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.Pagination;
@@ -39,15 +40,15 @@ public interface SubscriptionsService {
 
     boolean hasSubscription(String id);
 
-    List<SubscriptionInstance> getSubscriptions(Pagination p);
+    List<Subscription> getSubscriptions(Pagination p);
 
-    SubscriptionInstance getSubscription(String id) throws UnknownSubscriptionException;
+    Subscription getSubscription(String id) throws UnknownSubscriptionException;
 
-    void addSubscription(String subId, SubscriptionInstance subscription);
+    void addSubscription(String subId, Subscription subscription);
 
-    SubscriptionInstance updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException;
+    Subscription updateEndOfLife(String id, DateTime eol) throws UnknownSubscriptionException;
 
-    SubscriptionInstance updateStatus(String id, boolean enabled) throws UnknownSubscriptionException;
+    Subscription updateStatus(String id, boolean enabled) throws UnknownSubscriptionException;
 
     void remove(String id) throws UnknownSubscriptionException;
 

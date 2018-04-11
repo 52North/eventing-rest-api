@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.rest.subscriptions;
 
+import org.n52.eventing.rest.model.impl.SubscriptionImpl;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,8 @@ import org.n52.eventing.rest.eventlog.EventLogEndpoint;
 import org.n52.eventing.rest.eventlog.EventLogStore;
 import org.n52.eventing.rest.parameters.ParameterInstance;
 import org.n52.eventing.rest.templates.FilterInstanceGenerator;
-import org.n52.eventing.rest.templates.TemplateDefinition;
+import org.n52.eventing.rest.model.TemplateDefinition;
+import org.n52.eventing.rest.model.impl.TemplateDefinitionImpl;
 import org.n52.subverse.delivery.DeliveryEndpoint;
 import org.n52.subverse.engine.FilterEngine;
 import org.n52.subverse.engine.SubscriptionRegistrationException;
@@ -73,7 +75,13 @@ public class SubverseFilterLogic implements FilterLogic {
     private final Map<String, Subscription> subscriptionToRuleMap = new HashMap<>();
 
     @Override
-    public String internalSubscribe(SubscriptionInstance subscription, TemplateDefinition template) throws InvalidSubscriptionException {
+    public String internalSubscribe(org.n52.eventing.rest.model.Subscription sub, TemplateDefinition template) throws InvalidSubscriptionException {
+        if (!(sub instanceof SubscriptionImpl)) {
+            throw new InvalidSubscriptionException("Unsupported subscription type: "+ sub);
+        }
+
+        SubscriptionImpl subscription = (SubscriptionImpl) sub;
+
         /*
         * resolve delivery endpoint
         */
@@ -99,13 +107,13 @@ public class SubverseFilterLogic implements FilterLogic {
 
         String filterInstance = null;
         Map<String, ParameterInstance> params = null;
-        if (template != null) {
-            params = subscription.getTemplate().getParameters();
+        if (template != null && template instanceof TemplateDefinitionImpl) {
+            params = subscription.getTemplateInstance().getParameters();
             params.forEach((String t, ParameterInstance u) -> {
                 u.setName(t);
             });
             filterInstance = this.filterInstanceGenerator.generateFilterInstance(
-                template, params.values());
+                (TemplateDefinitionImpl) template, params.values());
         }
 
         try {
@@ -127,7 +135,7 @@ public class SubverseFilterLogic implements FilterLogic {
         return UUID.randomUUID().toString();
     }
 
-    private Subscription wrapToSubverseSubscription(SubscriptionInstance subscription,
+    private Subscription wrapToSubverseSubscription(SubscriptionImpl subscription,
             String filterInstance, String pubId) throws InvalidSubscriptionException {
         try {
             XmlObject filterXml = null;

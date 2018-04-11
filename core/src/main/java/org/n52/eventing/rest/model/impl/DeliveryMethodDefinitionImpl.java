@@ -25,29 +25,31 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.deliverymethods;
+package org.n52.eventing.rest.model.impl;
 
 import java.util.Map;
+import org.n52.eventing.rest.model.DeliveryMethodDefinition;
 import org.n52.eventing.rest.parameters.ParameterDefinition;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class DeliveryMethodDefinition {
+public class DeliveryMethodDefinitionImpl implements DeliveryMethodDefinition {
 
     private String id;
     private String label;
     private String description;
     private Map<String, ParameterDefinition> parameters;
 
-    public DeliveryMethodDefinition(String id, String label, String description, Map<String, ParameterDefinition> params) {
+    public DeliveryMethodDefinitionImpl(String id, String label, String description, Map<String, ParameterDefinition> params) {
         this.id = id;
         this.label = label;
         this.description = description;
         this.parameters = params;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -56,6 +58,7 @@ public class DeliveryMethodDefinition {
         this.id = id;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -64,6 +67,7 @@ public class DeliveryMethodDefinition {
         this.label = label;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }

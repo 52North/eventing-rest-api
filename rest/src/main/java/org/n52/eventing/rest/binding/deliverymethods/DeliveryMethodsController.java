@@ -37,7 +37,7 @@ import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.security.NotAuthenticatedException;
-import org.n52.eventing.rest.deliverymethods.DeliveryMethodDefinition;
+import org.n52.eventing.rest.model.DeliveryMethodDefinition;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;

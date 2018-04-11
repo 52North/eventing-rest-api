@@ -27,7 +27,8 @@
  */
 package org.n52.eventing.rest.subscriptions;
 
-import org.n52.eventing.rest.templates.TemplateDefinition;
+import org.n52.eventing.rest.model.Subscription;
+import org.n52.eventing.rest.model.TemplateDefinition;
 
 /**
  *
@@ -42,7 +43,7 @@ public interface FilterLogic {
      * @return the unique id for the subscription
      * @throws InvalidSubscriptionException
      */
-    public String internalSubscribe(SubscriptionInstance s, TemplateDefinition template) throws InvalidSubscriptionException;
+    public String internalSubscribe(Subscription s, TemplateDefinition template) throws InvalidSubscriptionException;
 
     /**
      * an implementation shall remove the subscription with the given ID

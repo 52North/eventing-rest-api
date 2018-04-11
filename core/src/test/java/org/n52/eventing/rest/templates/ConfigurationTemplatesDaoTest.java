@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.rest.templates;
 
+import org.n52.eventing.rest.model.impl.TemplateDefinitionImpl;
 import org.n52.eventing.rest.parameters.ParameterDefinition;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -45,7 +46,7 @@ public class ConfigurationTemplatesDaoTest {
     public void testTemplateLoading() throws IOException, URISyntaxException {
         ConfigurationTemplatesDao dao = new ConfigurationTemplatesDao(null);
 
-        TemplateDefinition t = dao.loadTemplate(Paths.get(getClass().getResource("/templates-test/overshootUndershoot.json").toURI()));
+        TemplateDefinitionImpl t = dao.loadTemplate(Paths.get(getClass().getResource("/templates-test/overshootUndershoot.json").toURI()));
 
         Assert.assertThat(t.getId(), CoreMatchers.is("overshootUndershoot"));
         Assert.assertThat(t.getLabel(), CoreMatchers.is("Generic overshoot/undershoot pattern"));

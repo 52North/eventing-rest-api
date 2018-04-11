@@ -25,12 +25,13 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.subscriptions;
+package org.n52.eventing.rest.model.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodInstance;
+import org.n52.eventing.rest.model.Subscription;
 import org.n52.eventing.rest.templates.TemplateInstance;
 import org.n52.eventing.rest.users.User;
 
@@ -39,7 +40,7 @@ import org.n52.eventing.rest.users.User;
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class SubscriptionInstance {
+public class SubscriptionImpl implements Subscription {
 
     private String id;
     private String label;
@@ -56,28 +57,32 @@ public class SubscriptionInstance {
     private Object details;
     private String href;
 
-    public SubscriptionInstance() {
+    public SubscriptionImpl() {
     }
 
-    public SubscriptionInstance(String id, String label, String description) {
+    public SubscriptionImpl(String id, String label, String description) {
         this();
         this.id = id;
         this.label = label;
         this.description = description;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
 
+    @Override
     public void setLabel(String label) {
         this.label = label;
     }
@@ -86,22 +91,27 @@ public class SubscriptionInstance {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public User getUser() {
         return user;
     }
 
+    @Override
     public void setUser(User user) {
         this.user = user;
     }
 
+    @Override
     public String getPublicationId() {
         return publicationId;
     }
 
+    @Override
     public void setPublicationId(String publicationId) {
         this.publicationId = publicationId;
     }
@@ -114,6 +124,7 @@ public class SubscriptionInstance {
         this.enabled = enabled;
     }
 
+    @Override
     public DateTime getEndOfLife() {
         return endOfLife;
     }
@@ -130,7 +141,8 @@ public class SubscriptionInstance {
         this.expired = expired;
     }
 
-    public TemplateInstance getTemplate() {
+    @Override
+    public TemplateInstance getTemplateInstance() {
         return template;
     }
 
@@ -154,6 +166,7 @@ public class SubscriptionInstance {
         return created;
     }
 
+    @Override
     public void setCreated(DateTime created) {
         this.created = created;
     }
@@ -162,6 +175,7 @@ public class SubscriptionInstance {
         return modified;
     }
 
+    @Override
     public void setModified(DateTime modified) {
         this.modified = modified;
     }
@@ -178,6 +192,7 @@ public class SubscriptionInstance {
         return href;
     }
 
+    @Override
     public void setHref(String href) {
         this.href = href;
     }

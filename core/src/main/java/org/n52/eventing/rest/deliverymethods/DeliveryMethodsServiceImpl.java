@@ -27,6 +27,8 @@
  */
 package org.n52.eventing.rest.deliverymethods;
 
+import org.n52.eventing.rest.model.impl.DeliveryMethodDefinitionImpl;
+import org.n52.eventing.rest.model.DeliveryMethodDefinition;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -81,7 +83,7 @@ public class DeliveryMethodsServiceImpl implements DeliveryMethodsService, Initi
     @Override
     public void afterPropertiesSet() throws Exception {
         this.deliveryProviderRepository.getProviders().stream().forEach(dp -> {
-            DeliveryMethodDefinition method = new DeliveryMethodDefinition(dp.getIdentifier(), dp.getAbstract(),
+            DeliveryMethodDefinition method = new DeliveryMethodDefinitionImpl(dp.getIdentifier(), dp.getAbstract(),
                     dp.getAbstract(), mapParameters(dp.getParameters()));
             methods.put(dp.getIdentifier(), method);
         });

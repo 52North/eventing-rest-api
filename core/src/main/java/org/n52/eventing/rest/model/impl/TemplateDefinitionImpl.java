@@ -25,17 +25,19 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.templates;
+package org.n52.eventing.rest.model.impl;
 
 import java.util.HashMap;
 import org.n52.eventing.rest.parameters.ParameterDefinition;
 import java.util.Map;
+import org.n52.eventing.rest.model.TemplateDefinition;
+import org.n52.eventing.rest.templates.Definition;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public class TemplateDefinition {
+public class TemplateDefinitionImpl implements TemplateDefinition {
 
     private String id;
     private String label;
@@ -43,10 +45,10 @@ public class TemplateDefinition {
     private Definition definition;
     private Map<String, ParameterDefinition> parameters;
 
-    public TemplateDefinition() {
+    public TemplateDefinitionImpl() {
     }
 
-    public TemplateDefinition(String id, String label, String description, Definition definition) {
+    public TemplateDefinitionImpl(String id, String label, String description, Definition definition) {
         this.id = id;
         this.label = label;
         this.description = description;
