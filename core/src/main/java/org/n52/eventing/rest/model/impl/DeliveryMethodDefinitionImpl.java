@@ -40,6 +40,7 @@ public class DeliveryMethodDefinitionImpl implements DeliveryMethodDefinition {
     private String id;
     private String label;
     private String description;
+    private String href;
     private Map<String, ParameterDefinition> parameters;
 
     public DeliveryMethodDefinitionImpl(String id, String label, String description, Map<String, ParameterDefinition> params) {
@@ -82,6 +83,15 @@ public class DeliveryMethodDefinitionImpl implements DeliveryMethodDefinition {
 
     public void setParameters(Map<String, ParameterDefinition> parameters) {
         this.parameters = parameters;
+    }
+
+    @Override
+    public String getHref() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void setHref(String href) {
+        this.href = href;
     }
 
 }

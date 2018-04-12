@@ -25,21 +25,21 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package org.n52.eventing.rest.model;
+
+package org.n52.eventing.rest.model.views;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
-public interface TemplateDefinition {
+public class Views {
 
-    String getId();
+    public static class SubscriptionOverview {
 
-    String getLabel();
+    }
+
+    public static class SubscriptionExpanded extends SubscriptionOverview {
+
+    }
 
 }

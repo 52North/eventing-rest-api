@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.rest.binding.subscriptions;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.rest.subscriptions.SubscriptionUpdate;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
@@ -48,6 +49,7 @@ import org.n52.eventing.security.SecurityService;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
 import org.n52.eventing.rest.subscriptions.SubscriptionManager;
 import org.n52.eventing.rest.model.Subscription;
+import org.n52.eventing.rest.model.views.Views;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
 import org.n52.eventing.rest.users.User;
 import org.slf4j.Logger;
@@ -91,8 +93,9 @@ public class SubscriptionsController {
     @Autowired
     private RequestContext context;
 
+    @JsonView(Views.SubscriptionExpanded.class)
     @RequestMapping("")
-    public ModelAndView getSubscriptions()
+    public List<Subscription> getSubscriptions()
             throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
         Map<String, String[]> query = context.getParameters();
         Pagination p = Pagination.fromQuery(query);
@@ -101,11 +104,7 @@ public class SubscriptionsController {
 
         List<Subscription> subs = retrieveSubscriptions(fullUrl, p);
 
-        if (subs.isEmpty()) {
-            return EmptyArrayModel.create();
-        }
-
-        return new ModelAndView().addObject(subs);
+        return subs;
     }
 
     private List<Subscription> retrieveSubscriptions(String fullUrl, Pagination p) throws NotAuthenticatedException {
@@ -125,6 +124,7 @@ public class SubscriptionsController {
 
     }
 
+    @JsonView(Views.SubscriptionExpanded.class)
     @RequestMapping(value = "/{item}", method = GET)
     public Subscription getSubscription(@PathVariable("item") String id)
             throws IOException, URISyntaxException, ResourceNotAvailableException, NotAuthenticatedException {
