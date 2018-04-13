@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.rest.binding.templates;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.factory.TemplatesDaoFactory;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.model.TemplateDefinition;
+import org.n52.eventing.rest.model.views.Views;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,7 @@ public class TemplatesController {
     private RequestContext context;
 
 
+    @JsonView(Views.TemplateOverview.class)
     @RequestMapping(value = "", method = RequestMethod.GET)
     public List<TemplateDefinition> getTemplates() throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
         RequestContext.storeInThreadLocal(context);
@@ -82,6 +85,13 @@ public class TemplatesController {
 
     }
 
+    @JsonView(Views.TemplateExpanded.class)
+    @RequestMapping(path = "", params = {"expanded=true"})
+    public List<TemplateDefinition> getTemplatesExpanded() throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
+        return getTemplates();
+    }
+
+    @JsonView(Views.TemplateExpanded.class)
     @RequestMapping(value = "/{item}", method = RequestMethod.GET)
     public TemplateDefinition getTemplate(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException, IOException, URISyntaxException {
         RequestContext.storeInThreadLocal(context);

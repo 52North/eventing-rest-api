@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.rest.binding.eventlog;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -46,6 +47,7 @@ import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.model.EventHolder;
 import org.n52.eventing.rest.eventlog.EventLogStore;
 import org.n52.eventing.rest.model.Subscription;
+import org.n52.eventing.rest.model.views.Views;
 import org.n52.eventing.rest.subscriptions.UnknownSubscriptionException;
 import org.n52.subverse.delivery.Streamable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +79,7 @@ public class EventLogController {
     private RequestUtils requestUtils;
 
 
+    @JsonView(Views.EventOverview.class)
     @RequestMapping("")
     public Collection<EventHolder> getAllEvents()
             throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
@@ -100,6 +103,14 @@ public class EventLogController {
         }
     }
 
+    @JsonView(Views.EventExpanded.class)
+    @RequestMapping(path = "", params = {"expanded=true"})
+    public Collection<EventHolder> getAllEventsExpanded()
+            throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
+        return getAllEvents();
+    }
+
+    @JsonView(Views.EventOverview.class)
     public Collection<EventHolder> getEventsForSubscription(String subId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, InvalidPaginationException {
         final String fullUrl = context.getFullUrl();
@@ -117,6 +128,7 @@ public class EventLogController {
                 .collect(Collectors.toList());
     }
 
+    @JsonView(Views.EventExpanded.class)
     @RequestMapping(value = "/{eventId}", method = GET)
     public EventHolder getSingleEvent(@PathVariable("eventId") String eventId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
@@ -141,6 +153,7 @@ public class EventLogController {
         throw new ResourceNotAvailableException("Could not find event");
     }
 
+    @JsonView(Views.EventExpanded.class)
     public EventHolder getSingleEventForSubscription(String subId, String eventId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
         return getSingleEvent(eventId);

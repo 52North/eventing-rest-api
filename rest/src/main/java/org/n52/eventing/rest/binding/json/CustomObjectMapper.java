@@ -45,7 +45,7 @@ public class CustomObjectMapper extends ObjectMapper {
         this.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
         this.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         this.registerModule(new JodaModule());
-        this.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        this.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 //        this.setConfig(this.getSerializationConfig().withView(Views.Overview.class).withView(Views.Expanded.class));
         this.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
     }

@@ -34,11 +34,31 @@ package org.n52.eventing.rest.model.views;
  */
 public class Views {
 
-    public static class SubscriptionOverview {
+    public static class BaseView {
+
+    }
+
+    public static class SubscriptionOverview extends BaseView {
 
     }
 
     public static class SubscriptionExpanded extends SubscriptionOverview {
+
+    }
+
+    public static class EventOverview extends BaseView {
+
+    }
+
+    public static class EventExpanded extends EventOverview {
+
+    }
+
+    public static class TemplateOverview extends BaseView {
+
+    }
+
+    public static class TemplateExpanded extends TemplateOverview {
 
     }
 

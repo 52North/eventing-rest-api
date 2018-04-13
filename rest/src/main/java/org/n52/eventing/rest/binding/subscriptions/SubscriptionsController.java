@@ -28,12 +28,10 @@
 package org.n52.eventing.rest.binding.subscriptions;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import org.n52.eventing.rest.binding.EmptyArrayModel;
 import org.n52.eventing.rest.subscriptions.SubscriptionUpdate;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +40,6 @@ import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.UrlSettings;
-import org.n52.eventing.rest.binding.eventlog.EventLogController;
-import org.n52.eventing.rest.model.EventHolder;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.security.SecurityService;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
@@ -86,9 +82,6 @@ public class SubscriptionsController {
 
     @Autowired
     private SecurityService securityService;
-
-    @Autowired
-    private EventLogController eventLogController;
 
     @Autowired
     private RequestContext context;
@@ -143,19 +136,6 @@ public class SubscriptionsController {
         finally {
             RequestContext.removeThreadLocal();
         }
-    }
-
-    @RequestMapping(value = "/{subId}/events", method = GET)
-    public Collection<EventHolder> getSubscriptionEvents(@PathVariable("subId") String subId)
-            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException, InvalidPaginationException {
-        return eventLogController.getEventsForSubscription(subId);
-    }
-
-    @RequestMapping(value = "/{subId}/events/{eventId}", method = GET)
-    public EventHolder getSingleSubscription(@PathVariable("subId") String subId,
-            @PathVariable("eventId") String eventId)
-            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
-        return eventLogController.getSingleEventForSubscription(subId, eventId);
     }
 
 
