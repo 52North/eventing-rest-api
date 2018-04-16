@@ -55,4 +55,6 @@ public interface RequestContext {
 
     Map<String, String[]> getParameters();
 
+    void setParameters(Map<String, String[]> parameters);
+
 }

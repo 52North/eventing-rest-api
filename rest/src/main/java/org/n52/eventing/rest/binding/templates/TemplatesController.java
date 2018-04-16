@@ -41,9 +41,11 @@ import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.ResourceCollectionWithMetadata;
 import org.n52.eventing.rest.binding.json.CustomObjectMapper;
 import org.n52.eventing.rest.factory.TemplatesDaoFactory;
+import org.n52.eventing.rest.model.Subscription;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.model.TemplateDefinition;
 import org.n52.eventing.rest.model.views.Views;
+import org.n52.eventing.rest.subscriptions.SubscriptionsService;
 import org.n52.eventing.rest.templates.TemplatesDao;
 import org.n52.eventing.rest.templates.UnknownTemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,9 @@ public class TemplatesController {
 
     @Autowired
     private TemplatesDaoFactory daoFactory;
+
+    @Autowired
+    private SubscriptionsService subscriptionsService;
 
     @Autowired
     private RequestContext context;
@@ -113,6 +118,33 @@ public class TemplatesController {
                 } catch (UnknownTemplateException ex) {
                     throw new ResourceNotAvailableException(ex.getMessage(), ex);
                 }
+            }
+        }
+        finally {
+            RequestContext.removeThreadLocal();
+        }
+
+        throw new ResourceNotAvailableException("not there: "+ id);
+    }
+
+    @JsonView(Views.TemplateOverview.class)
+    @RequestMapping(value = "/{item}/subscriptions", method = RequestMethod.GET)
+    public ResourceCollectionWithMetadata<Subscription> getSubscriptionsForTemplate(@PathVariable("item") String id) throws IOException, URISyntaxException,
+            NotAuthenticatedException, InvalidPaginationException, ResourceNotAvailableException {
+
+        RequestContext.storeInThreadLocal(context);
+        Map<String, String[]> query = context.getParameters();
+        Pagination p = Pagination.fromQuery(query);
+
+        try {
+            TemplatesDao dao = this.daoFactory.newDao();
+            if (dao.hasTemplate(id)) {
+                Map<String, String[]> newParams = new HashMap<>();
+                query.entrySet().forEach(e -> newParams.put(e.getKey(), e.getValue()));
+                newParams.put("templates", new String[] {id});
+                context.setParameters(newParams);
+                QueryResult<Subscription> qr = this.subscriptionsService.getSubscriptions(p);
+                return new ResourceCollectionWithMetadata(qr, p);
             }
         }
         finally {

@@ -82,6 +82,7 @@ public class SpringRequestContext implements RequestContext, InitializingBean {
         return parameters;
     }
 
+    @Override
     public void setParameters(Map<String, String[]> parameters) {
         this.parameters = parameters;
     }
