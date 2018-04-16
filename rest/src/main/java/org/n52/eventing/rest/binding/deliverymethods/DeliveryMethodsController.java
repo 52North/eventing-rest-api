@@ -30,12 +30,15 @@ package org.n52.eventing.rest.binding.deliverymethods;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
-import org.n52.eventing.rest.binding.EmptyArrayModel;
+import org.n52.eventing.rest.ResourceCollectionWithMetadata;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.model.DeliveryMethodDefinition;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
@@ -43,7 +46,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 import org.n52.eventing.rest.deliverymethods.DeliveryMethodsService;
 
 /**
@@ -62,7 +64,7 @@ public class DeliveryMethodsController {
     private RequestContext context;
 
     @RequestMapping("")
-    public ModelAndView getDeliveryMethods() throws IOException, URISyntaxException, NotAuthenticatedException {
+    public ResourceCollectionWithMetadata<ResourceCollection> getDeliveryMethods() throws IOException, URISyntaxException, NotAuthenticatedException {
         String fullUrl = context.getFullUrl();
         List<ResourceCollection> list = new ArrayList<>();
 
@@ -77,7 +79,8 @@ public class DeliveryMethodsController {
             });
 
             if (list.isEmpty()) {
-                return EmptyArrayModel.create();
+                QueryResult<ResourceCollection> result = new QueryResult<>(Collections.emptyList(), 0);
+                return new ResourceCollectionWithMetadata<>(result.getResult(), new ResourceCollectionWithMetadata.Metadata(result.getTotalHits(), Pagination.defaultPagination()));
             }
         }
         finally {
@@ -85,7 +88,8 @@ public class DeliveryMethodsController {
         }
 
 
-        return new ModelAndView().addObject(list);
+        QueryResult<ResourceCollection> result = new QueryResult<>(list, list.size());
+        return new ResourceCollectionWithMetadata<>(result.getResult(), new ResourceCollectionWithMetadata.Metadata(result.getTotalHits(), Pagination.defaultPagination()));
     }
 
     @RequestMapping("/{item}")

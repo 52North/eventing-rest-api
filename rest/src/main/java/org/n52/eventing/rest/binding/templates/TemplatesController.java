@@ -31,12 +31,15 @@ import com.fasterxml.jackson.annotation.JsonView;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.n52.eventing.rest.InvalidPaginationException;
+import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
+import org.n52.eventing.rest.ResourceCollectionWithMetadata;
+import org.n52.eventing.rest.binding.json.CustomObjectMapper;
 import org.n52.eventing.rest.factory.TemplatesDaoFactory;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.model.TemplateDefinition;
@@ -66,18 +69,23 @@ public class TemplatesController {
     @Autowired
     private RequestContext context;
 
+    @Autowired
+    private CustomObjectMapper mapper;
+
 
     @JsonView(Views.TemplateOverview.class)
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public List<TemplateDefinition> getTemplates() throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
+    public ResourceCollectionWithMetadata<TemplateDefinition> getTemplates() throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
         RequestContext.storeInThreadLocal(context);
 
         Map<String, String[]> query = context.getParameters();
+        Pagination page = Pagination.fromQuery(query);
 
         try {
-            List<TemplateDefinition> result = query == null ? this.daoFactory.newDao().getTemplates() : this.daoFactory.newDao().getTemplates(query);
+            TemplatesDao dao = this.daoFactory.newDao();
+            QueryResult<TemplateDefinition> result = query == null ? dao.getTemplates() : dao.getTemplates(query);
 
-            return result;
+            return new ResourceCollectionWithMetadata<>(result.getResult(), new ResourceCollectionWithMetadata.Metadata(result.getTotalHits(), page));
         }
         finally {
             RequestContext.removeThreadLocal();
@@ -87,7 +95,7 @@ public class TemplatesController {
 
     @JsonView(Views.TemplateExpanded.class)
     @RequestMapping(path = "", params = {"expanded=true"})
-    public List<TemplateDefinition> getTemplatesExpanded() throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
+    public ResourceCollectionWithMetadata<TemplateDefinition> getTemplatesExpanded() throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
         return getTemplates();
     }
 

@@ -38,14 +38,15 @@ import org.slf4j.LoggerFactory;
 public class Pagination {
 
     private static final Logger LOG = LoggerFactory.getLogger(Pagination.class);
+    private static final Pagination DEFAULT = new Pagination(0, 100);
 
     public static Pagination fromQuery(Map<String, String[]> query) throws InvalidPaginationException {
         if (query == null) {
             return null;
         }
 
-        int limit = 100;
-        int offset = 0;
+        int limit = DEFAULT.limit;
+        int offset = DEFAULT.offset;
         try {
             if (query.containsKey("limit")) {
                 String[] val = query.get("limit");
@@ -62,6 +63,10 @@ public class Pagination {
             LOG.warn(e.getMessage());
             throw new InvalidPaginationException("Not number: "+e.getMessage());
         }
+    }
+
+    public static Pagination defaultPagination() {
+        return DEFAULT;
     }
 
     private final int offset;

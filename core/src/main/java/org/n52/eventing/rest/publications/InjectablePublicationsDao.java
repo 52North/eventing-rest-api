@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import org.n52.eventing.rest.Configuration;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -68,8 +69,9 @@ public class InjectablePublicationsDao implements PublicationsService, Initializ
     }
 
     @Override
-    public synchronized List<Publication> getPublications(Pagination p) {
-        return Collections.unmodifiableList(new ArrayList<>(publications.values()));
+    public synchronized QueryResult<Publication> getPublications(Pagination p) {
+        List<Publication> data = Collections.unmodifiableList(new ArrayList<>(publications.values()));
+        return new QueryResult<>(data, data.size());
     }
 
     @Override

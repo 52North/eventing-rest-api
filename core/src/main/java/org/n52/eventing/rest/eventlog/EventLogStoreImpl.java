@@ -33,8 +33,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.model.Subscription;
 
@@ -67,8 +69,8 @@ public class EventLogStoreImpl implements EventLogStore {
     }
 
     @Override
-    public Collection<EventHolder> getAllEvents() {
-        Collection<EventHolder> result = new ArrayList<>();
+    public QueryResult<EventHolder> getAllEvents() {
+        List<EventHolder> result = new ArrayList<>();
 
         synchronized (this) {
             this.internalStore.values().forEach(coll -> {
@@ -76,22 +78,23 @@ public class EventLogStoreImpl implements EventLogStore {
             });
         }
 
-        return result;
+        return new QueryResult<>(result, result.size());
     }
 
     @Override
-    public Collection<EventHolder> getEventsForSubscription(Subscription sub) {
+    public QueryResult<EventHolder> getEventsForSubscription(Subscription sub) {
         synchronized (this) {
             if (!this.internalStore.containsKey(sub)) {
-                return Collections.emptyList();
+                return new QueryResult<>(Collections.emptyList(), 0);
             }
-            return Collections.unmodifiableCollection(this.internalStore.get(sub));
+            List<EventHolder> data = new ArrayList(this.internalStore.get(sub));
+            return new QueryResult<>(data, data.size());
         }
     }
 
     @Override
     public Optional<EventHolder> getSingleEvent(String eventId, RequestContext context) {
-        return getAllEvents().stream()
+        return getAllEvents().getResult().stream()
                 .filter(eh -> eh.getId().equals(eventId))
                 .findFirst();
     }

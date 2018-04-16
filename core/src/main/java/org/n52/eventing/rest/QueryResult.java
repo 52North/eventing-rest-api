@@ -25,28 +25,40 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.publications;
 
-import org.n52.eventing.rest.model.Publication;
-import java.util.Map;
-import org.n52.eventing.rest.InvalidPaginationException;
-import org.n52.eventing.rest.Pagination;
-import org.n52.eventing.rest.QueryResult;
+package org.n52.eventing.rest;
+
+import java.util.List;
 
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
+ * @param <T> the queried type
  */
-public interface PublicationsService {
+public class QueryResult<T> {
 
-    boolean hasPublication(String id);
+    private List<T> result;
+    private int totalHits;
 
-    default QueryResult<Publication> getPublications(Map<String, String[]>  filter, Pagination p) throws InvalidPaginationException {
-        return getPublications(p);
-    };
+    public QueryResult(List<T> result, int totalHits) {
+        this.result = result;
+        this.totalHits = totalHits;
+    }
 
-    QueryResult<Publication> getPublications( Pagination p) throws InvalidPaginationException;
+    public List<T> getResult() {
+        return result;
+    }
 
-    Publication getPublication(String id) throws UnknownPublicationsException;
+    public void setResult(List<T> result) {
+        this.result = result;
+    }
+
+    public int getTotalHits() {
+        return totalHits;
+    }
+
+    public void setTotalHits(int totalHits) {
+        this.totalHits = totalHits;
+    }
 
 }

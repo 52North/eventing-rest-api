@@ -78,7 +78,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
 
         LOG.info("Retrieveing persisted subscriptions...");
         AtomicInteger count = new AtomicInteger();
-        this.dao.getSubscriptions(null).stream().forEach(s -> {
+        this.dao.getSubscriptions(null).getResult().stream().forEach(s -> {
             LOG.info("Registering subscription {}", s.getId());
             try {
                 if (s.getTemplateInstance() != null) {

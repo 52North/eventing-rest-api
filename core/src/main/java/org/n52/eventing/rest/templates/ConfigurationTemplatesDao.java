@@ -71,6 +71,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.n52.eventing.rest.Configuration;
+import org.n52.eventing.rest.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -104,8 +105,9 @@ public class ConfigurationTemplatesDao implements TemplatesDao, InitializingBean
     }
 
     @Override
-    public List<TemplateDefinition> getTemplates() {
-        return Collections.unmodifiableList(new ArrayList<>(templates.values()));
+    public QueryResult<TemplateDefinition> getTemplates() {
+        List<TemplateDefinition> result = Collections.unmodifiableList(new ArrayList<>(templates.values()));
+        return new QueryResult(result, result.size());
     }
 
     @Override

@@ -30,13 +30,13 @@ package org.n52.eventing.rest.binding.publications;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Map;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.UrlSettings;
-import org.n52.eventing.rest.binding.EmptyArrayModel;
+import org.n52.eventing.rest.ResourceCollectionWithMetadata;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.model.Publication;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
@@ -66,28 +66,23 @@ public class PublicationsController {
     private RequestContext context;
 
     @RequestMapping("")
-    public ModelAndView getPublications()
+    public ResourceCollectionWithMetadata<Publication> getPublications()
             throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
         String fullUrl = context.getFullUrl();
         Map<String, String[]> query = context.getParameters();
         Pagination p = Pagination.fromQuery(query);
 
-        List<Publication> pubs = createPublications(fullUrl, query, p);
-
-        if (pubs.isEmpty()) {
-            return EmptyArrayModel.create();
-        }
-
-        return new ModelAndView().addObject(pubs);
+        QueryResult<Publication> result = createPublications(fullUrl, query, p);
+        return new ResourceCollectionWithMetadata<>(result.getResult(), new ResourceCollectionWithMetadata.Metadata(result.getTotalHits(), p));
     }
 
-    private List<Publication> createPublications(String fullUrl, Map<String, String[]> query, Pagination page) throws NotAuthenticatedException, InvalidPaginationException {
+    private QueryResult<Publication> createPublications(String fullUrl, Map<String, String[]> query, Pagination page) throws NotAuthenticatedException, InvalidPaginationException {
         RequestContext.storeInThreadLocal(context);
 
         try {
-            List<Publication> result = query == null ? this.dao.getPublications(page) : this.dao.getPublications(query, page);
+            QueryResult<Publication> result = query == null ? this.dao.getPublications(page) : this.dao.getPublications(query, page);
 
-            result.stream().forEach((Publication p) -> {
+            result.getResult().stream().forEach((Publication p) -> {
                 p.setHref(String.format("%s/%s", fullUrl, p.getId()));
             });
 

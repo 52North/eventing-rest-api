@@ -33,13 +33,14 @@ import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.UrlSettings;
+import org.n52.eventing.rest.ResourceCollectionWithMetadata;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.security.SecurityService;
 import org.n52.eventing.rest.subscriptions.InvalidSubscriptionException;
@@ -88,28 +89,28 @@ public class SubscriptionsController {
 
     @JsonView(Views.SubscriptionExpanded.class)
     @RequestMapping("")
-    public List<Subscription> getSubscriptions()
+    public ResourceCollectionWithMetadata<Subscription> getSubscriptions()
             throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
         Map<String, String[]> query = context.getParameters();
         Pagination p = Pagination.fromQuery(query);
 
         String fullUrl = context.getFullUrl();
 
-        List<Subscription> subs = retrieveSubscriptions(fullUrl, p);
-
-        return subs;
+        return retrieveSubscriptions(fullUrl, p);
     }
 
-    private List<Subscription> retrieveSubscriptions(String fullUrl, Pagination p) throws NotAuthenticatedException {
+    private ResourceCollectionWithMetadata<Subscription> retrieveSubscriptions(String fullUrl, Pagination p) throws NotAuthenticatedException {
         RequestContext.storeInThreadLocal(context);
 
         try {
-            return this.dao.getSubscriptions(p).stream()
+            QueryResult<Subscription> result = this.dao.getSubscriptions(p);
+            result.setResult(result.getResult().stream()
                 .map((Subscription si) -> {
                     si.setHref(String.format("%s/%s", fullUrl, si.getId()));
                     return si;
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+            return new ResourceCollectionWithMetadata<>(result.getResult(), new ResourceCollectionWithMetadata.Metadata(result.getTotalHits(), p));
         }
         finally {
             RequestContext.removeThreadLocal();

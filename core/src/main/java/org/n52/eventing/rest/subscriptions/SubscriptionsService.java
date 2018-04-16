@@ -28,9 +28,9 @@
 package org.n52.eventing.rest.subscriptions;
 
 import org.n52.eventing.rest.model.Subscription;
-import java.util.List;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.QueryResult;
 
 /**
  *
@@ -40,7 +40,7 @@ public interface SubscriptionsService {
 
     boolean hasSubscription(String id);
 
-    List<Subscription> getSubscriptions(Pagination p);
+    QueryResult<Subscription> getSubscriptions(Pagination p);
 
     Subscription getSubscription(String id) throws UnknownSubscriptionException;
 

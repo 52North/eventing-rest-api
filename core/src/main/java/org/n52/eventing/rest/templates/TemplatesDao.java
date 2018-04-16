@@ -28,9 +28,10 @@
 package org.n52.eventing.rest.templates;
 
 import org.n52.eventing.rest.model.TemplateDefinition;
-import java.util.List;
 import java.util.Map;
 import org.n52.eventing.rest.InvalidPaginationException;
+import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.QueryResult;
 
 /**
  *
@@ -42,9 +43,13 @@ public interface TemplatesDao {
 
     TemplateDefinition getTemplate(String id) throws UnknownTemplateException;
 
-    List<TemplateDefinition> getTemplates() throws InvalidPaginationException;
+    QueryResult<TemplateDefinition> getTemplates() throws InvalidPaginationException;
 
-    default List<TemplateDefinition> getTemplates(Map<String, String[]>  filter) throws InvalidPaginationException {
+    default QueryResult<TemplateDefinition> getTemplates(Map<String, String[]>  filter) throws InvalidPaginationException {
+        return getTemplates();
+    }
+
+    default QueryResult<TemplateDefinition> getTemplates(Map<String, String[]>  filter, Pagination page) throws InvalidPaginationException {
         return getTemplates();
     }
 

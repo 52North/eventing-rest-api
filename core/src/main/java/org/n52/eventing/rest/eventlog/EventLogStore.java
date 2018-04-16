@@ -31,6 +31,7 @@ import org.n52.eventing.rest.model.EventHolder;
 import java.util.Collection;
 import java.util.Optional;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.model.Subscription;
 
@@ -49,15 +50,15 @@ public interface EventLogStore {
      */
     void addEvent(Subscription sub, EventHolder eh, int maximumCapacity);
 
-    Collection<EventHolder> getAllEvents();
+    QueryResult<EventHolder> getAllEvents();
 
-    default Collection<EventHolder> getAllEvents(Pagination pagination) {
+    default QueryResult<EventHolder> getAllEvents(Pagination pagination) {
         return getAllEvents();
     };
 
-    Collection<EventHolder> getEventsForSubscription(Subscription subscription);
+    QueryResult<EventHolder> getEventsForSubscription(Subscription subscription);
 
-    default Collection<EventHolder> getEventsForSubscription(Subscription subscription, Pagination pagination) {
+    default QueryResult<EventHolder> getEventsForSubscription(Subscription subscription, Pagination pagination) {
         return getEventsForSubscription(subscription);
     }
 

@@ -31,7 +31,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,10 +38,12 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
+import org.n52.eventing.rest.ResourceCollectionWithMetadata;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.model.EventHolder;
 import org.n52.eventing.rest.eventlog.EventLogStore;
@@ -81,7 +82,7 @@ public class EventLogController {
 
     @JsonView(Views.EventOverview.class)
     @RequestMapping("")
-    public Collection<EventHolder> getAllEvents()
+    public ResourceCollectionWithMetadata<EventHolder> getAllEvents()
             throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
         final String fullUrl = context.getFullUrl();
         Map<String, String[]> query = context.getParameters();
@@ -90,13 +91,15 @@ public class EventLogController {
         RequestContext.storeInThreadLocal(context);
 
         try {
-            return store.getAllEvents(page).stream()
+            QueryResult<EventHolder> result = store.getAllEvents(page);
+            result.setResult(result.getResult().stream()
                 .map((EventHolder t) -> {
                     String id = t.getId();
                     t.setHref(String.format("%s/%s", fullUrl, id));
                     return t;
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+            return new ResourceCollectionWithMetadata<>(result.getResult(), new ResourceCollectionWithMetadata.Metadata(result.getTotalHits(), page));
         }
         finally {
             RequestContext.removeThreadLocal();
@@ -105,13 +108,13 @@ public class EventLogController {
 
     @JsonView(Views.EventExpanded.class)
     @RequestMapping(path = "", params = {"expanded=true"})
-    public Collection<EventHolder> getAllEventsExpanded()
+    public ResourceCollectionWithMetadata<EventHolder> getAllEventsExpanded()
             throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
         return getAllEvents();
     }
 
     @JsonView(Views.EventOverview.class)
-    public Collection<EventHolder> getEventsForSubscription(String subId)
+    public ResourceCollectionWithMetadata<EventHolder> getEventsForSubscription(String subId)
             throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, InvalidPaginationException {
         final String fullUrl = context.getFullUrl();
         Map<String, String[]> query = context.getParameters();
@@ -119,13 +122,16 @@ public class EventLogController {
 
         Subscription subscription = subDao.getSubscription(subId);
 
-        return store.getEventsForSubscription(subscription, page).stream()
+        QueryResult<EventHolder> result = store.getEventsForSubscription(subscription, page);
+        result.setResult(result.getResult().stream()
                 .map((EventHolder t) -> {
                     String id = t.getId();
                     t.setHref(String.format("%s/%s", fullUrl, id));
                     return t;
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+
+        return new ResourceCollectionWithMetadata<>(result.getResult(), new ResourceCollectionWithMetadata.Metadata(result.getTotalHits(), page));
     }
 
     @JsonView(Views.EventExpanded.class)

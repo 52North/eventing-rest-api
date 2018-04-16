@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -73,8 +74,9 @@ public class InMemorySubscriptionsDao implements SubscriptionsService, Initializ
     }
 
     @Override
-    public synchronized List<Subscription> getSubscriptions(Pagination p) {
-        return Collections.unmodifiableList(new ArrayList<>(subscriptions.values()));
+    public synchronized QueryResult<Subscription> getSubscriptions(Pagination p) {
+        List<Subscription> result = Collections.unmodifiableList(new ArrayList<>(subscriptions.values()));
+        return new QueryResult<>(result, result.size());
     }
 
     @Override
