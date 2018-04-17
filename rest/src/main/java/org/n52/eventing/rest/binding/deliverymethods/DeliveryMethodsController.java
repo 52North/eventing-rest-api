@@ -39,6 +39,7 @@ import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.ResourceCollectionWithMetadata;
+import org.n52.eventing.rest.binding.ResourceNotFoundException;
 import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.model.DeliveryMethodDefinition;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
@@ -64,7 +65,7 @@ public class DeliveryMethodsController {
     private RequestContext context;
 
     @RequestMapping("")
-    public ResourceCollectionWithMetadata<ResourceCollection> getDeliveryMethods() throws IOException, URISyntaxException, NotAuthenticatedException {
+    public ResourceCollectionWithMetadata<ResourceCollection> getDeliveryMethods() throws IOException, URISyntaxException {
         String fullUrl = context.getFullUrl();
         List<ResourceCollection> list = new ArrayList<>();
 
@@ -79,8 +80,7 @@ public class DeliveryMethodsController {
             });
 
             if (list.isEmpty()) {
-                QueryResult<ResourceCollection> result = new QueryResult<>(Collections.emptyList(), 0);
-                return new ResourceCollectionWithMetadata<>(result.getResult(), new ResourceCollectionWithMetadata.Metadata(result.getTotalHits(), Pagination.defaultPagination()));
+                return new ResourceCollectionWithMetadata<>(new QueryResult<>(Collections.emptyList(), 0));
             }
         }
         finally {
@@ -93,7 +93,7 @@ public class DeliveryMethodsController {
     }
 
     @RequestMapping("/{item}")
-    public DeliveryMethodDefinition getDeliveryMethod(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException {
+    public DeliveryMethodDefinition getDeliveryMethod(@PathVariable("item") String id) throws ResourceNotAvailableException, ResourceNotFoundException {
         if (this.dao.hasDeliveryMethod(id)) {
             RequestContext.storeInThreadLocal(context);
 
@@ -107,7 +107,7 @@ public class DeliveryMethodsController {
             }
         }
 
-        throw new ResourceNotAvailableException("Delivery method not available: "+id);
+        throw new ResourceNotFoundException("Delivery method not available: "+id);
     }
 
 }

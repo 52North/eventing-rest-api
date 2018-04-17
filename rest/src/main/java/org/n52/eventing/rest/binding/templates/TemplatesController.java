@@ -39,10 +39,10 @@ import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.ResourceCollectionWithMetadata;
+import org.n52.eventing.rest.binding.ResourceNotFoundException;
 import org.n52.eventing.rest.binding.json.CustomObjectMapper;
 import org.n52.eventing.rest.factory.TemplatesDaoFactory;
 import org.n52.eventing.rest.model.Subscription;
-import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.model.TemplateDefinition;
 import org.n52.eventing.rest.model.views.Views;
 import org.n52.eventing.rest.subscriptions.SubscriptionsService;
@@ -80,7 +80,7 @@ public class TemplatesController {
 
     @JsonView(Views.TemplateOverview.class)
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResourceCollectionWithMetadata<TemplateDefinition> getTemplates() throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
+    public ResourceCollectionWithMetadata<TemplateDefinition> getTemplates() throws IOException, URISyntaxException, InvalidPaginationException {
         RequestContext.storeInThreadLocal(context);
 
         Map<String, String[]> query = context.getParameters();
@@ -100,13 +100,13 @@ public class TemplatesController {
 
     @JsonView(Views.TemplateExpanded.class)
     @RequestMapping(path = "", params = {"expanded=true"})
-    public ResourceCollectionWithMetadata<TemplateDefinition> getTemplatesExpanded() throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
+    public ResourceCollectionWithMetadata<TemplateDefinition> getTemplatesExpanded() throws IOException, URISyntaxException, InvalidPaginationException {
         return getTemplates();
     }
 
     @JsonView(Views.TemplateExpanded.class)
     @RequestMapping(value = "/{item}", method = RequestMethod.GET)
-    public TemplateDefinition getTemplate(@PathVariable("item") String id) throws ResourceNotAvailableException, NotAuthenticatedException, IOException, URISyntaxException {
+    public TemplateDefinition getTemplate(@PathVariable("item") String id) throws ResourceNotAvailableException, IOException, URISyntaxException, ResourceNotFoundException {
         RequestContext.storeInThreadLocal(context);
 
         try {
@@ -124,13 +124,13 @@ public class TemplatesController {
             RequestContext.removeThreadLocal();
         }
 
-        throw new ResourceNotAvailableException("not there: "+ id);
+        throw new ResourceNotFoundException();
     }
 
     @JsonView(Views.TemplateOverview.class)
     @RequestMapping(value = "/{item}/subscriptions", method = RequestMethod.GET)
     public ResourceCollectionWithMetadata<Subscription> getSubscriptionsForTemplate(@PathVariable("item") String id) throws IOException, URISyntaxException,
-            NotAuthenticatedException, InvalidPaginationException, ResourceNotAvailableException {
+            InvalidPaginationException, ResourceNotAvailableException, ResourceNotFoundException {
 
         RequestContext.storeInThreadLocal(context);
         Map<String, String[]> query = context.getParameters();
@@ -151,7 +151,7 @@ public class TemplatesController {
             RequestContext.removeThreadLocal();
         }
 
-        throw new ResourceNotAvailableException("not there: "+ id);
+        throw new ResourceNotFoundException();
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)

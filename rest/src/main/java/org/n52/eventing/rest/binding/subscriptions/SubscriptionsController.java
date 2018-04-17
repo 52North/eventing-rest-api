@@ -27,6 +27,7 @@
  */
 package org.n52.eventing.rest.binding.subscriptions;
 
+import org.n52.eventing.rest.binding.ResourceNotFoundException;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.n52.eventing.rest.subscriptions.SubscriptionUpdate;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
@@ -90,7 +91,7 @@ public class SubscriptionsController {
     @JsonView(Views.SubscriptionExpanded.class)
     @RequestMapping("")
     public ResourceCollectionWithMetadata<Subscription> getSubscriptions()
-            throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
+            throws IOException, URISyntaxException, InvalidPaginationException {
         Map<String, String[]> query = context.getParameters();
         Pagination p = Pagination.fromQuery(query);
 
@@ -99,7 +100,7 @@ public class SubscriptionsController {
         return retrieveSubscriptions(fullUrl, p);
     }
 
-    private ResourceCollectionWithMetadata<Subscription> retrieveSubscriptions(String fullUrl, Pagination p) throws NotAuthenticatedException {
+    private ResourceCollectionWithMetadata<Subscription> retrieveSubscriptions(String fullUrl, Pagination p) {
         RequestContext.storeInThreadLocal(context);
 
         try {
@@ -121,7 +122,7 @@ public class SubscriptionsController {
     @JsonView(Views.SubscriptionExpanded.class)
     @RequestMapping(value = "/{item}", method = GET)
     public Subscription getSubscription(@PathVariable("item") String id)
-            throws IOException, URISyntaxException, ResourceNotAvailableException, NotAuthenticatedException {
+            throws IOException, URISyntaxException, ResourceNotAvailableException {
         RequestContext.storeInThreadLocal(context);
 
         if (!this.dao.hasSubscription(id)) {
@@ -141,8 +142,15 @@ public class SubscriptionsController {
 
 
     @RequestMapping(value = "", method = POST)
-    public ModelAndView subscribe(@RequestBody Subscription subDef) throws InvalidSubscriptionException, NotAuthenticatedException {
-        final User user = securityService.resolveCurrentUser();
+    public ModelAndView subscribe(@RequestBody Subscription subDef) throws InvalidSubscriptionException, ResourceNotFoundException {
+        final User user;
+        try {
+            user = securityService.resolveCurrentUser();
+        } catch (NotAuthenticatedException ex) {
+            LOG.warn(ex.getMessage());
+            LOG.trace(ex.getMessage(), ex);
+            throw new ResourceNotFoundException();
+        }
 
         RequestContext.storeInThreadLocal(context);
 
@@ -165,9 +173,16 @@ public class SubscriptionsController {
 
     @RequestMapping(value = "/{item}", method = PUT)
     public ResponseEntity<?> updateSubscription(@RequestBody SubscriptionUpdate subDef,
-            @PathVariable("item") String id) throws InvalidSubscriptionException, NotAuthenticatedException {
+            @PathVariable("item") String id) throws InvalidSubscriptionException, ResourceNotFoundException {
         subDef.setId(id);
-        final User user = securityService.resolveCurrentUser();
+        final User user;
+        try {
+            user = securityService.resolveCurrentUser();
+        } catch (NotAuthenticatedException ex) {
+            LOG.warn(ex.getMessage());
+            LOG.trace(ex.getMessage(), ex);
+            throw new ResourceNotFoundException();
+        }
 
         this.manager.updateSubscription(subDef, user);
 
@@ -175,8 +190,15 @@ public class SubscriptionsController {
     }
 
     @RequestMapping(value = "/{item}", method = DELETE)
-    public ResponseEntity<?> remove(@PathVariable("item") String id) throws InvalidSubscriptionException, NotAuthenticatedException {
-        final User user = securityService.resolveCurrentUser();
+    public ResponseEntity<?> remove(@PathVariable("item") String id) throws InvalidSubscriptionException, ResourceNotFoundException {
+        final User user;
+        try {
+            user = securityService.resolveCurrentUser();
+        } catch (NotAuthenticatedException ex) {
+            LOG.warn(ex.getMessage());
+            LOG.trace(ex.getMessage(), ex);
+            throw new ResourceNotFoundException();
+        }
 
         this.manager.removeSubscription(id, user);
 

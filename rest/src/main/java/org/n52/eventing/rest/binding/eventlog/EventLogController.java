@@ -44,7 +44,6 @@ import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.ResourceCollectionWithMetadata;
-import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.model.EventHolder;
 import org.n52.eventing.rest.eventlog.EventLogStore;
 import org.n52.eventing.rest.model.Subscription;
@@ -83,7 +82,7 @@ public class EventLogController {
     @JsonView(Views.EventOverview.class)
     @RequestMapping("")
     public ResourceCollectionWithMetadata<EventHolder> getAllEvents()
-            throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
+            throws IOException, URISyntaxException, InvalidPaginationException {
         final String fullUrl = context.getFullUrl();
         Map<String, String[]> query = context.getParameters();
         Pagination page = Pagination.fromQuery(query);
@@ -109,13 +108,13 @@ public class EventLogController {
     @JsonView(Views.EventExpanded.class)
     @RequestMapping(path = "", params = {"expanded=true"})
     public ResourceCollectionWithMetadata<EventHolder> getAllEventsExpanded()
-            throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
+            throws IOException, URISyntaxException, InvalidPaginationException {
         return getAllEvents();
     }
 
     @JsonView(Views.EventOverview.class)
     public ResourceCollectionWithMetadata<EventHolder> getEventsForSubscription(String subId)
-            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, InvalidPaginationException {
+            throws IOException, URISyntaxException, UnknownSubscriptionException, InvalidPaginationException {
         final String fullUrl = context.getFullUrl();
         Map<String, String[]> query = context.getParameters();
         Pagination page = Pagination.fromQuery(query);
@@ -137,7 +136,7 @@ public class EventLogController {
     @JsonView(Views.EventExpanded.class)
     @RequestMapping(value = "/{eventId}", method = GET)
     public EventHolder getSingleEvent(@PathVariable("eventId") String eventId)
-            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
+            throws IOException, URISyntaxException, UnknownSubscriptionException, ResourceNotAvailableException {
         RequestContext.storeInThreadLocal(context);
 
         try {
@@ -161,19 +160,19 @@ public class EventLogController {
 
     @JsonView(Views.EventExpanded.class)
     public EventHolder getSingleEventForSubscription(String subId, String eventId)
-            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
+            throws IOException, URISyntaxException, UnknownSubscriptionException, ResourceNotAvailableException {
         return getSingleEvent(eventId);
     }
 
 
-    private Optional<EventHolder> retrieveSingleEvent(String eventId) throws NotAuthenticatedException, UnknownSubscriptionException {
+    private Optional<EventHolder> retrieveSingleEvent(String eventId) throws UnknownSubscriptionException {
         Optional<EventHolder> result = store.getSingleEvent(eventId, context);
         return result;
     }
 
     @RequestMapping(value = "/{eventId}/content", method = GET)
     public void getSingleEventContent(@PathVariable("eventId") String eventId)
-            throws IOException, URISyntaxException, NotAuthenticatedException, UnknownSubscriptionException, ResourceNotAvailableException {
+            throws IOException, URISyntaxException, UnknownSubscriptionException, ResourceNotAvailableException {
         Optional<EventHolder> holder = retrieveSingleEvent(eventId);
 
         if (!holder.isPresent()) {

@@ -37,7 +37,7 @@ import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.ResourceCollectionWithMetadata;
-import org.n52.eventing.security.NotAuthenticatedException;
+import org.n52.eventing.rest.binding.ResourceNotFoundException;
 import org.n52.eventing.rest.model.Publication;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +49,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.n52.eventing.rest.publications.PublicationsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -59,6 +61,8 @@ import org.n52.eventing.rest.publications.PublicationsService;
         produces = {"application/json"})
 public class PublicationsController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(PublicationsController.class.getName());
+
     @Autowired
     private PublicationsService dao;
 
@@ -67,16 +71,16 @@ public class PublicationsController {
 
     @RequestMapping("")
     public ResourceCollectionWithMetadata<Publication> getPublications()
-            throws IOException, URISyntaxException, NotAuthenticatedException, InvalidPaginationException {
+            throws IOException, URISyntaxException, InvalidPaginationException {
         String fullUrl = context.getFullUrl();
         Map<String, String[]> query = context.getParameters();
         Pagination p = Pagination.fromQuery(query);
 
         QueryResult<Publication> result = createPublications(fullUrl, query, p);
-        return new ResourceCollectionWithMetadata<>(result.getResult(), new ResourceCollectionWithMetadata.Metadata(result.getTotalHits(), p));
+        return new ResourceCollectionWithMetadata<>(result);
     }
 
-    private QueryResult<Publication> createPublications(String fullUrl, Map<String, String[]> query, Pagination page) throws NotAuthenticatedException, InvalidPaginationException {
+    private QueryResult<Publication> createPublications(String fullUrl, Map<String, String[]> query, Pagination page) throws InvalidPaginationException {
         RequestContext.storeInThreadLocal(context);
 
         try {
@@ -96,10 +100,10 @@ public class PublicationsController {
     @RequestMapping(value = "/{item}", method = GET)
     public ModelAndView getPublication(@RequestParam(required = false) MultiValueMap<String, String> query,
             @PathVariable("item") String id)
-            throws IOException, URISyntaxException, ResourceNotAvailableException, NotAuthenticatedException {
+            throws IOException, URISyntaxException, ResourceNotFoundException, ResourceNotAvailableException {
 
         if (!this.dao.hasPublication(id)) {
-            throw new ResourceNotAvailableException("The publication is not available: "+id);
+            throw new ResourceNotFoundException("The publication is not available: "+id);
         }
 
         RequestContext.storeInThreadLocal(context);
