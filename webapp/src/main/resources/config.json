@@ -12,5 +12,6 @@
     "connector.mqtt.topic": "n52/eventing",
     "delivery.mqtt.host": "test.mosquitto.org",
     "delivery.mqtt.protocol": "tcp",
-    "delivery.mqtt.port": 1883
+    "delivery.mqtt.port": 1883,
+    "defaultPageLimit": 100
 }

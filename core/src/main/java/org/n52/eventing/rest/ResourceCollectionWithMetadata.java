@@ -30,7 +30,6 @@ package org.n52.eventing.rest;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import java.util.List;
-import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.model.views.Views;
 
 /**
@@ -48,13 +47,9 @@ public class ResourceCollectionWithMetadata<T> {
         this.metadata = metadata;
     }
 
-    public ResourceCollectionWithMetadata(QueryResult<T> qr) {
-        this(qr, null);
-    }
-
     public ResourceCollectionWithMetadata(QueryResult<T> qr, Pagination page) {
         this.data = qr.getResult();
-        this.metadata = new Metadata(qr.getTotalHits(), page == null ? Pagination.defaultPagination() : page);
+        this.metadata = new Metadata(qr.getTotalHits(), page);
     }
 
     @JsonView(Views.BaseView.class)
@@ -81,8 +76,7 @@ public class ResourceCollectionWithMetadata<T> {
         private int limit;
         private int total;
 
-        public Metadata() {
-            Pagination def = Pagination.defaultPagination();
+        public Metadata(Pagination def) {
             this.offset = def.getOffset();
             this.limit = def.getLimit();
         }

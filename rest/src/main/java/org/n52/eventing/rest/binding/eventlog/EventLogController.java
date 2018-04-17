@@ -38,6 +38,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.PaginationFactory;
 import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.RequestUtils;
@@ -78,6 +79,9 @@ public class EventLogController {
     @Autowired
     private RequestUtils requestUtils;
 
+    @Autowired
+    private PaginationFactory pageFactory;
+
 
     @JsonView(Views.EventOverview.class)
     @RequestMapping("")
@@ -85,7 +89,7 @@ public class EventLogController {
             throws IOException, URISyntaxException, InvalidPaginationException {
         final String fullUrl = context.getFullUrl();
         Map<String, String[]> query = context.getParameters();
-        Pagination page = Pagination.fromQuery(query);
+        Pagination page = pageFactory.fromQuery(query);
 
         RequestContext.storeInThreadLocal(context);
 
@@ -117,7 +121,7 @@ public class EventLogController {
             throws IOException, URISyntaxException, UnknownSubscriptionException, InvalidPaginationException {
         final String fullUrl = context.getFullUrl();
         Map<String, String[]> query = context.getParameters();
-        Pagination page = Pagination.fromQuery(query);
+        Pagination page = pageFactory.fromQuery(query);
 
         Subscription subscription = subDao.getSubscription(subId);
 

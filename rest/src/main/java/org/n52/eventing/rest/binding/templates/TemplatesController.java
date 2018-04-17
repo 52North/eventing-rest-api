@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.PaginationFactory;
 import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
@@ -77,6 +78,8 @@ public class TemplatesController {
     @Autowired
     private CustomObjectMapper mapper;
 
+    @Autowired
+    private PaginationFactory pageFactory;
 
     @JsonView(Views.TemplateOverview.class)
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -84,7 +87,7 @@ public class TemplatesController {
         RequestContext.storeInThreadLocal(context);
 
         Map<String, String[]> query = context.getParameters();
-        Pagination page = Pagination.fromQuery(query);
+        Pagination page = pageFactory.fromQuery(query);
 
         try {
             TemplatesDao dao = this.daoFactory.newDao();
@@ -134,7 +137,7 @@ public class TemplatesController {
 
         RequestContext.storeInThreadLocal(context);
         Map<String, String[]> query = context.getParameters();
-        Pagination p = Pagination.fromQuery(query);
+        Pagination p = pageFactory.fromQuery(query);
 
         try {
             TemplatesDao dao = this.daoFactory.newDao();

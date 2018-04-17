@@ -33,6 +33,7 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.PaginationFactory;
 import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.UrlSettings;
@@ -69,15 +70,18 @@ public class PublicationsController {
     @Autowired
     private RequestContext context;
 
+    @Autowired
+    private PaginationFactory pageFactory;
+
     @RequestMapping("")
     public ResourceCollectionWithMetadata<Publication> getPublications()
             throws IOException, URISyntaxException, InvalidPaginationException {
         String fullUrl = context.getFullUrl();
         Map<String, String[]> query = context.getParameters();
-        Pagination p = Pagination.fromQuery(query);
+        Pagination p = pageFactory.fromQuery(query);
 
         QueryResult<Publication> result = createPublications(fullUrl, query, p);
-        return new ResourceCollectionWithMetadata<>(result);
+        return new ResourceCollectionWithMetadata<>(result, p);
     }
 
     private QueryResult<Publication> createPublications(String fullUrl, Map<String, String[]> query, Pagination page) throws InvalidPaginationException {

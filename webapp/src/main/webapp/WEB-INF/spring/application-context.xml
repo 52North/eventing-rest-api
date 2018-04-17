@@ -40,6 +40,8 @@
     <bean class="org.n52.subverse.delivery.DeliveryProviderRepository" />
     <!--<bean class="org.n52.eventing.rest.deliverymethods.email.EmailDeliveryProvider" />-->
 
+    <bean class="org.n52.eventing.rest.PaginationFactory" />
+
     <!-- engine -->
     <!--<bean class="org.n52.eventing.rest.subscriptions.SubverseFilterLogic" />-->
     <!--<bean class="org.n52.subverse.engine.EposFilterEngine" />-->

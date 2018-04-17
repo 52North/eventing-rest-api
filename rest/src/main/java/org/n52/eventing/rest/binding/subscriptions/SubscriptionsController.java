@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.PaginationFactory;
 import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.UrlSettings;
@@ -88,12 +89,15 @@ public class SubscriptionsController {
     @Autowired
     private RequestContext context;
 
+    @Autowired
+    private PaginationFactory pageFactory;
+
     @JsonView(Views.SubscriptionExpanded.class)
     @RequestMapping("")
     public ResourceCollectionWithMetadata<Subscription> getSubscriptions()
             throws IOException, URISyntaxException, InvalidPaginationException {
         Map<String, String[]> query = context.getParameters();
-        Pagination p = Pagination.fromQuery(query);
+        Pagination p = pageFactory.fromQuery(query);
 
         String fullUrl = context.getFullUrl();
 

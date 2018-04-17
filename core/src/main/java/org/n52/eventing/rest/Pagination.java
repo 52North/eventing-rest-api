@@ -27,9 +27,6 @@
  */
 package org.n52.eventing.rest;
 
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -37,42 +34,10 @@ import org.slf4j.LoggerFactory;
  */
 public class Pagination {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Pagination.class);
-    private static final Pagination DEFAULT = new Pagination(0, 100);
-
-    public static Pagination fromQuery(Map<String, String[]> query) throws InvalidPaginationException {
-        if (query == null) {
-            return null;
-        }
-
-        int limit = DEFAULT.limit;
-        int offset = DEFAULT.offset;
-        try {
-            if (query.containsKey("limit")) {
-                String[] val = query.get("limit");
-                limit = Integer.parseInt(val[0]);
-            }
-            if (query.containsKey("offset")) {
-                String[] val = query.get("offset");
-                offset = Integer.parseInt(val[0]);
-            }
-
-            return new Pagination(offset, limit);
-        }
-        catch (NumberFormatException e) {
-            LOG.warn(e.getMessage());
-            throw new InvalidPaginationException("Not number: "+e.getMessage());
-        }
-    }
-
-    public static Pagination defaultPagination() {
-        return DEFAULT;
-    }
-
     private final int offset;
     private final int limit;
 
-    public Pagination(int offset, int size) {
+    protected Pagination(int offset, int size) {
         this.offset = offset;
         this.limit = size;
     }
@@ -84,6 +49,5 @@ public class Pagination {
     public int getLimit() {
         return limit;
     }
-
 
 }

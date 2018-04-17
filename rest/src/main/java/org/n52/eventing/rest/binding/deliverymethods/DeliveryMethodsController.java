@@ -32,7 +32,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
+import org.n52.eventing.rest.PaginationFactory;
 import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.binding.ResourceCollection;
@@ -40,7 +42,6 @@ import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.ResourceCollectionWithMetadata;
 import org.n52.eventing.rest.binding.ResourceNotFoundException;
-import org.n52.eventing.security.NotAuthenticatedException;
 import org.n52.eventing.rest.model.DeliveryMethodDefinition;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,12 +65,16 @@ public class DeliveryMethodsController {
     @Autowired
     private RequestContext context;
 
+    @Autowired
+    private PaginationFactory pageFactory;
+
     @RequestMapping("")
-    public ResourceCollectionWithMetadata<ResourceCollection> getDeliveryMethods() throws IOException, URISyntaxException {
+    public ResourceCollectionWithMetadata<ResourceCollection> getDeliveryMethods() throws IOException, URISyntaxException, InvalidPaginationException {
         String fullUrl = context.getFullUrl();
         List<ResourceCollection> list = new ArrayList<>();
 
         RequestContext.storeInThreadLocal(context);
+        Pagination page = pageFactory.fromQuery(context.getParameters());
 
         try {
             this.dao.getDeliveryMethods().stream().forEach(dm -> {
@@ -80,7 +85,7 @@ public class DeliveryMethodsController {
             });
 
             if (list.isEmpty()) {
-                return new ResourceCollectionWithMetadata<>(new QueryResult<>(Collections.emptyList(), 0));
+                return new ResourceCollectionWithMetadata<>(new QueryResult<>(Collections.emptyList(), 0), page);
             }
         }
         finally {
@@ -89,7 +94,7 @@ public class DeliveryMethodsController {
 
 
         QueryResult<ResourceCollection> result = new QueryResult<>(list, list.size());
-        return new ResourceCollectionWithMetadata<>(result.getResult(), new ResourceCollectionWithMetadata.Metadata(result.getTotalHits(), Pagination.defaultPagination()));
+        return new ResourceCollectionWithMetadata<>(result.getResult(), new ResourceCollectionWithMetadata.Metadata(result.getTotalHits(), pageFactory.defaultPagination()));
     }
 
     @RequestMapping("/{item}")
