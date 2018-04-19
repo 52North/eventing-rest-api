@@ -40,6 +40,11 @@ public class QueryResult<T> {
     private List<T> result;
     private int totalHits;
 
+    public QueryResult(List<T> result) {
+        this.result = result;
+        this.totalHits = result.size();
+    }
+
     public QueryResult(List<T> result, int totalHits) {
         this.result = result;
         this.totalHits = totalHits;

@@ -87,7 +87,7 @@ public class DeliveryMethodDefinitionImpl implements DeliveryMethodDefinition {
 
     @Override
     public String getHref() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.href;
     }
 
     public void setHref(String href) {
