@@ -120,7 +120,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
                 LOG.debug(ex.getMessage(), ex);
                 throw new InvalidSubscriptionException("Template unknown: "+pubId);
             }
-             desc = String.format("Subscription using template %s. Parameters: %s", template.getId(), subDef.getTemplateInstance().getParameters());
+            desc = String.format("Subscription using template %s. Parameters: %s", template.getId(), subDef.getTemplateInstance().getParameters());
         }
         else {
             desc = String.format("Subscription for publication: %s", pubId);
@@ -131,7 +131,6 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         String label = Optional.ofNullable(subDef.getLabel()).orElse(desc);
 
         subDef.setLabel(label);
-        subDef.setDescription(desc);
         subDef.setPublicationId(pubId);
         subDef.setUser(user);
         subDef.setCreated(now);

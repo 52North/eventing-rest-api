@@ -87,15 +87,6 @@ public class SubscriptionImpl implements Subscription {
         this.label = label;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     @Override
     public User getUser() {
         return user;

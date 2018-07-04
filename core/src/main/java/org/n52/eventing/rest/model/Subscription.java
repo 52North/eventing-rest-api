@@ -56,8 +56,6 @@ public interface Subscription {
 
     void setLabel(String label);
 
-    void setDescription(String desc);
-
     void setPublicationId(String pubId);
 
     void setUser(User u);
