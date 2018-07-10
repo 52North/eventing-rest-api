@@ -81,8 +81,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
         this.dao.getSubscriptions(null).getResult().stream().forEach(s -> {
             LOG.info("Registering subscription {}", s.getId());
             try {
-                if (s.getTemplateInstance() != null) {
-                    filterLogic.internalSubscribe(s, templatesDaoFactory.newDao().getTemplate(s.getTemplateInstance().getId()));
+                if (s.getNotificationInstance() != null) {
+                    filterLogic.internalSubscribe(s, templatesDaoFactory.newDao().getTemplate(s.getNotificationInstance().getId()));
                     count.getAndIncrement();
                 }
             } catch (UnknownTemplateException ex) {
@@ -112,15 +112,15 @@ public class SubscriptionManagerImpl implements SubscriptionManager, Initializin
 
         TemplateDefinition template = null;
         String desc;
-        if (subDef.getTemplateInstance() != null) {
+        if (subDef.getNotificationInstance() != null) {
             try {
-                template = this.templatesDaoFactory.newDao().getTemplate(subDef.getTemplateInstance().getId());
+                template = this.templatesDaoFactory.newDao().getTemplate(subDef.getNotificationInstance().getId());
             } catch (UnknownTemplateException ex) {
                 LOG.warn(ex.getMessage());
                 LOG.debug(ex.getMessage(), ex);
                 throw new InvalidSubscriptionException("Template unknown: "+pubId);
             }
-            desc = String.format("Subscription using template %s. Parameters: %s", template.getId(), subDef.getTemplateInstance().getParameters());
+            desc = String.format("Subscription using template %s. Parameters: %s", template.getId(), subDef.getNotificationInstance().getParameters());
         }
         else {
             desc = String.format("Subscription for publication: %s", pubId);

@@ -108,7 +108,7 @@ public class SubverseFilterLogic implements FilterLogic {
         String filterInstance = null;
         Map<String, ParameterInstance> params = null;
         if (template != null && template instanceof TemplateDefinitionImpl) {
-            params = subscription.getTemplateInstance().getParameters();
+            params = subscription.getNotificationInstance().getParameters();
             params.forEach((String t, ParameterInstance u) -> {
                 u.setName(t);
             });

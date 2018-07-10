@@ -50,7 +50,7 @@ public interface Subscription {
 
     String getPublicationId();
 
-    TemplateInstance getTemplateInstance();
+    TemplateInstance getNotificationInstance();
 
     String getLabel();
 

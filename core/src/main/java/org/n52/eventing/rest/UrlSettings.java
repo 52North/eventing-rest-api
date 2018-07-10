@@ -41,7 +41,7 @@ public interface UrlSettings {
 
     String SUBSCRIPTIONS_RESOURCE = "subscriptions";
 
-    String TEMPLATES_RESOURCE = "templates";
+    String NOTIFICATIONS_RESOURCE = "notifications";
 
     String EVENTLOG_RESOURCE = "events";
 

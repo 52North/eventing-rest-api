@@ -133,7 +133,7 @@ public class SubscriptionImpl implements Subscription {
     }
 
     @Override
-    public TemplateInstance getTemplateInstance() {
+    public TemplateInstance getNotificationInstance() {
         return template;
     }
 

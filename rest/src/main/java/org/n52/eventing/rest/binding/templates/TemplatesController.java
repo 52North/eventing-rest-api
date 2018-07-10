@@ -62,7 +62,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
 @RestController
-@RequestMapping(value = UrlSettings.API_V1_BASE+"/"+UrlSettings.TEMPLATES_RESOURCE,
+@RequestMapping(value = UrlSettings.API_V1_BASE+"/"+UrlSettings.NOTIFICATIONS_RESOURCE,
         produces = {"application/json"})
 public class TemplatesController {
 

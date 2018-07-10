@@ -76,8 +76,8 @@ public class ResourcesController {
                 String.format("%s/%s", fullUrl, UrlSettings.DELIVERY_METHODS_RESOURCE));
         resources.put(UrlSettings.SUBSCRIPTIONS_RESOURCE,
                 String.format("%s/%s", fullUrl, UrlSettings.SUBSCRIPTIONS_RESOURCE));
-        resources.put(UrlSettings.TEMPLATES_RESOURCE,
-                String.format("%s/%s", fullUrl, UrlSettings.TEMPLATES_RESOURCE));
+        resources.put(UrlSettings.NOTIFICATIONS_RESOURCE,
+                String.format("%s/%s", fullUrl, UrlSettings.NOTIFICATIONS_RESOURCE));
         resources.put(UrlSettings.EVENTLOG_RESOURCE,
                 String.format("%s/%s", fullUrl, UrlSettings.EVENTLOG_RESOURCE));
 
