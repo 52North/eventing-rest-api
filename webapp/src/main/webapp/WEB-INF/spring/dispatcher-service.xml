@@ -48,7 +48,7 @@
         </property>
     </bean>
 
-    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
         <property name="messageConverters">
             <util:list>
                 <ref bean="nonNullJacksonConverter" />
