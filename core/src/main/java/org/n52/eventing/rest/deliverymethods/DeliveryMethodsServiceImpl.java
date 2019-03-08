@@ -84,7 +84,7 @@ public class DeliveryMethodsServiceImpl implements DeliveryMethodsService, Initi
     public void afterPropertiesSet() throws Exception {
         this.deliveryProviderRepository.getProviders().stream().forEach(dp -> {
             DeliveryMethodDefinition method = new DeliveryMethodDefinitionImpl(dp.getIdentifier(), dp.getAbstract(),
-                    dp.getAbstract(), mapParameters(dp.getParameters()));
+                    mapParameters(dp.getParameters()));
             methods.put(dp.getIdentifier(), method);
         });
     }

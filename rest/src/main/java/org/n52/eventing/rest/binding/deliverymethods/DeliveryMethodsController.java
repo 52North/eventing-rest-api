@@ -80,7 +80,6 @@ public class DeliveryMethodsController {
             this.dao.getDeliveryMethods().stream().forEach(dm -> {
                 list.add(ResourceCollection.createResource(dm.getId())
                     .withLabel(dm.getLabel())
-                    .withDescription(dm.getDescription())
                     .withHref(String.format("%s/%s", fullUrl, dm.getId())));
             });
 

@@ -39,14 +39,12 @@ public class DeliveryMethodDefinitionImpl implements DeliveryMethodDefinition {
 
     private String id;
     private String label;
-    private String description;
     private String href;
     private Map<String, ParameterDefinition> parameters;
 
-    public DeliveryMethodDefinitionImpl(String id, String label, String description, Map<String, ParameterDefinition> params) {
+    public DeliveryMethodDefinitionImpl(String id, String label, Map<String, ParameterDefinition> params) {
         this.id = id;
         this.label = label;
-        this.description = description;
         this.parameters = params;
     }
 
@@ -66,15 +64,6 @@ public class DeliveryMethodDefinitionImpl implements DeliveryMethodDefinition {
 
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Map<String, ParameterDefinition> getParameters() {

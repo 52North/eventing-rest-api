@@ -42,8 +42,6 @@ public interface DeliveryMethodDefinition {
 
     String getLabel();
 
-    String getDescription();
-
     String getHref();
 
 }
