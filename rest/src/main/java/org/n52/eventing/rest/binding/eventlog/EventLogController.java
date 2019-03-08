@@ -85,7 +85,7 @@ public class EventLogController {
 
     @JsonView(Views.EventOverview.class)
     @RequestMapping("")
-    public ResourceCollectionWithMetadata<EventHolder> getAllEvents()
+    public ResourceCollectionWithMetadata<EventHolder> getEvents()
             throws IOException, URISyntaxException, InvalidPaginationException {
         final String fullUrl = context.getFullUrl();
         Map<String, String[]> query = context.getParameters();
@@ -111,9 +111,9 @@ public class EventLogController {
 
     @JsonView(Views.EventExpanded.class)
     @RequestMapping(path = "", params = {"expanded=true"})
-    public ResourceCollectionWithMetadata<EventHolder> getAllEventsExpanded()
+    public ResourceCollectionWithMetadata<EventHolder> getEventsExpanded()
             throws IOException, URISyntaxException, InvalidPaginationException {
-        return getAllEvents();
+        return getEvents();
     }
 
     @JsonView(Views.EventOverview.class)
