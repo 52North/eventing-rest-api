@@ -27,10 +27,15 @@
  */
 package org.n52.eventing.rest.binding.publications;
 
+import org.n52.eventing.rest.binding.BaseController;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
+import org.n52.eventing.rest.binding.exception.ResourceNotFoundException;
+import org.n52.eventing.rest.binding.exception.concrete.ResourceWithIdNotFoundException;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
+
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.PaginationFactory;
@@ -38,7 +43,6 @@ import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.ResourceCollectionWithMetadata;
-import org.n52.eventing.rest.binding.ResourceNotFoundException;
 import org.n52.eventing.rest.model.Publication;
 import org.n52.eventing.rest.publications.UnknownPublicationsException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +64,7 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping(value = UrlSettings.API_V1_BASE+"/"+UrlSettings.PUBLICATIONS_RESOURCE,
         produces = {"application/json"})
-public class PublicationsController {
+public class PublicationsController extends BaseController {
 
     private static final Logger LOG = LoggerFactory.getLogger(PublicationsController.class.getName());
 
@@ -107,7 +111,7 @@ public class PublicationsController {
             throws IOException, URISyntaxException, ResourceNotFoundException, ResourceNotAvailableException {
 
         if (!this.dao.hasPublication(id)) {
-            throw new ResourceNotFoundException("The publication is not available: "+id);
+            throw new ResourceWithIdNotFoundException(id);
         }
 
         RequestContext.storeInThreadLocal(context);

@@ -32,15 +32,18 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.PaginationFactory;
 import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
+import org.n52.eventing.rest.binding.BaseController;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.ResourceCollectionWithMetadata;
-import org.n52.eventing.rest.binding.ResourceNotFoundException;
+import org.n52.eventing.rest.binding.exception.ResourceNotFoundException;
+import org.n52.eventing.rest.binding.exception.concrete.ResourceWithIdNotFoundException;
 import org.n52.eventing.rest.binding.json.CustomObjectMapper;
 import org.n52.eventing.rest.factory.TemplatesDaoFactory;
 import org.n52.eventing.rest.model.Subscription;
@@ -64,7 +67,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RestController
 @RequestMapping(value = UrlSettings.API_V1_BASE+"/"+UrlSettings.NOTIFICATIONS_RESOURCE,
         produces = {"application/json"})
-public class TemplatesController {
+public class TemplatesController extends BaseController {
 
     @Autowired
     private TemplatesDaoFactory daoFactory;
@@ -127,7 +130,7 @@ public class TemplatesController {
             RequestContext.removeThreadLocal();
         }
 
-        throw new ResourceNotFoundException();
+        throw new ResourceWithIdNotFoundException(id);
     }
 
     @JsonView(Views.TemplateOverview.class)
@@ -154,7 +157,7 @@ public class TemplatesController {
             RequestContext.removeThreadLocal();
         }
 
-        throw new ResourceNotFoundException();
+        throw new ResourceWithIdNotFoundException(id);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)

@@ -25,28 +25,56 @@
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package org.n52.eventing.rest.binding;
+package org.n52.eventing.rest.binding.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-/**
- *
- * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
- */
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class ResourceNotFoundException extends Exception {
+public abstract class WebExceptionAdapter extends RuntimeException implements WebException {
 
-    public ResourceNotFoundException() {
-        this("404 Not Found");
+    private static final long serialVersionUID = 8960179333452332350L;
+
+    private List<String> details;
+
+    public WebExceptionAdapter(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public ResourceNotFoundException(String message) {
+    public WebExceptionAdapter(String message) {
         super(message);
     }
 
-    public ResourceNotFoundException(String message, Throwable cause) {
-        super(message, cause);
+    @Override
+    public WebExceptionAdapter addHint(String... hints) {
+        if (hints != null) {
+            Arrays.asList(hints)
+                  .stream()
+                  .forEach(d -> addHint(d));
+        }
+        return this;
+    }
+
+    @Override
+    public WebExceptionAdapter addHint(String hint) {
+        if (hint == null) {
+            return this;
+        }
+        if (getHints() == null) {
+            this.details = new ArrayList<>();
+        }
+        this.details.add(hint);
+        return this;
+    }
+
+    @Override
+    public String[] getHints() {
+        return details == null ? null : details.toArray(new String[0]);
+    }
+
+    @Override
+    public Throwable getThrowable() {
+        return this;
     }
 
 }

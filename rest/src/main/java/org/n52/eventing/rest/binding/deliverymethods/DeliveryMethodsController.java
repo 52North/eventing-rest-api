@@ -37,11 +37,13 @@ import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.PaginationFactory;
 import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
+import org.n52.eventing.rest.binding.BaseController;
 import org.n52.eventing.rest.binding.ResourceCollection;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
+import org.n52.eventing.rest.binding.exception.ResourceNotFoundException;
+import org.n52.eventing.rest.binding.exception.concrete.ResourceWithIdNotFoundException;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.ResourceCollectionWithMetadata;
-import org.n52.eventing.rest.binding.ResourceNotFoundException;
 import org.n52.eventing.rest.model.DeliveryMethodDefinition;
 import org.n52.eventing.rest.deliverymethods.UnknownDeliveryMethodException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +59,7 @@ import org.n52.eventing.rest.deliverymethods.DeliveryMethodsService;
 @RestController
 @RequestMapping(value = UrlSettings.API_V1_BASE+"/"+UrlSettings.DELIVERY_METHODS_RESOURCE,
         produces = {"application/json"})
-public class DeliveryMethodsController {
+public class DeliveryMethodsController extends BaseController {
 
     @Autowired
     private DeliveryMethodsService dao;
@@ -111,7 +113,7 @@ public class DeliveryMethodsController {
             }
         }
 
-        throw new ResourceNotFoundException("Delivery method not available: "+id);
+        throw new ResourceWithIdNotFoundException(id);
     }
 
 }

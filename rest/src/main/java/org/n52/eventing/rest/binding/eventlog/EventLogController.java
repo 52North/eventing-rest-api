@@ -41,8 +41,10 @@ import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.PaginationFactory;
 import org.n52.eventing.rest.QueryResult;
 import org.n52.eventing.rest.RequestContext;
+import org.n52.eventing.rest.binding.BaseController;
 import org.n52.eventing.rest.binding.RequestUtils;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
+import org.n52.eventing.rest.binding.exception.concrete.ResourceWithIdNotFoundException;
 import org.n52.eventing.rest.UrlSettings;
 import org.n52.eventing.rest.ResourceCollectionWithMetadata;
 import org.n52.eventing.rest.model.EventHolder;
@@ -65,7 +67,7 @@ import org.n52.eventing.rest.subscriptions.SubscriptionsService;
 @RestController
 @RequestMapping(value = UrlSettings.API_V1_BASE+"/"+UrlSettings.EVENTLOG_RESOURCE,
         produces = {"application/json"})
-public class EventLogController {
+public class EventLogController extends BaseController {
 
     @Autowired
     private SubscriptionsService subDao;
@@ -140,7 +142,7 @@ public class EventLogController {
     @JsonView(Views.EventExpanded.class)
     @RequestMapping(value = "/{eventId}", method = GET)
     public EventHolder getSingleEvent(@PathVariable("eventId") String eventId)
-            throws IOException, URISyntaxException, UnknownSubscriptionException, ResourceNotAvailableException {
+            throws IOException, URISyntaxException, UnknownSubscriptionException {
         RequestContext.storeInThreadLocal(context);
 
         try {
@@ -159,7 +161,7 @@ public class EventLogController {
             RequestContext.removeThreadLocal();
         }
 
-        throw new ResourceNotAvailableException("Could not find event");
+        throw new ResourceWithIdNotFoundException(eventId);
     }
 
     @JsonView(Views.EventExpanded.class)
