@@ -33,6 +33,8 @@ import java.util.Map;
 import org.n52.eventing.rest.model.TemplateDefinition;
 import org.n52.eventing.rest.templates.Definition;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>

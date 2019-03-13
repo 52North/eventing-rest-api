@@ -35,6 +35,8 @@ import org.n52.eventing.rest.model.Subscription;
 import org.n52.eventing.rest.templates.TemplateInstance;
 import org.n52.eventing.rest.users.User;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 
 /**
  *
