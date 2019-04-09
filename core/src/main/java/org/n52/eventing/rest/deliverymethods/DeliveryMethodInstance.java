@@ -30,10 +30,13 @@ package org.n52.eventing.rest.deliverymethods;
 import java.util.Map;
 import org.n52.eventing.rest.parameters.ParameterInstance;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
+@JsonPropertyOrder({"id", "href", "label", "parameters"})
 public class DeliveryMethodInstance {
 
     private final String id;
