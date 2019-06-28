@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -29,10 +29,13 @@ package org.n52.eventing.rest.model.impl;
 
 import org.n52.eventing.rest.model.Publication;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
+@JsonPropertyOrder({"id", "href", "label", "description", "details"})
 public class PublicationImpl implements Publication {
 
     private String id;

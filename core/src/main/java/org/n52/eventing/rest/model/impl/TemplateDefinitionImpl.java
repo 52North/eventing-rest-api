@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -32,6 +32,8 @@ import org.n52.eventing.rest.parameters.ParameterDefinition;
 import java.util.Map;
 import org.n52.eventing.rest.model.TemplateDefinition;
 import org.n52.eventing.rest.templates.Definition;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  *

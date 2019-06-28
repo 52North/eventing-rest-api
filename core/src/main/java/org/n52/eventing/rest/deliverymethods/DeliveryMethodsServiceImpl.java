@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -84,7 +84,7 @@ public class DeliveryMethodsServiceImpl implements DeliveryMethodsService, Initi
     public void afterPropertiesSet() throws Exception {
         this.deliveryProviderRepository.getProviders().stream().forEach(dp -> {
             DeliveryMethodDefinition method = new DeliveryMethodDefinitionImpl(dp.getIdentifier(), dp.getAbstract(),
-                    dp.getAbstract(), mapParameters(dp.getParameters()));
+                    mapParameters(dp.getParameters()));
             methods.put(dp.getIdentifier(), method);
         });
     }

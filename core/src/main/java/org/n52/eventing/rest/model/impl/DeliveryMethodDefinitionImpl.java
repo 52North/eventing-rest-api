@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -31,22 +31,23 @@ import java.util.Map;
 import org.n52.eventing.rest.model.DeliveryMethodDefinition;
 import org.n52.eventing.rest.parameters.ParameterDefinition;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  *
  * @author <a href="mailto:m.rieke@52north.org">Matthes Rieke</a>
  */
+@JsonPropertyOrder({"id", "href", "label", "parameters"})
 public class DeliveryMethodDefinitionImpl implements DeliveryMethodDefinition {
 
     private String id;
     private String label;
-    private String description;
     private String href;
     private Map<String, ParameterDefinition> parameters;
 
-    public DeliveryMethodDefinitionImpl(String id, String label, String description, Map<String, ParameterDefinition> params) {
+    public DeliveryMethodDefinitionImpl(String id, String label, Map<String, ParameterDefinition> params) {
         this.id = id;
         this.label = label;
-        this.description = description;
         this.parameters = params;
     }
 
@@ -66,15 +67,6 @@ public class DeliveryMethodDefinitionImpl implements DeliveryMethodDefinition {
 
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Map<String, ParameterDefinition> getParameters() {

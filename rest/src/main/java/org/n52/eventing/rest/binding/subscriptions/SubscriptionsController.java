@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -27,15 +27,19 @@
  */
 package org.n52.eventing.rest.binding.subscriptions;
 
-import org.n52.eventing.rest.binding.ResourceNotFoundException;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.n52.eventing.rest.subscriptions.SubscriptionUpdate;
+import org.n52.eventing.rest.binding.BaseController;
 import org.n52.eventing.rest.binding.ResourceNotAvailableException;
+import org.n52.eventing.rest.binding.exception.ResourceNotFoundException;
+import org.n52.eventing.rest.binding.exception.concrete.ResourceWithIdNotFoundException;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.n52.eventing.rest.InvalidPaginationException;
 import org.n52.eventing.rest.Pagination;
 import org.n52.eventing.rest.PaginationFactory;
@@ -73,7 +77,7 @@ import org.n52.eventing.rest.subscriptions.SubscriptionsService;
 @RestController
 @RequestMapping(value = UrlSettings.API_V1_BASE+"/"+UrlSettings.SUBSCRIPTIONS_RESOURCE,
         produces = {"application/json"})
-public class SubscriptionsController {
+public class SubscriptionsController extends BaseController{
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionsController.class);
 
@@ -153,7 +157,7 @@ public class SubscriptionsController {
         } catch (NotAuthenticatedException ex) {
             LOG.warn(ex.getMessage());
             LOG.trace(ex.getMessage(), ex);
-            throw new ResourceNotFoundException();
+            throw new ResourceWithIdNotFoundException("me");
         }
 
         RequestContext.storeInThreadLocal(context);
@@ -185,7 +189,7 @@ public class SubscriptionsController {
         } catch (NotAuthenticatedException ex) {
             LOG.warn(ex.getMessage());
             LOG.trace(ex.getMessage(), ex);
-            throw new ResourceNotFoundException();
+            throw new ResourceWithIdNotFoundException(id);
         }
 
         this.manager.updateSubscription(subDef, user);
@@ -201,7 +205,7 @@ public class SubscriptionsController {
         } catch (NotAuthenticatedException ex) {
             LOG.warn(ex.getMessage());
             LOG.trace(ex.getMessage(), ex);
-            throw new ResourceNotFoundException();
+            throw new ResourceWithIdNotFoundException(id);
         }
 
         this.manager.removeSubscription(id, user);
