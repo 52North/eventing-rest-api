@@ -370,14 +370,14 @@
     <repositories>
         <repository>
             <id>52n-snapshots</id>
-            <url>http://52north.org/maven/repo/snapshots</url>
+            <url>https://52north.org/maven/repo/snapshots</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
         </repository>
         <repository>
             <id>52n-releases</id>
-            <url>http://52north.org/maven/repo/releases</url>
+            <url>https://52north.org/maven/repo/releases</url>
         </repository>
         <repository>
             <snapshots>
@@ -385,7 +385,7 @@
             </snapshots>
             <id>jcenter-releases</id>
             <name>jcenter</name>
-            <url>http://jcenter.bintray.com</url>
+            <url>https://jcenter.bintray.com</url>
         </repository>
     </repositories>
     
@@ -393,7 +393,7 @@
         <pluginRepository>
             <id>jcenter-releases</id>
             <name>jcenter</name>
-            <url>http://jcenter.bintray.com</url>
+            <url>https://jcenter.bintray.com</url>
         </pluginRepository>
     </pluginRepositories>
     
