@@ -529,41 +529,6 @@
                     </execution>
                 </executions>
              </plugin>
-             <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <inherited>false</inherited>
-                <configuration>
-                    <aggregate>true</aggregate>
-                    <header>misc/52N_license.txt</header>
-                    <excludes>
-                        <exclude>**/log4j*</exclude>
-                        <exclude>**/*.xml</exclude>
-                        <exclude>**/*.html</exclude>
-                        <exclude>**/webapp/static/lib/*</exclude>
-                        <exclude>**/webapp/WEB-INF/web.xml</exclude>
-                        <exclude>**/buildNumber.properties</exclude>
-                        <exclude>**/src/**/NcNameResolver.java</exclude>
-                        <exclude>**/src/**/PGGeometryTypeDescriptor52N.java</exclude>
-                        <exclude>**/src/**/PGGeometryValueExtractor52N.java</exclude>
-                        <exclude>**/src/**/PostgisDialect52N.java</exclude>
-                        <exclude>iceland/**</exclude>
-                    </excludes>
-                    <includes>
-                        <include>**/*.java</include>
-                        <include>**/*.jsp</include>
-                        <include>**/*.js</include>
-                        <include>**/*.xsl</include>
-                        <include>**/*.sql</include>
-                    </includes>
-                    <strictCheck>true</strictCheck>
-                    <properties>
-                        <year>${project.inceptionYear}-${currentYearDynamic}</year>
-                    </properties>
-                </configuration>
-                <!-- <executions> <execution> <id>check-license</id> <phase>initialize</phase> 
-                    <goals> <goal>format</goal> </goals> </execution> </executions> -->
-            </plugin>
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -588,8 +553,7 @@
                     </includes>
                     <strictCheck>true</strictCheck>
                     <properties>
-                        <inceptionYear>${project.inceptionYear}</inceptionYear>
-                        <latestYearOfContribution>2017</latestYearOfContribution>
+                        <year>${project.inceptionYear}-${currentYearDynamic}</year>
                     </properties>
                 </configuration>
                 <executions>
