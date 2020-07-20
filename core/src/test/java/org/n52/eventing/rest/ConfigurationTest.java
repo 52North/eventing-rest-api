@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2019 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2020 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -29,8 +29,8 @@ package org.n52.eventing.rest;
 
 import java.util.Optional;
 import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -43,11 +43,11 @@ public class ConfigurationTest {
         Configuration config = new ConfigurationImpl("/test-config.json");
         Optional<Double> val = config.getParameterAsDouble("doubleVal");
 
-        Assert.assertThat(val.get(), CoreMatchers.is(2.3));
+        MatcherAssert.assertThat(val.get(), CoreMatchers.is(2.3));
 
         Optional<String> stringVal = config.getParameter("stringVal");
 
-        Assert.assertThat(stringVal.get(), CoreMatchers.is("testString"));
+        MatcherAssert.assertThat(stringVal.get(), CoreMatchers.is("testString"));
     }
 
 }

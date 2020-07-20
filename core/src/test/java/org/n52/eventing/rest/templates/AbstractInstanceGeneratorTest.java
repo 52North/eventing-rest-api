@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2019 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2020 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -31,8 +31,8 @@ import org.n52.eventing.rest.model.impl.TemplateDefinitionImpl;
 import java.util.ArrayList;
 import java.util.List;
 import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
 import org.n52.eventing.rest.parameters.ParameterInstance;
 
 /**
@@ -47,7 +47,7 @@ public class AbstractInstanceGeneratorTest {
 
         String instance = aig.generateFilterInstance(createTemplate(), createValues());
 
-        Assert.assertThat(instance, CoreMatchers.is(
+        MatcherAssert.assertThat(instance, CoreMatchers.is(
                 "<greaterThan><prop>temp</prop><val>22.03</val></greaterThan>"
         ));
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2019 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2016-2020 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -33,8 +33,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -48,15 +49,15 @@ public class ConfigurationTemplatesDaoTest {
 
         TemplateDefinitionImpl t = dao.loadTemplate(Paths.get(getClass().getResource("/templates-test/overshootUndershoot.json").toURI()));
 
-        Assert.assertThat(t.getId(), CoreMatchers.is("overshootUndershoot"));
-        Assert.assertThat(t.getLabel(), CoreMatchers.is("Generic overshoot/undershoot pattern"));
-        Assert.assertThat(t.getParameters().size(), CoreMatchers.is(2));
-        Assert.assertThat(t.getParameters().get("observedProperty").getType(), CoreMatchers.is("text"));
+        MatcherAssert.assertThat(t.getId(), CoreMatchers.is("overshootUndershoot"));
+        MatcherAssert.assertThat(t.getLabel(), CoreMatchers.is("Generic overshoot/undershoot pattern"));
+        MatcherAssert.assertThat(t.getParameters().size(), CoreMatchers.is(2));
+        MatcherAssert.assertThat(t.getParameters().get("observedProperty").getType(), CoreMatchers.is("text"));
 
         ParameterDefinition thresholdValue = t.getParameters().get("thresholdValue");
-        Assert.assertThat(thresholdValue.getMin(), CoreMatchers.is(1.3));
-        Assert.assertThat(thresholdValue.getMax(), CoreMatchers.is(2.2));
-        Assert.assertThat(thresholdValue.getPattern(), CoreMatchers.is("regex"));
+        MatcherAssert.assertThat(thresholdValue.getMin(), CoreMatchers.is(1.3));
+        MatcherAssert.assertThat(thresholdValue.getMax(), CoreMatchers.is(2.2));
+        MatcherAssert.assertThat(thresholdValue.getPattern(), CoreMatchers.is("regex"));
     }
 
 }
