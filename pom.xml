@@ -53,7 +53,7 @@
   </scm>
 
     <properties>
-        <org.springframework.version>5.2.7.RELEASE</org.springframework.version>
+        <org.springframework.version>5.2.8.RELEASE</org.springframework.version>
         <spring-security.version>5.3.3.RELEASE</spring-security.version>
         <logback.version>1.2.3</logback.version>
         <jackson.version>2.11.1</jackson.version>
@@ -132,6 +132,12 @@
                 <groupId>org.n52.subverse</groupId>
                 <artifactId>termination</artifactId>
                 <version>${subverse.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>c3p0</groupId>
+                        <artifactId>c3p0</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 <!--            <dependency>
                 <groupId>org.n52.epos</groupId>
@@ -140,9 +146,9 @@
             </dependency>-->
 
             <dependency>
-                <groupId>com.zaxxer</groupId>
-                <artifactId>HikariCP</artifactId>
-                <version>3.4.5</version>
+                <groupId>com.mchange</groupId>
+                <artifactId>c3p0</artifactId>
+                <version>0.9.5.5</version>
             </dependency>
             
             <dependency>
@@ -243,7 +249,12 @@
                 <artifactId>spring-security-config</artifactId>
                 <version>${spring-security.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring-security.version}</version>
+                <scope>test</scope>
+            </dependency>
 
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
