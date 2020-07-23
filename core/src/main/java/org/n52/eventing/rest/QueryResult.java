@@ -37,16 +37,19 @@ import java.util.List;
 public class QueryResult<T> {
 
     private List<T> result;
-    private int totalHits;
+    private Long totalHits;
 
     public QueryResult(List<T> result) {
-        this.result = result;
-        this.totalHits = result.size();
+        this(result, result.size());
     }
 
     public QueryResult(List<T> result, int totalHits) {
-        this.result = result;
-        this.totalHits = totalHits;
+        this(result, Integer.valueOf(totalHits).longValue());
+    }
+
+    public QueryResult(List<T> result, Long totalHits) {
+       this.result = result;
+       this.totalHits = totalHits;
     }
 
     public List<T> getResult() {
@@ -57,11 +60,15 @@ public class QueryResult<T> {
         this.result = result;
     }
 
-    public int getTotalHits() {
+    public Long getTotalHits() {
         return totalHits;
     }
 
     public void setTotalHits(int totalHits) {
+        setTotalHits(Integer.valueOf(totalHits).longValue());
+    }
+
+    public void setTotalHits(Long totalHits) {
         this.totalHits = totalHits;
     }
 

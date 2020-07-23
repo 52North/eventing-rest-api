@@ -71,45 +71,61 @@ public class ResourceCollectionWithMetadata<T> {
 
     public static class Metadata {
 
-        private int offset;
-        private int limit;
-        private int total;
+        private Long offset;
+        private Long limit;
+        private Long total;
 
-        public Metadata(Pagination def) {
-            this.offset = def.getOffset();
-            this.limit = def.getLimit();
+        public Metadata(Pagination page) {
+            this.offset = Integer.valueOf(page.getOffset()).longValue();
+            this.limit = Integer.valueOf(page.getLimit()).longValue();
         }
 
         public Metadata(int total, Pagination page) {
+            this(Integer.valueOf(total).longValue(), page);
+        }
+
+        public Metadata(Long total, Pagination page) {
             this.total = total;
-            this.offset = page.getOffset();
-            this.limit = page.getLimit();
+            this.offset = Integer.valueOf(page.getOffset()).longValue();
+            this.limit = Integer.valueOf(page.getLimit()).longValue();
         }
 
         @JsonView(Views.BaseView.class)
-        public int getOffset() {
+        public Long getOffset() {
             return offset;
         }
 
         public void setOffset(int offset) {
+           setOffset(Integer.valueOf(offset).longValue());
+        }
+
+        public void setOffset(Long offset) {
             this.offset = offset;
         }
 
         @JsonView(Views.BaseView.class)
-        public int getLimit() {
+        public Long getLimit() {
             return limit;
         }
 
         public void setLimit(int limit) {
+            setLimit(Integer.valueOf(limit).longValue());
+        }
+
+        public void setLimit(Long limit) {
             this.limit = limit;
         }
 
         @JsonView(Views.BaseView.class)
-        public int getTotal() {
+        public Long getTotal() {
             return total;
         }
 
         public void setTotal(int total) {
+            setTotal(Integer.valueOf(total).longValue());
+        }
+
+        public void setTotal(Long total) {
             this.total = total;
         }
 
