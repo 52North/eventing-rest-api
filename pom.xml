@@ -54,7 +54,7 @@
 
     <properties>
         <org.springframework.version>5.2.8.RELEASE</org.springframework.version>
-        <spring-security.version>5.3.3.RELEASE</spring-security.version>
+        <spring-security.version>5.3.9.RELEASE</spring-security.version>
         <logback.version>1.2.3</logback.version>
         <jackson.version>2.11.1</jackson.version>
         <subverse.version>1.0.0-rc0</subverse.version>
